@@ -1,0 +1,110 @@
+https://www.acmicpc.net/problem/17140
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import Counter
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    r,c,k = map(int,input().split())
+    arr = []
+    for _ in range (3) :
+        arr.append(list(map(int,input().split())))
+    ans = 0 ## 횟수
+
+    while ans <= 100 :
+        if r-1<len(arr) and c-1<len(arr[0]) and arr[r-1][c-1] == k :
+            break
+        C_flag = False
+
+
+        if len(arr) < len(arr[0]) : ## (행의 개수) < (열의 개수)
+            C_flag = True
+            arr = list(zip(*arr)) ## 행과 열 바꿔서
+
+        m = len(arr)
+
+        tmp_x = []
+        max_length = 0
+        for i in range (m) : ## 연산
+            tmp = Counter(arr[i])
+            tmp = list(map(list,tmp.items()))
+            tmp.sort(key = lambda x : (x[1],x[0])) ## x[0]은 숫자 x[1]은 숫자 등장 횟수
+            tmp_arr = []
+            for x,y in tmp :
+                if x != 0 :
+                    tmp_arr.append(x)
+                    tmp_arr.append(y)
+            if len(tmp_arr) > 100 :
+                tmp_arr = tmp_arr[:100]
+            max_length = max(max_length,len(tmp_arr))
+            tmp_x.append(tmp_arr)
+        for i in range (m) :
+            if len(tmp_x[i]) < max_length :
+                tmp_x[i] += [0]*(max_length-len(tmp_x[i]))
+
+        arr = tmp_x
+
+        if C_flag :
+            arr = list(zip(*arr))
+
+        ans += 1
+
+    print(-1 if ans>100 else ans)
+
+--------------------------------
+## Counter안쓰고 구현
+import sys
+from collections import Counter
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    r,c,k = map(int,input().split())
+    arr = []
+    for _ in range (3) :
+        arr.append(list(map(int,input().split())))
+
+    cnt = 0
+
+    while cnt<=100 :
+        if r-1 < len(arr) and c-1 < len(arr[0]) and arr[r-1][c-1] == k :
+            break
+
+        C_flag = False
+
+        if len(arr) < len(arr[0]) :
+            C_flag = True
+            arr = list(zip(*arr))
+
+        r_length = len(arr)
+        ans_arr = []
+        max_length = 0
+        for i in range (r_length) : ## 행 연산
+            used_num = [0]*101 ## 1~100의 숫자
+            for x in arr[i] :
+                if x != 0 :
+                    used_num[x] += 1
+            tmp = []
+            for j in range (101) :
+                if used_num[j] != 0 :
+                    tmp.append((j,used_num[j]))
+            tmp.sort(key = lambda x:x[1])
+            tmp_arr = []
+            for x,y in tmp :
+                tmp_arr.append(x)
+                tmp_arr.append(y)
+            max_length = max(max_length,len(tmp_arr))
+            ans_arr.append(tmp_arr)
+        for i in range (r_length) :
+            if len(ans_arr[i]) < max_length :
+                ans_arr[i] += [0]*(max_length-len(ans_arr[i]))
+
+        arr = ans_arr
+
+        if C_flag :
+            arr = list(zip(*arr))
+
+        cnt += 1
+
+    print(cnt if cnt<=100 else -1)

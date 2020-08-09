@@ -1,0 +1,52 @@
+https://www.acmicpc.net/problem/14889
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+
+def get_score(team) : ## team의 점수 계산
+    score = 0
+    for i in range (len(team)) :
+        for j in range (len(team)) :
+            if i == j :
+                continue
+            score += S[team[i]-1][team[j]-1]
+    return score
+
+
+def DFS(num) :
+    global ans
+    if ans == 0 : ## 더 이상 연산할 필요가 없음
+        return
+
+    if len(team1)+(N-num+1) < len(team2) or len(team2) + (N-num+1) < len(team1) : ## 인원 균형이 안맞을 때
+        return
+
+    if num == N+1 :
+        if len(team1) == len(team2) : ## 인원 수가 같아야함
+            ans = min(ans,abs(get_score(team1)-get_score(team2)))
+        return
+
+    ## num번 사람이 팀 1에 속할 때
+    team1.append(num)
+    DFS(num+1)
+    team1.pop()
+    ## num번 사람이 팀 2에 속할 때
+    team2.append(num)
+    DFS(num+1)
+    team2.pop()
+
+    return
+
+
+if __name__ == "__main__" :
+    N = int(input())
+    S = []
+    for _ in range (N) :
+        S.append(list(map(int,input().split())))
+    team1 = []
+    team2 = []
+    ans = sys.maxsize
+    DFS(1)
+    print(ans)

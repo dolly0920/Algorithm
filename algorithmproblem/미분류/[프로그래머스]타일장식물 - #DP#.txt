@@ -1,0 +1,11 @@
+https://programmers.co.kr/learn/courses/30/lessons/43104
+----------------------------------------------------------------------------------------------------------------
+def solution(N):
+    answer = 0
+    fibonacci = [0]*(N+1)
+    fibonacci[1] = 1
+    fibonacci[2] = 1
+    for i in range (3,N+1) :
+        fibonacci[i] = fibonacci[i-1]+fibonacci[i-2] ## 피보나치 수열
+    answer = fibonacci[N]*4 + fibonacci[N-1]*2
+    return answer

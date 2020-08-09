@@ -1,0 +1,92 @@
+https://www.acmicpc.net/problem/14503
+----------------------------------------------------------------------------------------------------------------
+##BFS사용##(20.05.07)
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [-1,0,1,0]
+dc = [0,1,0,-1]
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    MAP = []
+    r,c,d = map(int,input().split()) ## 0:북쪽 1:동쪽 2:남쪽 3:서쪽
+    for _ in range (N) :
+        MAP.append(list(map(int,input().split())))
+
+    visit = [[0]*M for _ in range (N)]
+    q = deque()
+    visit[r][c] = 1
+    q.append((r,c,d,0))
+    cnt = 1
+
+    while q :
+        ##print(q)
+        r,c,d,rotate_cnt = q.popleft()
+        ## 현재 위치 청소
+        ## 왼쪽 방향 확인
+        if MAP[r+dr[(d+3)%4]][c+dc[(d+3)%4]] == 0 and visit[r+dr[(d+3)%4]][c+dc[(d+3)%4]] == 0 : ## 빈칸이고 방문하지 않은 곳(청소하지 않은 곳)이라면
+            d = (d+3)%4 ## 왼쪽으로 방향 회전
+            visit[r+dr[d]][c+dc[d]] = 1
+            q.append((r+dr[d],c+dc[d],d,0)) ## 왼쪽으로 전진, 왼쪽으로 방향 전환
+            cnt += 1
+        else :
+            ## 왼쪽 방향에 청소할 공간이 없는 경우
+            if rotate_cnt != 4 : ## 아직 4방향 탐색을 하기전인 경우
+                d = (d+3)%4
+                q.append((r,c,d,rotate_cnt+1)) ## 방향만 회전
+            else : ## rotate_cnt == 4 : 4방향 탐색을 모두 한 경우
+                nr = r+dr[(d+2)%4]
+                nc = c+dc[(d+2)%4]
+                if nr<0 or nr>= N or nc<0 or nc>=M or MAP[nr][nc] == 1 : ## 후진한 곳이 벽일 경우
+                    break ## 종료
+                else : ## 벽이 아닌 경우
+                    q.append((nr,nc,d,0)) ## 후진, 방향 그대로, 2번으로 돌아감
+
+    print(cnt)
+
+##DFS사용 (19년도)##
+def clean(x,y,d) : ## 좌표, 방향 매개변수
+    global area
+    area[x][y] = 2 ## 청소를 한 곳을 2로 표시
+    lx = x + dx[(d+3)%4]
+    ly = y + dy[(d+3)%4] ## 바라보는 방향의 왼쪽 방향
+    bx = x + dx[(d+2)%4]
+    by = y + dy[(d+2)%4] ## 반대 방향
+    rx = x + dx[(d+1)%4]
+    ry = y + dy[(d+1)%4] ## 오른쪽 방향
+    tx = x + dx[d]
+    ty = y + dy[d] ## 원래 보던 방향
+
+    if 0 <= lx < N and 0 <= ly < M and area[lx][ly] == 0 : ## 청소가 가능한 지역이라면
+        clean(lx,ly,(d+3)%4) ## 재귀
+    elif 0 <= bx < N and 0 <= by < M and area[bx][by] == 0 :
+        clean(bx,by,(d+2)%4) ## 재귀
+    elif 0 <= rx < N and 0 <= ry < M and area[rx][ry] == 0 :
+        clean(rx,ry,(d+1)%4) ## 재귀
+    elif 0 <= tx < N and 0 <= ty < M and area[tx][ty] == 0 :
+        clean(tx,ty,d)
+    else : ## 4방향 모두 벽이거나 청소한 경우, 후진
+        if 0 <= bx < N and 0 <= by < M and area[bx][by] == 1 : ## 후진한 곳이 벽이라면
+            return
+        else :
+            clean(bx,by,d)
+
+
+dx = [-1,0,1,0]
+dy = [0,1,0,-1]
+N,M = map(int,input().split())
+area = [[0]*M for _ in range (N)]
+r,c,d = map(int,input().split()) ## 청소기의 좌표 area[r-1][c-1], 방향 d
+for i in range (N) :
+    area[i] = list(map(int,input().split()))
+clean(r,c,d)
+
+cnt = 0
+for i in range (N) :
+    for j in range (M) :
+        if area[i][j] == 2 :
+            cnt += 1
+print(cnt)

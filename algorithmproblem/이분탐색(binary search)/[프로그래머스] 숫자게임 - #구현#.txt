@@ -1,0 +1,55 @@
+https://programmers.co.kr/learn/courses/30/lessons/12987?language=python3
+----------------------------------------------------------------------------------------------------------------
+## 인덱스 활용 코드
+def solution(A, B):
+    answer = 0
+    A.sort(reverse=True)
+    B.sort(reverse=True)
+    A_index = 0
+    B_index = 0
+    while True :
+        if A_index == len(A) :
+            break
+        if A[A_index] >= B[B_index] : ## A가 더 크거나 같으면
+            A_index += 1
+        else :
+            answer += 1
+            A_index += 1
+            B_index += 1
+        
+    return answer
+
+## upper_bound 활용 (sort를 한개만함) -- ## 이렇게 코드 짰을 때가 시간 더 오래 걸림
+from copy import deepcopy
+
+def upper_bound(x) : ## x는 찾으려는값(x초과값 찾아야함),arr배열
+    s = 0
+    e = len(arr)-1
+    ans = -1
+
+    while s<=e :
+        mid = (s+e)//2
+
+        if arr[mid] <= x :
+            s = mid + 1
+        elif arr[mid] > x : ## 초과인 경우
+            ans = mid
+            e = mid - 1
+
+    if ans == -1 : ## 초과하는 값이 없는 경우
+        return False
+    else : ## 있는 경우
+        del arr[ans]
+        return True
+
+
+def solution(A, B):
+    global arr
+    answer = 0
+    arr = deepcopy(B)
+    arr.sort() ## arr 오름차순 정렬
+
+    for x in A :
+        if upper_bound(x) :
+            answer += 1
+    return answer

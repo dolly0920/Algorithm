@@ -1,0 +1,161 @@
+스타트링크에서 판매하는 어린이용 장난감 중에서 가장 인기가 많은 제품은 구슬 탈출이다. 구슬 탈출은 직사각형 보드에 빨간 구슬과 파란 구슬을 하나씩 넣은 다음, 빨간 구슬을 구멍을 통해 빼내는 게임이다.
+
+보드의 세로 크기는 N, 가로 크기는 M이고, 편의상 1×1크기의 칸으로 나누어져 있다. 가장 바깥 행과 열은 모두 막혀져 있고, 보드에는 구멍이 하나 있다. 빨간 구슬과 파란 구슬의 크기는 보드에서 1×1크기의 칸을 가득 채우는 사이즈이고, 각각 하나씩 들어가 있다. 게임의 목표는 빨간 구슬을 구멍을 통해서 빼내는 것이다. 이때, 파란 구슬이 구멍에 들어가면 안 된다.
+
+이때, 구슬을 손으로 건드릴 수는 없고, 중력을 이용해서 이리 저리 굴려야 한다. 왼쪽으로 기울이기, 오른쪽으로 기울이기, 위쪽으로 기울이기, 아래쪽으로 기울이기와 같은 네 가지 동작이 가능하다.
+
+각각의 동작에서 공은 동시에 움직인다. 빨간 구슬이 구멍에 빠지면 성공이지만, 파란 구슬이 구멍에 빠지면 실패이다. 빨간 구슬과 파란 구슬이 동시에 구멍에 빠져도 실패이다. 빨간 구슬과 파란 구슬은 동시에 같은 칸에 있을 수 없다. 또, 빨간 구슬과 파란 구슬의 크기는 한 칸을 모두 차지한다. 기울이는 동작을 그만하는 것은 더 이상 구슬이 움직이지 않을 때 까지이다.
+
+보드의 상태가 주어졌을 때, 최소 몇 번 만에 빨간 구슬을 구멍을 통해 빼낼 수 있는지 구하는 프로그램을 작성하시오.
+----------------------------------------------------------------------------------------------------------------
+//My sol
+#include <stdio.h>
+
+int N, M, sol;
+int Wp, Rp;
+int dr[4] = {0,0,1,-1};
+int dc[4] = {1,-1,0,0};
+int visited[10 + 10][10 + 10][10 + 10][10 + 10];
+char map[10 + 10][10 + 10];
+
+
+struct st
+{
+	int rr;
+	int rc;
+	int br;
+	int bc;
+};
+
+struct st queue[100 * 100 + 10];
+
+void Inque(int rr, int rc, int br, int bc)
+{
+	queue[Wp].rr = rr;
+	queue[Wp].rc = rc;
+	queue[Wp].br = br;
+	queue[Wp].bc = bc;
+	Wp++;
+}
+
+int abs(int n)
+{
+	return (n > 0) ? n : -n;
+}
+
+int BFS(void)
+{
+	int i;
+	int cnt = 0;	// return값
+	int qsize;	// qsize
+	int orr, orc, obr, obc;
+	int rr, rc, br, bc;
+	int nrr, nrc, nbr, nbc;
+
+	while (Rp < Wp)
+	{
+		qsize = Wp - Rp;
+		//printf("zero\n");
+		while (qsize--)
+		{
+			orr = queue[Rp].rr;
+			orc = queue[Rp].rc;
+			obr = queue[Rp].br;
+			obc = queue[Rp].bc;
+			Rp++;
+
+			//printf("first\n");
+
+			if (map[orr][orc] == 'O' && map[obr][obc] != 'O')	return cnt;
+
+			for (i = 0; i < 4; i++)
+			{
+				rr = orr;
+				rc = orc;
+				br = obr;
+				bc = obc;
+
+				//printf("second\n");
+
+				while (1)	// 빨간 공 좌표 계산 (겹치는 경우는 뒤에서 고려) // 무한루프 걸림
+				{
+					nrr = rr + dr[i];
+					nrc = rc + dc[i];
+					if (map[nrr][nrc] == '#' || map[rr][rc] == 'O')	break;
+					rr = nrr;
+					rc = nrc;
+					//printf("third\n");
+				}
+
+				while (1)	// 파란 공 좌표 계산 (겹치는 경우는 뒤에서 고려)
+				{
+					nbr = br + dr[i];
+					nbc = bc + dc[i];
+					if (map[nbr][nbc] == '#' || map[br][bc] == 'O') break;
+					br = nbr;
+					bc = nbc;
+					//printf("fourth\n");
+				}
+
+				if (rr == br && rc == bc)	// 겹치는 경우
+				{
+					if (map[br][bc] == 'O')	continue;
+					if (abs(orr - rr) + abs(orc - rc) > abs(obr - br) + abs(obc - bc))	// 빨간 공의 이동거리가 더 큰 경우 ( 더 멀리 잇을 때)
+					{
+						rr -= dr[i];
+						rc -= dc[i];
+					}
+					else
+					{
+						br -= dr[i];
+						bc -= dc[i];
+					}
+				}
+				if (visited[rr][rc][br][bc] == 1)	 continue;	// 방문한 좌표인 경우
+				visited[rr][rc][br][bc] = 1;
+				Inque(rr, rc, br, bc);
+			}
+		}
+
+		if (cnt == 10)	return -1;
+
+		cnt++;
+	}
+
+	return -1;
+}
+
+int main(void)
+{
+	int i,j;
+	int rr, rc, br, bc;
+
+	scanf("%d %d", &N, &M);
+
+	for (i = 0; i < N; i++)
+	{
+		scanf("%s", &map[i][0]);
+		for (j = 0; j < M; j++)
+		{
+			if (map[i][j] == 'R')
+			{
+				rr = i;
+				rc = j;
+			}
+			else if (map[i][j] == 'B')
+			{
+				br = i;
+				bc = j;
+			}
+		}
+	}
+
+	Inque(rr, rc, br, bc);
+	visited[rr][rc][br][bc] = 1;	// 방문 체크
+
+	sol = BFS();
+
+	printf("%d", sol);
+
+	return 0;
+}

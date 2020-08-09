@@ -1,0 +1,47 @@
+https://www.acmicpc.net/problem/14003
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+INF = sys.maxsize
+
+def lower_bound(start,end,value) :
+    ans = 0
+    while start <= end :
+        mid = (start+end) // 2
+        if C[mid] >= value :
+            ans = mid
+            end = mid-1
+        else :
+            start = mid+1
+    return ans
+
+if __name__ == "__main__" :
+    n = int(input())
+    arr = list(map(int,input().split()))
+    ## nlogn LIS 구현
+    ans = [] ## 답 배열 저장
+    C = [-INF] * (len(arr)+1) ## C[i] : 길이가 i인 LIS의 마지막 값
+    tmp_length = 0
+    process = [] ## 업데이트 과정을 기록할 배열
+    for i in range (len(arr)) :
+        if C[tmp_length] < arr[i] :
+            tmp_length += 1
+            C[tmp_length] = arr[i]
+            process.append([tmp_length,arr[i]]) ## tmp_length에 arr[i]를 입력했다는 기록
+        else : ## 이떄 C[tmp_length]는 arr[i]보다 크거나 같다.
+            index = lower_bound(1,tmp_length,arr[i]) ## 1-tmp_length의 범위에서 arr[i]이상 값의 인덱스 찾기
+            C[index] = arr[i]
+            process.append([index,arr[i]]) ## index를 arr[i]로 업데이트 했다는 기록
+
+    ans = []
+    a_index = tmp_length
+    for i in range (len(process)-1,-1,-1) : ## 역순
+        if a_index == process[i][0] : ## 해당 인덱스의 과정이 있었다면
+            ans.append(process[i][1]) ## 답에 그 인덱스 값 입력 (역순으므로 최신값만 들어가게된다)
+            a_index -= 1
+    print(tmp_length)
+    ans.reverse()
+    for x in ans :
+        print(x,end=' ')

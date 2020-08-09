@@ -1,0 +1,22 @@
+https://www.acmicpc.net/problem/12813
+## .join() 함수와 .zfill()함수
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+def bn(i) :
+    return ''.join(['1'if v=='0' else '0' for v in i])
+
+if __name__ == "__main__" :
+    A = input()
+    B = input()
+    sl = len(A) if A>B else len(B)
+    a = int(A,2)
+    b = int(B,2)
+    print(bin(a&b)[2:].zfill(sl),
+          bin(a|b)[2:].zfill(sl),
+          bin(a^b)[2:].zfill(sl),
+          bn(A),
+          bn(B),
+          sep='\n')

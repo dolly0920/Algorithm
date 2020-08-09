@@ -1,0 +1,52 @@
+https://www.acmicpc.net/problem/15686
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def sol_dis() :
+    distance = 0
+    for r1,c1 in house : ## 각 집의 좌표 값
+        tmp = 1000
+        for r2,c2 in arr : ## 사용하는 치킨집 좌표
+            tmp = min(tmp,abs(r1-r2)+abs(c1-c2)) ## 최소값 저장
+        distance += tmp ## 각 집의 최소 치킨거리를 더한다
+    return distance
+
+def solve(index,cnt) : ## 인덱스, 치킨집
+    global arr,ans ## 사용하는 치킨집을 추가할 배열
+
+    if cnt == M :
+        ans = min(ans,sol_dis()) ## 거리를 구한다
+        return
+
+    if arr : ## arr이 빈 배열이 아니라면
+        ans = min(ans,sol_dis()) ## 거리를 구한다
+
+    if index == len(chicken) :
+        return
+
+    arr.append(chicken[index])
+    solve(index+1,cnt+1) ## chicken[index]의 좌표를 arr에 추가한 상태로 DFS
+    arr.pop()
+    solve(index + 1, cnt)
+
+    return
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    city = []
+    for _ in range (N) :
+        city.append(list(map(int,input().split())))
+    house = []
+    chicken = []
+    for i in range (N) :
+        for j in range (N) :
+            if city[i][j] == 1 : ## 집
+                house.append((i,j))
+            elif city[i][j] == 2 : ## 치킨집
+                chicken.append((i,j))
+    arr = []
+    ans = 10000
+    solve(0,0)
+    print(ans)

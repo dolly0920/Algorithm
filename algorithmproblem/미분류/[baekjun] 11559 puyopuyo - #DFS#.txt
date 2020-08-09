@@ -1,0 +1,87 @@
+뿌요뿌요의 룰은 다음과 같다.
+
+필드에 여러 가지 색깔의 뿌요를 놓는다. 뿌요는 중력의 영향을 받아 아래에 바닥이나 다른 뿌요가 나올 때까지 아래로 떨어진다.
+
+뿌요를 놓고 난 후, 같은 색 뿌요가 4개 이상 상하좌우로 연결되어 있으면 연결된 같은 색 뿌요들이 한꺼번에 없어진다.
+
+뿌요들이 없어지고 나서 위에 다른 뿌요들이 있다면, 역시 중력의 영향을 받아 차례대로 아래로 떨어지게 된다.
+
+아래로 떨어지고 나서 다시 같은 색의 뿌요들이 4개 이상 모이게 되면 또 터지게 되는데, 터진 후 뿌요들이 내려오고 다시 터짐을 반복할 때마다 1연쇄씩 늘어난다.
+
+터질 수 있는 뿌요가 여러 그룹이 있다면 동시에 터져야 하고 여러 그룹이 터지더라도 한번의 연쇄가 추가된다.
+
+남규는 최근 뿌요뿌요 게임에 푹 빠졌다. 이 게임은 1:1로 붙는 대전게임이라 잘 쌓는 것도 중요하지만, 상대방이 터뜨린다면 연쇄가 몇 번이 될지 바로 파악할 수 있는 능력도 필요하다. 하지만 아직 실력이 부족하여 남규는 자기 필드에만 신경 쓰기 바쁘다. 상대방의 필드가 주어졌을 때, 연쇄가 몇 번 연속으로 일어날지 계산하여 남규를 도와주자!
+----------------------------------------------------------------------------------------------------------------
+//My sol
+import sys
+
+#sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+
+def DFS(r,c,color) :
+    global tmp
+    visit[r][c] = 1 ## 방문 표시
+    tmp.append((r,c))
+
+    for i in range (4) :
+        nr = r + dr[i]
+        nc = c + dc[i]
+        if 0<=nr<12 and 0<=nc<6 :
+            if visit[nr][nc] == 0 and board[nr][nc] == color :
+                DFS(nr,nc,color)
+
+
+def height_max() :
+    global board
+    for i in range (12) :
+        for j in range (6) :
+            if board[i][j] != '.' :
+                return i
+    return i
+
+
+def board_update() : ## 중력 작용 구현
+    for r in range (11,height,-1) : ## 아래에서 위로 탐색
+        for c in range (6) :
+            if board[r][c] == '.' :
+                tmp_r = r
+                while board[tmp_r-1][c] == '.' and tmp_r-1 >= 0:
+                    tmp_r -= 1
+                if tmp_r == 0 :
+                    continue
+                board[r][c] = board[tmp_r-1][c]
+                board[tmp_r-1][c] = '.'
+
+
+if __name__ == "__main__" :
+    board = []
+    for _ in range (12) :
+        board.append(list(input()))
+    ans = 0
+
+    while True :
+        flag = 1 ## break 조건 (지워지는 경우가 없을 경우 break)
+        visit = [[0]*6 for _ in range (12)]
+        for i in range (12) :
+            for j in range (6) :
+                tmp = []
+                if board[i][j] != '.' and visit[i][j] == 0:
+                    DFS(i,j,board[i][j])
+                ##print(tmp)
+                if len(tmp) >= 4 : ## 지워지는 경우
+                    flag = 0
+                    for r,c in tmp :
+                        board[r][c] = '.' ## 빈칸으로 만든다
+        if flag :
+            break
+        else :
+            ans += 1
+
+        height = height_max()
+        board_update() ## 중력 작용
+
+
+print(ans)

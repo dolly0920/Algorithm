@@ -1,0 +1,154 @@
+https://www.acmicpc.net/problem/12100
+----------------------------------------------------------------------------------------------------------------
+import sys
+from copy import deepcopy
+
+##sys.stdin = open("input.txt","rt")
+
+def up_move(arr) :
+    ans = deepcopy(arr)
+    visit = [[0]*N for _ in range (N)]
+    for r in range (1,N) :
+        for c in range (N) :
+            sr = r
+            sc = c ## 옮겨질 위치(합쳐지지 않는다면)
+            while True :
+                nr = sr - 1
+                nc = sc
+                if nr<0 or nr>=N or nc<0 or nc>=N or ans[nr][nc] != 0: ## 범위를 벗어나거나 숫자가 있을 때
+                    break
+                sr = nr
+                sc = nc
+            if 0<=nr<N and 0<=nc<N and ans[nr][nc] != 0 : ## 범위 안, 숫자를 부딪혀 나온 경우
+                if ans[r][c] == ans[nr][nc] and visit[nr][nc] == 0: ## 숫자가 같고 한번 합쳐졌던 부분이 아니면
+                    visit[nr][nc] = 1 ## 한번 합쳐진 곳 체크
+                    ans[nr][nc] *= 2
+                    ans[r][c] = 0
+                else : ## 숫자가 다른 경우
+                    tmp = ans[r][c]
+                    ans[r][c] = 0
+                    ans[sr][sc] = tmp  ## ans[r][c] -> ans[sr][sc]
+            else : ## 벽과 부딪히는 경우
+                tmp = ans[r][c]
+                ans[r][c] = 0
+                ans[sr][sc] = tmp  ## ans[r][c] -> ans[sr][sc]
+    return ans
+
+def down_move(arr) :
+    ans = deepcopy(arr)
+    visit = [[0]*N for _ in range (N)]
+    for r in range (N-2,-1,-1) :
+        for c in range (N) :
+            sr = r
+            sc = c
+            while True :
+                nr = sr + 1
+                nc = sc
+                if nr<0 or nr>=N or nc<0 or nc>=N or ans[nr][nc] != 0: ## 범위를 벗어나거나 숫자가 있을 때
+                    break
+                sr = nr
+                sc = nc
+            if 0 <= nr < N and 0 <= nc < N and ans[nr][nc] != 0:  ## 범위 안, 숫자를 부딪혀 나온 경우
+                if ans[r][c] == ans[nr][nc] and visit[nr][nc] == 0:  ## 숫자가 같고 한번 합쳐졌던 부분이 아니면
+                    visit[nr][nc] = 1  ## 한번 합쳐진 곳 체크
+                    ans[nr][nc] *= 2
+                    ans[r][c] = 0
+                else :  ## 숫자가 다른 경우
+                    tmp = ans[r][c]
+                    ans[r][c] = 0
+                    ans[sr][sc] = tmp  ## ans[r][c] -> ans[sr][sc]
+            else:  ## 벽과 부딪히는 경우
+                tmp = ans[r][c]
+                ans[r][c] = 0
+                ans[sr][sc] = tmp  ## ans[r][c] -> ans[sr][sc]
+    return ans
+
+
+def left_move(arr) :
+    ans = deepcopy(arr)
+    visit = [[0]*N for _ in range (N)]
+    for r in range (N) :
+        for c in range (1,N) :
+            sr = r
+            sc = c
+            while True :
+                nr = sr
+                nc = sc - 1
+                if nr<0 or nr>=N or nc<0 or nc>=N or ans[nr][nc] != 0: ## 범위를 벗어나거나 숫자가 있을 때
+                    break
+                sr = nr
+                sc = nc
+            if 0 <= nr < N and 0 <= nc < N and ans[nr][nc] != 0:  ## 범위 안, 숫자를 부딪혀 나온 경우
+                if ans[r][c] == ans[nr][nc] and visit[nr][nc] == 0:  ## 숫자가 같고 한번 합쳐졌던 부분이 아니면
+                    visit[nr][nc] = 1  ## 한번 합쳐진 곳 체크
+                    ans[nr][nc] *= 2
+                    ans[r][c] = 0
+                else :  ## 숫자가 다른 경우
+                    tmp = ans[r][c]
+                    ans[r][c] = 0
+                    ans[sr][sc] = tmp  ## ans[r][c] -> ans[sr][sc]
+            else:  ## 벽과 부딪히는 경우
+                tmp = ans[r][c]
+                ans[r][c] = 0
+                ans[sr][sc] = tmp  ## ans[r][c] -> ans[sr][sc]
+    return ans
+
+
+def right_move(arr) :
+    ans = deepcopy(arr)
+    visit = [[0]*N for _ in range (N)]
+    for r in range (N) :
+        for c in range (N-2,-1,-1) :
+            sr = r
+            sc = c
+            while True :
+                nr = sr
+                nc = sc + 1
+                if nr<0 or nr>=N or nc<0 or nc>=N or ans[nr][nc] != 0: ## 범위를 벗어나거나 숫자가 있을 때
+                    break
+                sr = nr
+                sc = nc
+            if 0 <= nr < N and 0 <= nc < N and ans[nr][nc] != 0:  ## 범위 안, 숫자를 부딪혀 나온 경우
+                if ans[r][c] == ans[nr][nc] and visit[nr][nc] == 0:  ## 숫자가 같고 한번 합쳐졌던 부분이 아니면
+                    visit[nr][nc] = 1  ## 한번 합쳐진 곳 체크
+                    ans[nr][nc] *= 2
+                    ans[r][c] = 0
+                else :  ## 숫자가 다른 경우
+                    tmp = ans[r][c]
+                    ans[r][c] = 0
+                    ans[sr][sc] = tmp  ## ans[r][c] -> ans[sr][sc]
+            else:  ## 벽과 부딪히는 경우
+                tmp = ans[r][c]
+                ans[r][c] = 0
+                ans[sr][sc] = tmp  ## ans[r][c] -> ans[sr][sc]
+    return ans
+
+
+def solve(depth,arr) :
+    global ans
+
+    if depth == 5 :
+        tmp = 0
+        for i in range (N) :
+            for j in range (N) :
+                tmp = max(tmp,arr[i][j])
+        ans = max(ans,tmp)
+        return
+
+    ## 상,하,좌,우
+    solve(depth+1,up_move(arr))
+    solve(depth+1,down_move(arr))
+    solve(depth+1,left_move(arr))
+    solve(depth+1,right_move(arr))
+    return
+
+
+if __name__ == "__main__" :
+    N = int(input())
+    board = []
+    for _ in range (N) :
+        board.append(list(map(int,input().split())))
+    ## 최대 5번 이동 가장 큰 블록
+    ans = 0
+    solve(0,board)
+    print(ans)

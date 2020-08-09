@@ -1,0 +1,21 @@
+https://www.acmicpc.net/problem/5502
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input())
+    msg = list(map(str,input()))
+    r_msg = list(reversed(msg))
+
+    LCS = [[0]*(N+1) for _ in range (N+1)]
+
+    for i in range (1,N+1) :
+        for j in range (1,N+1) :
+            if msg[i-1] == r_msg[j-1] :
+                LCS[i][j] = LCS[i-1][j-1] + 1
+            else :
+                LCS[i][j] = max(LCS[i-1][j],LCS[i][j-1])
+
+    print(N-LCS[N][N])

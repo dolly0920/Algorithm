@@ -1,0 +1,29 @@
+https://programmers.co.kr/learn/courses/30/lessons/12984
+----------------------------------------------------------------------------------------------------------------
+def solution(land, P, Q):
+    N = len(land)
+    height_dic = {} ## (height:갯수)꼴로 저장
+    for i in range (N) :
+        for j in range (N) :
+            if land[i][j] in height_dic :
+                height_dic[land[i][j]] += 1
+            else :
+                height_dic[land[i][j]] = 1
+    height_list = sorted(height_dic) ## key값을 오름차순으로 정렬
+    s = 0
+    e = len(height_list)-1
+    money = 0
+
+    while s != e:
+        low_num = height_dic[height_list[s]] ## 낮은 지점의 갯수
+        high_num = height_dic[height_list[e]] ## 높은 지점의 갯수
+        if P*low_num < Q*high_num : ## P*low_num : 낮은 지점을 추가하는 비용, Q*high_num : 높은 지점을 삭제하는 비용 ## 낮은 지점을 추가하는 비용이 더 적으므로 낮은 지점을 높힌다.
+            money += P*low_num*(height_list[s+1]-height_list[s]) ## 바로 다음 높이로 올린다. (최저지점을 바로 위의 지점으로 추가)
+            s += 1
+            height_dic[height_list[s]] += low_num ## 높이를 높혔으므로 갯수 갱신
+        else :
+            money += Q*high_num*(height_list[e]-height_list[e-1]) ## 높이를 줄이는 만큼
+            e -= 1
+            height_dic[height_list[e]] += high_num
+
+    return money

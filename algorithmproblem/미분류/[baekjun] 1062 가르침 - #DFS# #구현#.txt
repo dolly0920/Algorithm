@@ -1,0 +1,61 @@
+https://www.acmicpc.net/problem/1062
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+input = sys.stdin.readline
+
+def solve() :
+    ans_cnt = 0
+    for x in word_list :
+        flag = True
+        for k in range (4,len(x)-4) : ## "anta", "tica" 부분 제외한 문자열 탐색
+            if x[k] not in (select_alpha) :
+                flag = False
+                break
+        if flag :
+            ans_cnt += 1
+    return ans_cnt
+
+
+def DFS(depth,target,index) :
+    global select_alpha,ans
+    if depth + len(tmp)-index < target :
+        return
+
+    if depth == target : ## target만큼 포함된 경우
+        ans = max(ans,solve())
+        return
+
+    select_alpha.append(tmp[index])
+    DFS(depth+1,target,index+1)
+    select_alpha.pop()
+    DFS(depth,target,index+1)
+    return
+
+if __name__ == "__main__" :
+    ## anta - tica : a,c,i,n,t ## 5글자는 필수
+    select_alpha = ['a', 'c', 'i', 'n', 't']
+    N,K = map(int,input().split()) ## 단어의 갯수,K개의 글자
+    word_list = []
+    for _ in range (N) :
+        word_list.append(input())
+    if K-5 < 0 :
+        print(0)
+    elif K == 26 :
+        print(N)
+    else :
+        tmp = set()
+        for x in (word_list) :
+            for k in range (4,len(x)-4) :
+                if x[k] in select_alpha :
+                    continue
+                tmp.add(x[k]) ## 필요한 알파벳들 저장
+        tmp = list(tmp)
+        ans = 0
+        if len(tmp) <= K-5 : ## 필요한 알파벳들의 갯수가 배울 수 있는 알파벳들의 갯수보다 적다면 모든 단어 배울수잇다.
+            print(N)
+        else :
+            DFS(0,K-5,0)
+            print(ans)

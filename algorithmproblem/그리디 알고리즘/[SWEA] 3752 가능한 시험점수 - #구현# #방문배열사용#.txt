@@ -1,0 +1,20 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AWHPkqBqAEsDFAUn&categoryId=AWHPkqBqAEsDFAUn&categoryType=CODE&&&
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        N = int(input())
+        prob = list(map(int,input().split()))
+        visit = [0]*100001 ## visit[i] : i숫자를 사용한 적이 있는지 체크
+        visit[0] = 1
+        score_list = [0] ## 현재 만든 점수
+        for point in prob :
+            for i in range (len(score_list)) :
+                if visit[point+score_list[i]] == 0 : ## 사용한 적 없는 숫자이면
+                    visit[point+score_list[i]] = 1 ## 사용체크
+                    score_list.append(point+score_list[i])
+        print("#%d %d"%(test_case,len(score_list)))

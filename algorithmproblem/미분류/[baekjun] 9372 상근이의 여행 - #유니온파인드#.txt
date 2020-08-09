@@ -1,0 +1,48 @@
+https://www.acmicpc.net/problem/9372
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+def findParent(x) :
+    if parent[x] == x :
+        return parent[x]
+    parent[x] = findParent(parent[x])
+    return parent[x]
+
+
+def union(a,b) :
+    root1 = findParent(a)
+    root2 = findParent(b)
+
+    if root1 != root2 :
+        if rank[root1] > rank[root2] : ## root1이 더 긴 노드라면
+            parent[root2] = root1
+        else :
+            parent[root1] = root2
+            if rank[root1] == rank[root2] :
+                rank[root2] += 1
+    return
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        N,M = map(int,input().split())
+        parent = list(range(N+1))
+        rank = [0]*(N+1)
+        ans = 0
+        for _ in range (M) :
+            a,b = map(int,input().split())
+            if findParent(a) != findParent(b) :
+                ans += 1
+                union(a,b) ## a,b노드 합친다
+        print(ans)
+
+###########
+import sys
+input=sys.stdin.readline
+for tc in range(int(input())):
+    n,m=map(int,input().split())
+    for i in range(m):
+        input()
+    print(n-1)

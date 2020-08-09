@@ -1,0 +1,44 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        N,M,K = map(int,input().split()) ## 세로, 가로, 배양시간
+        grid = []
+        visit = {} ## (r,c) : 세포의 생명력 형태로 저장
+        for _ in range (N) :
+            grid.append(list(map(int,input().split())))
+
+        ## 초기값 저장
+        cell_info = [[] for _ in range (11)] ## cell_info[i] : i의 생명력을 가진 세포들의 정보 (r,c,남은수명) 꼴로 저장
+        for i in range (N) :
+            for j in range (M) :
+                if grid[i][j] != 0 : ## 살아있는 세포
+                    cell_info[grid[i][j]].append([i,j,grid[i][j]])
+                    visit[(i,j)] = grid[i][j] ## visit에는 (좌표) : 해당 좌표의 세포의 생명력 (불변)
+
+        for _ in range (K) : ## K시간동안
+            for i in range (10,0,-1) : ## 큰 생명력을 가진 세포부터 확인한다. (조건충족)
+                for x in cell_info[i] : ## i의 생명력을 가진 세포의 정보 x[0],x[1] 좌표 x[2]는 남은 수명
+                    if x[2] == 0 : ## 비활성화 -> 활성화
+                        for k in range (4) :
+                            nr = x[0] + dr[k]
+                            nc = x[1] + dc[k]
+                            if (nr,nc) in visit : ## 해당 자리에 이미 세포가 있는 경우
+                                continue
+                            cell_info[i].append([nr,nc,i+1]) ## 같은 생명력의 세포 추가 (1시간동안 배양되므로 +1을 해줘야 정확한 값이 출력됨)
+                            visit[(nr,nc)] = i ## 불변의 값 입력
+                    x[2] -= 1 ## 수명 감소
+
+        ans = 0
+        for i in range (1,11) :
+            if cell_info[i] :
+                for x in cell_info[i] :
+                    if x[2] > -visit[(x[0],x[1])] : ## 남은 생명력이 조건보다 더 큰 경우
+                        ans += 1
+        print("#%d %d"%(test_case,ans))

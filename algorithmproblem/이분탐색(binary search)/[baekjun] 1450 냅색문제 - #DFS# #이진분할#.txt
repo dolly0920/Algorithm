@@ -1,0 +1,48 @@
+세준이는 N개의 물건을 가지고 있고, 최대 C만큼의 무게를 넣을 수 있는 가방을 하나 가지고 있다.
+
+N개의 물건을 가방에 넣는 방법의 수를 구하는 프로그램을 작성하시오.
+----------------------------------------------------------------------------------------------------------------
+//my sol
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(start_index,end_index,weight,tmp) :
+    global ans
+    if weight > C : ## 무게가 C보다 크면 return
+        return
+    if start_index == end_index :
+        tmp.append(weight)
+        return
+
+    DFS(start_index+1,end_index,weight,tmp)
+    DFS(start_index+1,end_index,weight+a[start_index],tmp)
+
+
+if __name__ == "__main__" :
+    N,C = map(int,input().split()) ## N개의 물건, C만큼의 무게를 넣을 수 있는 가방
+    tmp1 = []
+    tmp2 = []
+    a = list(map(int,input().split()))
+    a.sort() ## 오름차순 정렬
+    DFS(0,N//2,0,tmp1)
+    tmp1.sort()
+    DFS(N//2,N,0,tmp2)
+    tmp2.sort()
+    ans = 0
+
+    i = 0
+    j = 0
+
+    while i<len(tmp1) :
+        if tmp1[i]+tmp2[j] <= C :
+            ans += 1
+            j += 1
+            if j == len(tmp2) :
+                i += 1
+                j = 0
+        else :
+            i += 1
+            j = 0 ## 다음 탐색
+
+    print(ans)

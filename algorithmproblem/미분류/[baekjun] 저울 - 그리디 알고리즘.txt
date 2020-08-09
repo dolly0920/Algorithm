@@ -1,0 +1,137 @@
+하나의 양팔 저울을 이용하여 물건의 무게를 측정하려고 한다. 이 저울의 양 팔의 끝에는 물건이나 추를 올려놓는 접시가 달려 있고, 양팔의 길이는 같다. 또한, 저울의 한쪽에는 저울추들만 놓을 수 있고, 다른 쪽에는 무게를 측정하려는 물건만 올려놓을 수 있다.
+
+
+
+무게가 양의 정수인 N개의 저울추가 주어질 때, 이 추들을 사용하여 측정할 수 없는 양의 정수 무게 중 최솟값을 구하는 프로그램을 작성하시오.
+
+예를 들어, 무게가 각각 3, 1, 6, 2, 7, 30, 1인 7개의 저울추가 주어졌을 때, 이 추들로 측정할 수 없는 양의 정수 무게 중 최솟값은 21이다. 
+----------------------------------------------------------------------------------------------------------------
+//My sol
+#include <stdio.h>
+
+int N;
+int a[1000 + 10];
+int sol;
+
+void sort(void)
+{
+	int i, j,tmp;
+
+	for (i = 0; i < N; i++)
+	{
+		for (j = i + 1; j < N; j++)
+		{
+			if (a[i] > a[j])
+			{
+				tmp = a[i];
+				a[i] = a[j];
+				a[j] = tmp;
+			}
+		}
+	}
+}
+
+
+int main(void)
+{
+	int i,j,sum;
+	int state = 1;
+
+	scanf("%d", &N);
+
+	for (i = 0; i < N; i++)
+	{
+		scanf("%d", &a[i]);
+	}
+
+	sort();	// 오름 차순 정리
+
+	if (a[0] != 1)	sol = 1;
+	else
+	{
+		sum = 1;
+		for (i = 1; i < N; i++)
+		{
+			if (a[i] > sum + 1)	break;	// 핵심!
+			sum += a[i];
+		}
+		sol = sum + 1;
+	}
+
+	printf("%d", sol);
+
+	return 0;
+}
+----------------------------------------------------------------------------------------------------------------
+//My sol 2 (quick소트 사용, for문 한번에 해결 (기존의 분기문(if) 삭제)
+#include <stdio.h>
+
+int N;
+int a[1000 + 10];
+
+void quick_sort(int *arr, int s, int e)
+{
+	int i, j, key, tmp;
+
+	if (s >= e)	return;
+
+	key = s;
+	i = s + 1;
+	j = e;
+
+	while (i <= j)
+	{
+		while (i <= e && arr[i] <= a[key])	i++;
+		while (j > s && arr[j] >= a[key])	j--;
+
+		if (i > j)
+		{
+			tmp = a[key];
+			a[key] = a[j];
+			a[j] = tmp;
+		}
+		else
+		{
+			tmp = a[i];
+			a[i] = a[j];
+			a[j] = tmp;
+		}
+	}
+
+	quick_sort(arr, s, j - 1);
+	quick_sort(arr, j + 1, e);
+}
+
+int main(void)
+{
+	int i,j,sum;
+
+	scanf("%d", &N);
+
+	for (i = 0; i < N; i++)
+	{
+		scanf("%d", &a[i]);
+	}
+
+	quick_sort(a, 0, N - 1); // 오름차순 정렬
+
+	
+
+	for (i = -1; i < N; i++)
+	{
+		sum = 0;
+		for (j = 0; j <= i; j++)	// i까지의 합
+		{
+			sum += a[j];	// 그 이전까지의 수들로 만들어 낼 수 있는 최대의 값
+			if (sum >= a[i + 1])	continue;
+		}
+		if (a[i + 1] > sum + 1)
+		{
+			break;
+		}
+	}
+
+	printf("%d", sum + 1);
+
+	return 0;
+}

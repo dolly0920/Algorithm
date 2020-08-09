@@ -1,0 +1,80 @@
+https://www.acmicpc.net/problem/17837
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,1,0,-1]
+dc = [1,0,-1,0] ## 반대방향 : +2 %4
+
+def solve() :
+    global cnt
+    while cnt <= 1000 :
+        cnt += 1
+        for i in range(1, K + 1):
+            r, c = spot[i][0], spot[i][1]  ## 현재 좌표
+            nr, nc = r + dr[dir[i]], c + dc[dir[i]]  ## 이동해야할 좌표 탐색
+
+            if nr < 0 or nr >= N or nc < 0 or nc >= N or arr[nr][nc] == 2:  ## 좌표를 벗어나거나 파란색인 경우
+                dir[i] = (dir[i] + 2) % 4
+                nr, nc = r + dr[dir[i]], c + dc[dir[i]]  ## 이동해야할 좌표 재정의
+
+            if nr < 0 or nr >= N or nc < 0 or nc >= N or arr[nr][nc] == 2: ## 범위를 벗어나거나 파란색인 경우 가만히 있는다
+                continue
+
+            if arr[nr][nc] == 0:  ## 가야할 곳이 흰색인 경우
+                spot[i][0], spot[i][1] = nr, nc  ## 말의 좌표 갱신
+                ##print(len(arr_chess[r][c]))
+                for j in range (len(arr_chess[r][c])):
+                    if arr_chess[r][c][j] == i:
+                        index = j
+                        break
+                for x in (arr_chess[r][c][index:]):
+                    spot[x][0], spot[x][1] = nr, nc  ## 같이 이동하는 말의 좌표 갱신
+                arr_chess[nr][nc] += arr_chess[r][c][index:]
+                arr_chess[r][c] = arr_chess[r][c][:index]
+            elif arr[nr][nc] == 1:  ## 빨간색인 경우
+                spot[i][0], spot[i][1] = nr, nc  ## 말의 좌표 갱신
+                for j in range(len(arr_chess[r][c])):
+                    if arr_chess[r][c][j] == i:
+                        index = j
+                for x in (arr_chess[r][c][index:]):
+                    spot[x][0], spot[x][1] = nr, nc
+                tmp = arr_chess[r][c][index:]
+                tmp.reverse()
+                arr_chess[nr][nc] += tmp
+                arr_chess[r][c] = arr_chess[r][c][:index]
+
+            if len(arr_chess[nr][nc]) >= 4 : ## K개의 말이 한 곳에 모이는 경우
+                return True
+    return False
+
+if __name__ == "__main__" :
+    N,K = map(int,input().split()) ## 크기 말의 개수
+    arr = [] ## 행,열의 번호는 1번부터 시작
+    for _ in range (N) :
+        arr.append(list(map(int,input().split())))
+    ## arr은 체스판의 색을 판단하기 위한 용도로 사용
+    ## arr_chess는 체스판의 말을 확인하기 위한 용도로 사용
+    spot = [[] for _ in range (K+1)]
+    arr_chess = [[[] for _ in range (N)] for _ in range (N)]
+    dir = [-1]*(K+1) ## dir[i] : ## i번 말의 방향
+    for i in range (1,K+1) : ## 1~K번 말의 정보
+        r,c,d = map(int,input().split()) ## 좌표와 방향성
+        spot[i].append(r-1) ## 각 말의 현재 좌표 저장
+        spot[i].append(c-1)
+        arr_chess[r-1][c-1].append(i) ## arr_chess[r][c]에 말 추가
+        if d == 1 : ## 오른쪽
+            dir[i] = 0
+        elif d == 2 : ## 왼쪽
+            dir[i] = 2
+        elif d == 3 : ## 위쪽
+            dir[i] = 3
+        elif d == 4 : ## 아래쪽
+            dir[i] = 1
+    cnt = 0
+
+    if solve() :
+        print(cnt)
+    else :
+        print(-1)

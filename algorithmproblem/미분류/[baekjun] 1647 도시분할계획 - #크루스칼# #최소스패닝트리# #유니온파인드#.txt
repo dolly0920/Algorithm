@@ -1,0 +1,46 @@
+https://www.acmicpc.net/problem/1647
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+
+def findParent(x) : ## x노드의 뿌리를 찾는다
+    if parent[x] == x :
+        return x
+    parent[x] = findParent(parent[x]) ## 값 갱신하면서 감
+    return parent[x]
+
+
+def union(x,y) :
+    root1 = findParent(x)
+    root2 = findParent(y)
+
+    if root1 != root2 :
+        if rank[root1] > rank[root2] :
+            parent[root2] = root1
+        else :
+            parent[root1] = root2
+            if rank[root1] == rank[root2] :
+                rank[root2] += 1
+    return
+
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    parent = list(range(N+1))
+    rank = [0]*(N+1)
+    path = []
+    for _ in range (M) :
+        path.append(list(map(int,input().split())))
+    path.sort(key = lambda x:x[2]) ## 오름차순 정렬
+    ans = 0
+    cnt = 0
+    for x,y,cost in path :
+        if findParent(x) != findParent(y) :
+            cnt += 1
+            ans += cost
+            union(x,y)
+            if cnt == N-2 :
+                break
+    print(ans)

@@ -1,0 +1,90 @@
+https://www.acmicpc.net/status?user_id=dolly0920&problem_id=13460&from_mine=1
+----------------------------------------------------------------------------------------------------------------
+import sys
+sys.setrecursionlimit(10000)
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def solve(depth,red_r,red_c,blue_r,blue_c,dir) :
+    global ans
+
+    if depth > 10 :
+        return
+
+    if depth >= ans :
+        return
+
+    if red_r == hole_r and red_c == hole_c :
+        ans = min(ans,depth)
+        return
+
+    ##좌,우,상,하
+    s_red_r = red_r
+    s_red_c = red_c
+    s_blue_r = blue_r
+    s_blue_c = blue_c  ## 공의 최초 위치 저장
+    for i in range (4) :
+        if i == dir : ## 이전과 동일 방향인 경우
+            continue
+        ## 빨간 공 이동
+        red_r = s_red_r
+        red_c = s_red_c ## 공 위치 초기화
+        while board[red_r][red_c] != 'O' : ## 구멍인 경우 빠져나감
+            ##print("1")
+            n_red_r = red_r + dr[i]
+            n_red_c = red_c + dc[i]
+            if n_red_r < 0 or n_red_r >= N or n_red_c < 0 or n_red_c >= M or board[n_red_r][n_red_c] == '#' : ## 범위를 벗어나거나 벽일 때
+                break
+            red_r = n_red_r
+            red_c = n_red_c
+        ## 파란 공 이동
+        blue_r = s_blue_r
+        blue_c = s_blue_c ## 공 위치 초기화
+        while board[blue_r][blue_c] != 'O' : ## 구멍인 경우 빠져나감
+            ##print("2")
+            n_blue_r = blue_r + dr[i]
+            n_blue_c = blue_c + dc[i]
+            if n_blue_r < 0 or n_blue_r >= N or n_blue_c < 0 or n_blue_r >= M or board[n_blue_r][n_blue_c] == '#' :
+                break
+            blue_r = n_blue_r
+            blue_c = n_blue_c
+
+        if board[blue_r][blue_c] == 'O' : ## 파란 공이 구멍에 빠진 경우 ## 불가능한 경우
+            continue
+
+        if red_r == blue_r and red_c == blue_c : ## 공이 겹친 경우
+            if abs(red_r - s_red_r) + abs(red_c - s_red_c) > abs(blue_r-s_blue_r) + abs(blue_c - s_blue_c) : ## 파란공이 더 가까웠다면
+                red_r -= dr[i]
+                red_c -= dc[i] ## 한 칸 당겨준다
+            else :
+                blue_r -= dr[i]
+                blue_c -= dc[i]
+
+        solve(depth+1,red_r,red_c,blue_r,blue_c,i)
+
+    return
+
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split()) ## 세로,가로
+    board = []
+    for _ in range (N) :
+        board.append(list(map(str,input())))
+
+    for i in range (N) :
+        for j in range (M) :
+            if board[i][j] == 'R' :
+                red_r = i
+                red_c = j
+            if board[i][j] == 'B' :
+                blue_r = i
+                blue_c = j
+            if board[i][j] == 'O' :
+                hole_r = i
+                hole_c = j
+    ans = sys.maxsize
+    solve(0,red_r,red_c,blue_r,blue_c,-1)
+    print(ans if ans != sys.maxsize else -1)

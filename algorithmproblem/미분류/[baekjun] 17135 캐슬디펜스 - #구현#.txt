@@ -1,0 +1,78 @@
+https://www.acmicpc.net/problem/17135
+----------------------------------------------------------------------------------------------------------------
+import sys
+from copy import deepcopy
+
+sys.stdin = open("input.txt","rt")
+
+def solve() :
+    remove_cnt = 0 ## 제거된 적의 수
+    arr = deepcopy(MAP) ## MAP을 깊은 복사
+    while True :
+        enemy = [] ## 적이 있는 좌표를 저장
+        for i in range (M) :
+            for j in range (N) :
+                if arr[j][i] == 1 : ## 적이 있는 곳 ## 왼쪽위부터 아래,왼쪽으로 탐색 (같은 거리가 있는 경우 왼쪽으로 갱신)
+                    enemy.append((j,i))
+
+        if len(enemy) == 0 : ## 배열이 비어 있는 경우
+            break
+
+        ## 궁수가 적을 잡는 경우 탐색
+        remove_enemy = [] ## 제거되는 적 리스트 탐색 (중복되는 경우도 있으므로 추가해놨다가 한번에 처리)
+        for r1,c1 in select_archer : ## 궁수의 좌표
+            dis = sys.maxsize
+            r,c = -1,-1
+            for r2,c2 in enemy :
+                archer_enemy_dis = abs(r2-r1)+abs(c2-c1) ## 궁수-적 사이 거리
+                if archer_enemy_dis <= D : ## 거리 제한 내라면
+                    if archer_enemy_dis < dis : ## 거리가 더 짧다면
+                        dis = archer_enemy_dis
+                        r,c = r2,c2
+            if r!=-1 and c!=-1 : ## 잡을 수 있는 적이 있는 경우 (한마리)
+                remove_enemy.append((r,c))
+
+        remove_enemy = list(set(remove_enemy)) ## 중복값 제거
+
+        for r,c in remove_enemy : ## 제거될 수 있는 적 배열에서 0으로 만든다.
+            arr[r][c] = 0
+
+        remove_cnt += len(remove_enemy) ## 제거되는 적 계산
+        enemy = list(set(enemy) - set(remove_enemy)) ## 남는 적
+
+        ## 적들의 이동
+        arr = [[0]*M for _ in range (N)]
+        for r,c in enemy :
+            if r == N-1 :
+                continue
+            arr[r+1][c] = 1
+    return remove_cnt
+
+
+def DFS(index,cnt) : ## archer_list의 index, 고른 궁수의 갯수
+    global ans
+    if cnt == 3 : ## 고른 궁수가 3명이라면
+        ## 고른 궁수를 활용하여 잡을 수 있는 적 (select_archer)
+        ans = max(ans,solve())
+        return
+
+    if M-index+cnt < 3 : ## 나머지 인원을 다 더해도 궁수가 3명이 안되는 경우
+        return
+
+    select_archer.append(archer_list[index])
+    DFS(index+1,cnt+1) ## archer_list[index]의 궁수를 사용
+    select_archer.pop()
+    DFS(index+1,cnt) ## archer_list[index]의 궁수를 사용 x
+
+if __name__ == "__main__" :
+    N,M,D = map(int,input().split()) ## 행,열,사거리
+    MAP = []
+    for _ in range (N) :
+        MAP.append(list(map(int,input().split())))
+    archer_list = []
+    for i in range (M) :
+        archer_list.append((N,i))
+    select_archer = []
+    ans = 0
+    DFS(0,0)
+    print(ans)

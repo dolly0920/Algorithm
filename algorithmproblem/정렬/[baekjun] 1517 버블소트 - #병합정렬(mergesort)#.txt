@@ -1,0 +1,53 @@
+https://www.acmicpc.net/problem/1517
+----------------------------------------------------------------------------------------------------------------
+//my sol
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def merge(left,right) :
+    global ans
+    if len(left) == 0 :
+        return right
+    elif len(right) == 0 :
+        return left
+
+    left_index = 0
+    right_index = 0
+    sorted = []
+    cnt = 0
+    while True :
+        if left[left_index] > right[right_index] : ## 같을때는
+            sorted.append(right[right_index])
+            right_index += 1
+            cnt += 1
+            if right_index == len(right) : ## 왼쪽 배열을 뒤에 더하는 경우
+                sorted += left[left_index:]
+                ans += (len(left)-left_index)*cnt
+                return sorted
+        else :
+            sorted.append(left[left_index])
+            left_index += 1
+            ans += cnt
+            if left_index == len(left) :
+                sorted += right[right_index:]
+                return sorted
+
+def merge_sort(arr) :
+    if len(arr) <= 1 :
+        return arr
+
+    mid = len(arr)//2
+
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+
+    return merge(left,right)
+
+
+if __name__ == "__main__" :
+    N = int(input())
+    a = list(map(int,input().split()))
+    ans = 0
+    merge_sort(a)
+    print(ans)

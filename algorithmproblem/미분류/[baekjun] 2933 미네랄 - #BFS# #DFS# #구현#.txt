@@ -1,0 +1,123 @@
+https://www.acmicpc.net/problem/2933
+----------------------------------------------------------------------------------------------------------------
+//My sol
+import sys
+from collections import deque
+
+##sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0] ## state 0 일때 오른쪽 , 1 일떄 왼쪽 탐색
+
+def max_height() : ## 현재 동굴의 최고 높이(행) 구하기
+    for i in range (R) :
+        for j in range (C) :
+            if cave[i][j] == 'x' : ## 높이
+                return i ## 행 값 반환
+
+def BFS(x,y,s) : ## 클러스터 묶기
+    q = deque()
+    q.append((x,y))
+    while q :
+        r,c = q.popleft()
+        for i in range (4) :
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if 0<=nr<R and 0<=nc<C :
+                if visit[nr][nc] == 0 and cave[nr][nc] == 'x' :
+                    visit[nr][nc] = s
+                    q.append((nr,nc))
+    return
+
+
+def drop_height(r,c) : ## 떨어지는 높이 (중력 작용에 적용)
+    ##print("drop_height")
+    cnt = 1 ##
+    while r+cnt < R : ## 범위 조건
+        if cave[r+cnt][c] == 'x' and visit[r+cnt][c] != 2: ## 다른 종류의 클러스터가 있다면
+            return cnt-1 ## 떨어질 때 클러스터 위로 떨어지므로
+        cnt += 1
+    return cnt-1
+
+
+def update_cave() : ## 동굴 중력 작용
+    ##print("update")
+    global visit
+    visit = [[0]*C for _ in range (R)] ## 방문 배열 초기화
+
+    for i in range (C) : ## 바닥에서 이어져 있는 클러스터 확인
+        if visit[R-1][i] == 0 and cave[R-1][i] == 'x': ## 방문하지 않은 미네랄 (바닥에 붙어있는)
+            visit[R-1][i] = 1
+            BFS(R-1,i,1) ## 바닥과 이어져 있는 미네랄은 모두 방문체크 된다. (1로 체크)
+
+    height = max_height()
+    ##print(R-2,height-1,0,C)
+    for i in range (R-2,height-1,-1) : ## 아래부터 탐색
+        for j in range (0,C) :
+            if visit[i][j] == 0 and cave[i][j] == 'x': ## 방문하지 않은 미네랄
+                visit[i][j] = 2
+                BFS(i,j,2) ## 2로 미네랄 클러스터 표시
+
+    min_drop_height = R
+    '''
+    for i in range(R - 2, height - 1, -1):  ## 아래부터 탐색
+        for j in range(0, C):
+            if visit[i][j] == 2 : ## 클러스터 각각의 떨어질 높이 계산
+                if drop_height(i,j) == 0 :
+                    continue
+                ##print(i,j,drop_height(i,j))
+                min_drop_height = min(min_drop_height,drop_height(i,j)) ## 최소 떨어질 높이
+    '''
+    ## 열 탐색
+    for i in range (0,C) :
+        for j in range (R-2,height-1,-1) : ## 아래에서 위로 탐색
+            if visit[j][i] == 2 : ## 떨어져야할 클러스터인 경우 가장 아래 부분
+                min_drop_height = min(min_drop_height, drop_height(j,i))  ## 최소 떨어질 높이를 구하는 과정
+                break ## break를 씀으로써 위의 코드보다 빨라질 수 있음
+
+    for i in range (R-2,height-1,-1) : ## 클러스터를 떨어뜨리는 과정
+        for j in range (0,C) :
+            if visit[i][j] == 2 :
+                cave[i+min_drop_height][j] = 'x'
+                cave[i][j] = '.'
+    return
+
+
+def delete_cave(r,state) : ## 행,상태
+    ##print("delete")
+    ##print(r,state)
+    if state == 0 : ## 시작점 설정
+        c = 0
+    else :
+        c = C-1
+    update_cave()
+    flag = 0
+    while 0 <= c < C : ## 범위 내
+        if cave[r][c] == 'x' :
+            ##print(r,c)
+            cave[r][c] = '.' ## 미네랄 제거
+            flag = 1
+            break
+        c += dc[state]
+    if flag :
+        update_cave()
+    return
+
+if __name__ == "__main__" :
+    R,C = map(int,input().split())
+    cave = []
+    for _ in range (R) :
+        cave.append(list(map(str,input()))) ## . : 빈칸, x : 미네랄
+    N = int(input()) ## 막대를 던진 횟수
+    stick = list(map(int,input().split())) ## 1은 가장 바닥 R은 가장 위를 의미 (반대로 생각해야함)
+
+    state = 0 ## 0:left에서 던졌을 때, 1: right에서 던졌을 때
+    for x in stick :
+        ##print(x)
+        delete_cave(R-x,state) ## 행의 번호로 입력
+        state = (state+1)%2
+
+    for i in range (R) :
+        for j in range (C) :
+            print(cave[i][j],end='')
+        print()

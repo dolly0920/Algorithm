@@ -1,0 +1,85 @@
+https://www.acmicpc.net/problem/17406
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+from copy import deepcopy
+
+sys.stdin = open("input.txt","rt")
+
+def rotate_arr(r,c,length) : ## 시작점,회전하는 범위
+    global arr
+    ## r,c부터 length범위만 회전
+    q = deque()
+    ## 윗변
+    for i in range (length+1) :
+        q.append(arr[r][c+i])
+    ## 오른쪽변
+    for i in range (1,length+1) :
+        q.append(arr[r+i][c+length])
+    ## 아랫변
+    for i in range (length) :
+        q.append(arr[r+length][c+length-1-i])
+    ## 왼쪽변
+    for i in range (1,length) :
+        q.append(arr[r+length-i][c])
+
+    q.rotate(1) ## 시계방향 회전
+
+    q_index = 0
+    for i in range (length+1) :
+        arr[r][c+i] = q[q_index]
+        q_index += 1
+    for i in range (1,length+1) :
+        arr[r+i][c+length] = q[q_index]
+        q_index += 1
+    for i in range (length) :
+        arr[r+length][c+length-1-i] = q[q_index]
+        q_index += 1
+    for i in range (1,length) :
+        arr[r+length-i][c] = q[q_index]
+        q_index += 1
+    return
+
+
+def sum_arr(arr) : ## 배열의 값 구하기
+    tmp = []
+    for i in range (N) :
+        tmp.append(sum(arr[i]))
+    return min(tmp)
+
+
+def DFS(depth) : ## 순열(팩토리열연산의 가지수)
+    global arr,ans
+    if depth == K :
+        arr = deepcopy(MAP)
+        for r,c,s in cal_tmp :
+            for i in range(2 * s + 1):  ## 시작점
+                if 2 * s - 2 * i <= 0:
+                    break
+                rotate_arr(r - s - 1 + i, c - s - 1 + i, 2 * s - 2 * i)
+        ans = min(ans,sum_arr(arr))
+        return
+
+    for i in range (K) :
+        if visit[i] == 0 :
+            visit[i] = 1
+            cal_tmp.append(cal[i])
+            DFS(depth+1)
+            cal_tmp.pop()
+            visit[i] = 0
+
+
+if __name__ == "__main__" :
+    N,M,K = map(int,input().split())
+    MAP = []
+    for _ in range (N) :
+        MAP.append(list(map(int,input().split())))
+    ans = sys.maxsize
+    cal = []
+    for _ in range (K) :
+        r,c,s = map(int,input().split()) ## 한번씩 사용하여야 하고 순서는 무작위
+        cal.append((r,c,s))
+    visit = [0]*K
+    cal_tmp = [] ## 연산 순서 (순열) 저장
+    DFS(0)
+    print(ans)

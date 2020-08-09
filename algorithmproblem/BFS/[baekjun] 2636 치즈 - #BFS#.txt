@@ -1,0 +1,81 @@
+https://www.acmicpc.net/problem/2636
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def BFS_air(x,y) : ## 치즈 외부 공기 체크
+    global remove_cnt
+    q = deque()
+    q.append((x,y))
+
+    while q :
+        r,c = q.popleft()
+        for i in range (4) :
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if nr<0 or nr>=R or nc<0 or nc>=C :
+                continue ## 범위를 벗어나는 경우
+            if visit[nr][nc] == 0 and MAP[nr][nc] == 0 :
+                visit[nr][nc] = 1
+                q.append((nr,nc))
+            elif visit[nr][nc] == 0 and MAP[nr][nc] == 1 : ## 치즈인 경우
+                remove_cnt += 1
+                visit[nr][nc] = 1
+                MAP[nr][nc] = 0 ## 치즈 사라짐
+
+def cheese_remove(r,c) : ## (r,c)위치의 치즈가 사라져야할지 아닌지 확인
+    for i in range (4) :
+        nr = r + dr[i]
+        nc = c + dc[i]
+        if visit[nr][nc] == 1 : ## 주변에 외부공기가 있는 경우
+            return True
+    return False ## 외부 공기가 없는 경우
+
+if __name__ == "__main__" :
+    R,C = map(int,input().split()) ## 세로,가로
+    MAP = []
+    for _ in range (R) :
+        MAP.append(list(map(int,input().split())))
+
+    cheese_cnt = 0
+    for i in range (R) :
+        for j in range (C) :
+            if MAP[i][j] == 1 : ## 치즈인 경우
+                cheese_cnt += 1
+
+    ## 치즈가 모두 녹아서 없어지는 시간 출력
+    time = 0
+    while True :
+        visit = [[0]*C for _ in range (R)]
+        time += 1
+        remove_cnt = 0 ## 사라지는 치즈 갯수
+        ## 치즈가 녹는 과정
+        for i in range (R) : ## 세로 가장자리 탐색
+            if MAP[i][0] == 0 and visit[i][0] == 0 : ## 공기인데 방문하지 않은 곳일 때
+                visit[i][0] = 1 ## 방문체크
+                BFS_air(i,0)
+            if MAP[i][C-1] == 0 and visit[i][C-1] == 0 :
+                visit[i][C-1] = 1
+                BFS_air(i,C-1)
+
+        for i in range (C) : ## 가로 가장자리 탐색
+            if MAP[0][i] == 0 and visit[0][i] == 0 :
+                visit[0][i] = 1
+                BFS_air(0,i)
+            if MAP[R-1][i] == 0 and visit[R-1][i] == 0 :
+                visit[R-1][i] = 1
+                BFS_air(R-1,i)
+
+        ##사라져야할 치즈 탐색
+        cheese_cnt -= remove_cnt
+
+        if cheese_cnt == 0 :
+            break
+
+    print(time)
+    print(remove_cnt)

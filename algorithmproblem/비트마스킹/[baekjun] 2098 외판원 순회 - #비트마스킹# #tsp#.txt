@@ -1,0 +1,30 @@
+https://www.acmicpc.net/problem/2098
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+
+def find_path(last,visited) : ## (현재 방문한 곳, 방문체크) ## last까지 오는데 걸린 비용을 return
+    if visited == (1<<N)-1 : ## 모두 방문했다면
+        return W[last][0] or sys.maxsize
+
+    if dp[last][visited] != None :
+        return dp[last][visited] ## memorization활용
+
+    tmp = sys.maxsize
+    for city in range (N) :
+        if (visited & (1<<city)) == 0 and W[last][city] != 0 : ## 방문하지 않았고, 길이 있는 경우
+            tmp = min(tmp,find_path(city,visited|(1<<city)) + W[last][city])
+    dp[last][visited] = tmp
+    return tmp
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## 도시의 수
+    dp = [[None]*(1<<N) for _ in range (N)] ## 행은 N개 열은 1<<N개 (이유 : dp[i][j] : i는 마지막 방문 노드, j는 방문체크)
+    W = []
+    for _ in range (N) :
+        W.append(list(map(int,input().split()))) ## 간선값 W[i][j] : i -> j 도시로 가는 비용 (비대칭적)
+
+    print(find_path(0,1<<0))

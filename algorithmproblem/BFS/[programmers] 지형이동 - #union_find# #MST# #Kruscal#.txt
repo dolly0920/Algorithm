@@ -1,0 +1,114 @@
+N x N 크기인 정사각 격자 형태의 지형이 있습니다. 각 격자 칸은 1 x 1 크기이며, 숫자가 하나씩 적혀있습니다. 격자 칸에 적힌 숫자는 그 칸의 높이를 나타냅니다.
+
+이 지형의 아무 칸에서나 출발해 모든 칸을 방문하는 탐험을 떠나려 합니다. 칸을 이동할 때는 상, 하, 좌, 우로 한 칸씩 이동할 수 있는데, 현재 칸과 이동하려는 칸의 높이 차가 height 이하여야 합니다. 높이 차가 height 보다 많이 나는 경우에는 사다리를 설치해서 이동할 수 있습니다. 이때, 사다리를 설치하는데 두 격자 칸의 높이차만큼 비용이 듭니다. 따라서, 최대한 적은 비용이 들도록 사다리를 설치해서 모든 칸으로 이동 가능하도록 해야 합니다. 설치할 수 있는 사다리 개수에 제한은 없으며, 설치한 사다리는 철거하지 않습니다.
+
+각 격자칸의 높이가 담긴 2차원 배열 land와 이동 가능한 최대 높이차 height가 매개변수로 주어질 때, 모든 칸을 방문하기 위해 필요한 사다리 설치 비용의 최솟값을 return 하도록 solution 함수를 완성해주세요.
+
+제한사항
+land는 N x N크기인 2차원 배열입니다.
+land의 최소 크기는 4 x 4, 최대 크기는 300 x 300입니다.
+land의 원소는 각 격자 칸의 높이를 나타냅니다.
+격자 칸의 높이는 1 이상 10,000 이하인 자연수입니다.
+height는 1 이상 10,000 이하인 자연수입니다.
+----------------------------------------------------------------------------------------------------------------
+//My sol
+import sys
+from collections import deque
+
+##sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+
+def find(x) : ## 최상위 정점을 찾는다
+    if x != parent[x] :
+        parent[x] = find(parent[x])
+
+    return parent[x]
+
+
+def union(x,y) :
+    root1 = find(x)
+    root2 = find(y)
+
+    if root1 != root2 : ## 뿌리가 다르면
+        if rank[root1] > rank[root2] :
+            parent[root2] = root1 ## 짧은 노드의 루트가 긴 루트의 루트를 가리키게 하는 것이 좋다
+        else :
+            parent[root1] = root2
+
+            if rank[root1] == rank[root2] :
+                rank[root2] += 1
+
+
+def BFS(x,y) :
+    q = deque()
+    visit_area[x][y] = 1 ## 방문 표시
+    q.append((x,y))
+
+    while q :
+        r,c = q.popleft()
+        for i in range (4) :
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if 0<=nr<len(visit) and 0<=nc<len(visit[0]) : ## 범위 안
+                if visit_area[nr][nc] == 0 and visit[r][c] == visit[nr][nc] : ## 방문하지 않았고 지역 번호가 같은 경우
+                    visit_area[nr][nc] = 1 ## 방문 체크
+                    q.append((nr,nc))
+                elif visit_area[nr][nc] == 0 and visit[r][c] != visit[nr][nc] : ## 방문하지 않았고 지역 번호가 다른 경우
+                    edge.append((abs(land[nr][nc]-land[r][c]),visit[r][c],visit[nr][nc])) ## (a,b,c) : a 높이차, b,c : 지역 번호
+
+def BFS_group(x,y,num,height) :
+    visit[x][y] = num
+    q = deque()
+    q.append((x,y))
+
+    while q :
+        r,c = q.popleft()
+        for i in range (4) :
+            nr = r+dr[i]
+            nc = c+dc[i]
+            if 0<=nr<len(land) and 0<=nc<len(land) : ## 범위 내
+                if visit[nr][nc] == 0 and abs(land[nr][nc]-land[r][c]) <= height :
+                    visit[nr][nc] = num
+                    q.append((nr,nc))
+
+
+
+def solution(land, height):
+    global visit,visit_area,edge,parent,rank
+    answer = 0
+    area_num = 1
+    for i in range (len(land)) : ## 지역에 번호 매기는 과정
+        for j in range (len(land[0])) :
+            if visit[i][j] == 0 :
+                BFS_group(i,j,area_num,height)
+                area_num += 1 ## 지역 번호
+
+    edge = []
+
+    for i in range (len(visit)) :
+        for j in range (len(visit[0])) :
+            if visit_area[i][j] == 0 : ## 방문하지 않은 지역에서 탐색 시작
+                BFS(i,j) ## 각 구역 사이의 최소 거리를 구한다.
+
+    ## union find, mst
+    parent = list(range(0,area_num)) ## parent[i] : i번 노드의 부모 노드
+    rank = [0]*(area_num)
+    edge.sort() ## 오름차순 정렬
+
+    for x,y,z in edge :
+        if find(y) != find(z) : ## 부모 노드가 다른 경우
+            union(y,z) ## 결합
+            answer += x
+
+    return answer
+
+
+if __name__ == "__main__" :
+    land = [[1, 4, 8, 10], [5, 5, 5, 5], [10, 10, 10, 10], [10, 10, 10, 20]]
+    height = 3
+    visit = [[0] * len(land[0]) for _ in range(len(land))]
+    visit_area = [[0]*len(visit[0]) for _ in range (len(visit))]
+    print(solution(land,height))

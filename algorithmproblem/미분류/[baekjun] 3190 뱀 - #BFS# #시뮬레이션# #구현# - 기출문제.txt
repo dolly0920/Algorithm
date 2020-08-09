@@ -1,0 +1,56 @@
+https://www.acmicpc.net/problem/3190
+----------------------------------------------------------------------------------------------------------------
+// (20.06.11) - 정답확인 - 코드가 간결하고 이해하기는 좋지만 메모리, 속도를 고려했을 때 아쉬운 부분이 있는 코드이다.
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,-1,0,1]
+dc = [1,0,-1,0]
+
+if __name__ == "__main__" :
+    N = int(input()) ## 보드의 크기
+    board = [[0]*N for _ in range (N)] ## 보드
+    K = int(input()) ## 사과의 갯수
+    for _ in range (K) :
+        x,y = map(int,input().split()) ## 행,열
+        board[x-1][y-1] = 1 ## 사과
+    L = int(input()) ## 뱀의 방향 전환 횟수
+    command = deque()
+    for _ in range (L) :
+        x,c = input().split() ## x초후 방향 회전 c=='L' : 왼쪽90도, 'D' : 오른쪽 90도
+        command.append((x,c))
+
+    q = deque() ## 뱀의 정보를 담는 공간
+    q.append((0,0)) ## 시작 위치
+    cur_time = 0 ## 현재 시간
+    cur_dir = 0 ## 현재 방향
+
+    while True :
+        ## 방향 설정
+        if command : ## 명령이 있는 경우
+            if cur_time == int(command[0][0]) : ## 방향전환하는 시간인 경우
+                if command[0][1] == 'L' : ## 왼쪽 90도 회전
+                    cur_dir = (cur_dir+1)%4
+                elif command[0][1] == 'D' : ## 오른쪽 90도 회전
+                    cur_dir = (cur_dir-1)%4
+                command.popleft() ## 명령 처리 후 명령 삭제
+
+        cur_time += 1
+
+        ## 이동
+        r,c = q[-1] ## 머리
+        nr = r + dr[cur_dir]
+        nc = c + dc[cur_dir]
+        if nr<0 or nr>=N or nc<0 or nc>=N : ## 범위를 벗어나는 경우
+            break
+        if (nr,nc) in q : ## 몸통과 부딪히는 경우
+            break
+        ## 사과가 있든 없든 (nr,nc)는 추가됨
+        q.append((nr,nc))
+        if board[nr][nc] == 1 : ## 사과인 경우
+            board[nr][nc] = 0 ## 사과 없앰
+        else : ## 사과가 아닌 경우
+            q.popleft() ## 꼬리 제거
+    print(cur_time)

@@ -1,0 +1,62 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV5-BEE6AK0DFAVl
+----------------------------------------------------------------------------------------------------------------
+import sys
+from copy import deepcopy
+sys.stdin = open("input.txt","rt")
+
+
+def solve(x,k) : ## x:거리배열 k:계단번호
+    arr = deepcopy(x)
+    arr.sort()
+    if len(arr) == 0 :
+        return 0
+    elif len(arr) <= 3 : ## 3명 이하인 경우
+        return arr[-1]+1+stair[k][2]
+    else : ## 3명 초과인 경우
+        for i in range (len(arr)-3) :
+            if arr[i]+stair[k][2]-arr[i+3] <= 0 : ## 시간 차이가 없는 경우
+                continue
+            ## arr[i+3]이 더 작은 경우
+            tmp = arr[i]+stair[k][2]-arr[i+3]
+            arr[i+3] += tmp ## 이 값만 갱신하면 된다.
+        return arr[-1]+1+stair[k][2]
+
+
+def DFS(index) :
+    global ans,stair1,stair2
+    if index == len(people) :
+        time = max(solve(stair1,0),solve(stair2,1))
+        ans = min(ans,time)
+        return
+    ##계단 1로 가는 경우
+    stair1.append(abs(people[index][0]-stair[0][0]) + abs(people[index][1]-stair[0][1]))
+    DFS(index+1)
+    stair1.pop()
+    ##계단 2로 가는 경우
+    stair2.append(abs(people[index][0]-stair[1][0]) + abs(people[index][1]-stair[1][1]))
+    DFS(index+1)
+    stair2.pop()
+    return
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        N = int(input())
+        MAP = []
+        for _ in range (N) :
+            MAP.append(list(map(int,input().split())))
+        people = []
+        stair = []
+        for i in range (N) :
+            for j in range (N) :
+                if MAP[i][j] == 1 : ## 사람
+                    people.append((i,j))
+                elif MAP[i][j] >= 2 : ## 계단
+                    stair.append((i,j,MAP[i][j]))
+        ## 조합
+        ans = 100000
+        stair1 = [] ## stair1까지의 거리
+        stair2 = [] ## stair2까지의 거리
+        DFS(0)
+        print("#%d %d"%(test_case,ans))

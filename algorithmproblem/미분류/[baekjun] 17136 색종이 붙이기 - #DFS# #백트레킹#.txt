@@ -1,0 +1,71 @@
+https://www.acmicpc.net/problem/17136
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.setrecursionlimit(100000)
+
+sys.stdin = open("input.txt","rt")
+
+def test_paper(arr,r,c,size) : ## (r,c)에서 size범위 탐색
+    for i in range (r,r+size) :
+        for j in range (c,c+size) :
+            if i>=10 or j>=10 : ## 범위를 벗어나는 경우
+                return False
+            if arr[i][j] == 0 : ## 범위 내에 0이 있는 경우
+                return False
+    return True ## 조건을 통과하는 경우
+
+
+def DFS(arr,depth) :
+    global ans,one_cnt
+
+    if depth >= ans :
+        return
+
+    if one_cnt == 0 :
+        ans = min(ans,depth)
+        return
+
+    if ans == 4 : ## 10*10의 종이를 5*5블록 4개로 채우는 경우가 최소이므로 이 경우를 만족하는 경우 return
+        return
+
+    if sum(color_cnt) == 0 :
+        return
+
+    for i in range (10) :
+        for j in range (10) :
+            if arr[i][j] == 1 : ## 색종이를 붙여야 하는 곳
+                ##print(i,j)
+                for size in range (5,0,-1) :
+                    if color_cnt[size] > 0 : ## 남은 색종이가 있는 경우
+                        if test_paper(arr,i,j,size) : ## 붙일 수 있는 경우
+                            flag = False
+                            color_cnt[size] -= 1
+                            one_cnt -= (size*size)
+                            for r1 in range (i,i+size) :
+                                for c1 in range (j,j+size) :
+                                    arr[r1][c1] = 0
+                            DFS(arr,depth+1) ## size*size의 색종이를 붙이는 경우
+                            for r1 in range (i,i+size) :
+                                for c1 in range (j,j+size) :
+                                    arr[r1][c1] = 1
+                            one_cnt += (size*size)
+                            color_cnt[size] += 1 ## 원래대로
+                ## 가장 처음 만나는 1의 처리를 어떻게 할지 정한다음 return해야한다. (왼쪽 위부터 차례대로 색종이를 덮는 작업)
+                return ## 이 return의 위치 중요! (재귀에서 return의 위치 이해할것!)
+
+
+
+if __name__ == "__main__" :
+    MAP = []
+    for _ in range (10) :
+        MAP.append(list(map(int,input().split())))
+    one_cnt = 0
+    for i in range (10) :
+        for j in range (10) :
+            if MAP[i][j] == 1 :
+                one_cnt += 1
+    color_cnt = [0,5,5,5,5,5] ## color_cnt[i] : i*i사이즈 색종이의 남은 갯수
+    ans = 26
+    DFS(MAP,0)
+    print(ans if ans != 26 else -1)

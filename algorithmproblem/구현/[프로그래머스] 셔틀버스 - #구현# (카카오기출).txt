@@ -1,0 +1,96 @@
+https://programmers.co.kr/learn/courses/30/lessons/17678
+----------------------------------------------------------------------------------------------------------------
+## (틀린코드) 틀린이유를 모르겟음
+from collections import deque
+
+def solution(n, t, m, timetable):
+    timetable.sort(key=lambda x:(int(x[0:2]),int(x[3:5])))
+    answer = ''
+    cur_hour = 9
+    cur_min = 0
+    wait = deque() ## 대기자
+    used = [0]*len(timetable)
+
+    while n :
+        n -= 1
+        for i in range (len(timetable)) :
+            if int(timetable[i][0:2]) < cur_hour or (int(timetable[i][0:2])==cur_hour and int(timetable[i][3:5])<=cur_min) :
+                if used[i] == 0 :
+                    used[i] = 1
+                    wait.append((int(timetable[i][0:2]),int(timetable[i][3:5]))) ## (시간,분) int 꼴로 저장
+        if n==0: ## 마지막 셔틀일 때
+            if len(wait) < m : ## 최대보다 여유가 있는 경우
+                ## cur_hour,cur_min이 답이 된다.
+                if cur_hour >= 10 :
+                    answer = str(cur_hour) + ":"
+                else :
+                    answer = "0" + str(cur_hour) + ":"
+                if cur_min >= 10 :
+                    answer += str(cur_min)
+                else :
+                    answer += "0" + str(cur_min)
+            else : ## 최대보다 많은 경우
+                last_hour = wait[-1][0]
+                last_min = wait[-1][1]
+                last_min -= 1
+                if last_min < 0 :
+                    last_hour -= 1
+                    last_min %= 60
+                ## 문자열 변환
+                if last_hour >= 10 :
+                    answer = str(last_hour) + ":"
+                else :
+                    answer = "0" + str(last_hour) + ":"
+                if last_min >= 10 :
+                    answer += str(last_min)
+                else :
+                    answer += "0" + str(last_min)
+        for _ in range (m) :
+            if wait :
+                wait.popleft() ## first in first out
+            else :
+                break
+        cur_min += t
+        while cur_min >= 60 :
+            cur_min -= 60
+            cur_hour += 1
+    return answer
+
+if __name__ == "__main__" :
+    n = 10
+    t = 60
+    m = 45
+    timetable = ["23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59", "23:59"]
+    print(solution(n,t,m,timetable))
+
+###########################
+## 다시 푼 코드(답 참고)
+def solution(n, t, m, timetable):
+    answer = ''
+    for i in range (len(timetable)) :
+        timetable[i] = int(timetable[i][0:2])*60 + int(timetable[i][3:5])
+    timetable.sort() ## 오름차순 정렬
+    last_time = 60*9 + (n-1)*t
+
+    for i in range (n) : ## n번 운행
+        if len(timetable) < m :
+            return '%02d:%02d'%(last_time//60,last_time%60)
+        if i == n-1 : ## 마지막 운행
+            if timetable[m-1] <= last_time :
+                last_time = timetable[m-1]-1
+            return '%02d:%02d'%(last_time//60,last_time%60)
+        cur_time = 9*60 + t*i
+        for j in range (m) :
+            if timetable[j] <= cur_time :
+                del timetable[j]
+            else :
+                break
+
+    return answer
+
+if __name__ == "__main__" :
+    n = 2
+    t = 10
+    m = 2
+    timetable = ["09:10", "09:09", "08:00"]
+    print(solution(n,t,m,timetable))

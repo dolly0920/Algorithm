@@ -1,0 +1,35 @@
+https://www.acmicpc.net/problem/14891
+----------------------------------------------------------------------------------------------------------------
+//My sol
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+def certificate_left(num,dir) : ## 번호,방향
+    if num == 1 or a[num-1][2] == a[num][6]:
+        return
+    certificate_left(num-1,-dir)
+    a[num - 1].rotate(-dir)  ## 반대방향으로 회전 ## 끝까지 확인하고 회전시켜야함
+
+def certificate_right(num,dir) :
+    if num == 4 or a[num+1][6] == a[num][2] :
+        return
+    certificate_right(num+1,-dir)
+    a[num + 1].rotate(-dir)
+
+if __name__ == "__main__" :
+    a = [0]
+    for _ in range (4) :
+        a.append(deque(list(map(int,input()))))
+    K = int(input())
+    for _ in range (K) :
+        x,y = map(int,input().split()) ## 톱니바퀴 번호, 방향
+        certificate_left(x,y) ## x톱니바퀴의 왼쪽 확인
+        certificate_right(x,y) ## y톱니바퀴의 오른쪽 확인
+        a[x].rotate(y) ## 방향대로 회전
+    ans = 0
+    for i in range (1,len(a)) :
+        if a[i][0] == 1 : ## 12시방향이 N극이면
+            ans += 2**(i-1)
+    print(ans)

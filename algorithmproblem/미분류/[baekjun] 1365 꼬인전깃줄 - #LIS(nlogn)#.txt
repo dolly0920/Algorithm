@@ -1,0 +1,44 @@
+공화국에 있는 유스타운 시에서는 길을 사이에 두고 전봇대가 아래와 같이 두 줄로 늘어서 있다. 그리고 길 왼편과 길 오른편의 전봇대는 하나의 전선으로 연결되어 있다. 어떤 전봇대도 두 개 이상의 다른 전봇대와 연결되어 있지는 않다.
+
+
+
+문제는 이 두 전봇대 사이에 있는 전깃줄이 매우 꼬여 있다는 점이다. 꼬여있는 전깃줄은 화재를 유발할 가능성이 있기 때문에 유스타운 시의 시장 임한수는 전격적으로 이 문제를 해결하기로 했다.
+
+임한수는 꼬여 있는 전깃줄 중 몇 개를 적절히 잘라 내어 이 문제를 해결하기로 했다. 하지만 이미 설치해 놓은 전선이 아깝기 때문에 잘라내는 전선을 최소로 하여 꼬여 있는 전선이 하나도 없게 만들려고 한다.
+
+유스타운 시의 시장 임한수를 도와 잘라내야 할 전선의 최소 개수를 구하는 프로그램을 작성하시오.
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+def lower_bound(left,right,n) : ## *이상 값의 최초 등장 위치
+    ans = 0
+    while left <= right :
+        mid = (left+right)//2
+
+        if c[mid] == n :
+            return mid ## c 배열은 중복값이 없는 증가수열 이므로 ==n일 때 바로 반환
+        elif c[mid] > n :
+            ans = mid ## 이상 조건을 만족하므로 저장
+            right = mid-1
+        else :
+            left = mid+1
+    return ans
+
+if __name__ == "__main__" :
+    N = int(input())
+    a = list(map(int,input().split()))
+    INF = 1000000
+    c = [INF]*(len(a)+1) ## c[i] : i 길이 lis의 마지막 값 중 최소값
+    c[0] = -INF
+    tmp_length = 0
+
+    for x in a :
+        if c[tmp_length] < x : ## x가 크다면
+            tmp_length += 1
+            c[tmp_length] = x
+        else : ## x가 작거나 같은 경우
+            next_loc = lower_bound(0,tmp_length,x)
+            c[next_loc] = x
+    print(len(a)-tmp_length)

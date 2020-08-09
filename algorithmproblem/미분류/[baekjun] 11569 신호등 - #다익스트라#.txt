@@ -1,0 +1,67 @@
+
+----------------------------------------------------------------------------------------------------------------
+import sys
+import heapq as hq
+
+sys.stdin = open("input.txt","rt")
+
+INF = sys.maxsize
+
+def solve() :
+    if S==D : ## 출발지와 목적지가 같다면
+        return 0
+    dis = [INF] * (N+1)
+    pq = []
+    dis[S] = 0 ## 자기 자신은 0
+    ans = INF
+    hq.heappush(pq,[0,S])
+
+    while pq :
+        cur_dis,point = hq.heappop(pq)
+        ##
+        for i,cost in path[point].items() :
+            s_time = cur_dis + cost
+            if i == D:
+                ans = min(ans, s_time)  ## q에 들어가는 연산을 하기 전 미리 답 기억
+            i_cycle = cycle[i] * len(rank[i])  ## 도달하고자 하는 교차로의 주기
+            e_time = s_time % i_cycle  ## 일정한 주기로 나눠 계산하기 편하게 만들어 준다
+            for j in range(len(rank[i])):
+                if rank[i][j] == point:  ## point노드가 i번 노드에서 몇 번째 개방 노드인지 확인
+                    order = j
+                    break
+            start_time = cycle[i] * order  ## 시작 시간 (i번 노드의 point 노드 개방 시작 시간)
+            if start_time <= e_time < start_time + cycle[i]:  ## 개방시간이라면
+                next_dis = s_time
+            elif start_time > e_time:  ## 안 겹치는 경우
+                next_dis = s_time + (start_time - e_time)
+            else:  ## 안 겹치는 경우
+                next_dis = s_time + (i_cycle - e_time + start_time)
+
+            if next_dis < dis[i]:
+                dis[i] = next_dis  ## 갱신
+                hq.heappush(pq, [next_dis, i])  ## 최단 거리 푸시
+
+    if ans == INF :
+        return -1
+    else :
+        return ans
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for _ in range (T) :
+        N,M,S,D = map(int,input().split()) ## 교차로,도로,출발,도착
+        path = [{} for _ in range (N+1)]
+        rank = [[] for _ in range (N+1)] ## rank[i] : i번 노드에 연결된 도로의 갯수
+        for _ in range (M) :
+            a,b,c = map(int,input().split())
+            path[a][b] = c
+            path[b][a] = c
+            rank[a].append(b)
+            rank[b].append(a)
+        for i in range (1,N+1) :
+            rank[i].sort()
+        tmp = list(map(int,input().split()))
+        cycle = [0]
+        cycle += tmp
+        print(solve())

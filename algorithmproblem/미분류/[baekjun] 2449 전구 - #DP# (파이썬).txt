@@ -1,0 +1,28 @@
+https://www.acmicpc.net/submit/2449/19545796
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+INF = sys.maxsize
+
+def solve(start,end) : ## start-end의 전구를 같은 색으로 바꾸기 위한 최소 갯수
+    if start == end :
+        return 0 ## 같은 위치는 0 리턴
+
+    if dp[start][end] != INF : ## memorization
+        return dp[start][end]
+
+
+    for i in range (start,end) : ## 모든 경우를 고려하여 최솟값을 구한다 (다익스트라와 비슷)
+        tmp = 0
+        if light[start] != light[i+1] : ## 전구 색은 앞의 색을 기준으로 바꾼다
+            tmp = 1
+        dp[start][end] = min(dp[start][end],solve(start,i)+solve(i+1,end)+tmp) ## 분할해서 생각 
+
+    return dp[start][end]
+if __name__ == "__main__" :
+    N,K = map(int,input().split()) ## 전구의 수, 색의 갯수
+    light = list(map(int,input().split())) ## 전구
+    dp = [[INF]*N for _ in range (N)] ## dp[i][j] : i-j의 전구를 같은 색으로 바꾸기 위한 횟수
+    print(solve(0,N-1))

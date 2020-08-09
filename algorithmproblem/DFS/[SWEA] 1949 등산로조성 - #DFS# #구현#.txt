@@ -1,0 +1,56 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV5PoOKKAPIDFAUq
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def DFS(r,c,length,state,height) : ## 좌표,길이,상태(작업여부)
+    global ans
+
+    ans = max(ans,length)
+
+    for i in range (4) :
+        nr = r+dr[i]
+        nc = c+dc[i]
+        if nr<0 or nr>=N or nc<0 or nc>=N or visit[nr][nc] == 1: ## 범위를 벗어날 때, 방문한 곳일 때
+            continue
+        if MAP[nr][nc] < height : ## 가려는 곳이 현재 봉우리보다 낮을 때
+            visit[nr][nc] = 1
+            DFS(nr,nc,length+1,state,MAP[nr][nc])
+            visit[nr][nc] = 0
+        else : ## 가려는 곳이 현재 봉우리보다 높거나 같을 때
+            if state and MAP[nr][nc]-height+1 <= K : ## 깎을 수 있는 상태이고, 깎아서 갈 수 있는 곳이면
+                visit[nr][nc] = 1
+                DFS(nr,nc,length+1,False,MAP[r][c]-1)
+                visit[nr][nc] = 0
+    return
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        N,K = map(int,input().split())
+        MAP = []
+        for _ in range (N) :
+            MAP.append(list(map(int,input().split())))
+        max_height = 0
+        start = [] ## 시작점의 좌표 저장
+        for i in range (N) :
+            for j in range (N) :
+                if MAP[i][j] > max_height :
+                    max_height = MAP[i][j]
+                    start = []
+                    start.append((i,j))
+                elif MAP[i][j] == max_height :
+                    start.append((i,j))
+        ans = 0
+        ##print(start)
+        for r,c in start : ## 각각의 시작점에서 DFS
+            visit = [[0] * N for _ in range(N)]
+            visit[r][c] = 1
+            DFS(r,c,1,True,MAP[r][c])
+            visit[r][c] = 0
+        print("#%d %d"%(test_case,ans))

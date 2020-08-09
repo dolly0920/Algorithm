@@ -1,0 +1,111 @@
+
+----------------------------------------------------------------------------------------------------------------
+//My sol
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def BFS() : ## 꽃이 피는 경우 return
+    state = [[[-1]*2 for _ in range (M)] for _ in range (N)] ## state[i][j][0] : 시간, state[i][j][1] : 뿌려진 배양액 or 꽃
+    q = deque()
+    tmp = 0 ## 피어난 꽃의 개수
+
+    for x in red_ground :
+        state[x[0]][x[1]][0] = 0
+        state[x[0]][x[1]][1] = 'R'
+        #print("red_spot",x[0],x[1])
+        q.append((x[0],x[1]))
+    for x in green_ground :
+        state[x[0]][x[1]][0] = 0
+        state[x[0]][x[1]][1] = 'G'
+        #print("green_spot",x[0],x[1])
+        q.append((x[0],x[1]))
+
+    while q :
+        r,c = q.popleft()
+
+        if state[r][c][1] == 'F' : ## 꽃인 경우
+            continue
+
+        for i in range (4) :
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if 0<=nr<N and 0<=nc<M : ## 범위 안
+                if ground[nr][nc] == 0 : ## 호수인 경우
+                    continue
+                if state[nr][nc][0] == -1 : ## 방문하지 않은 곳
+                    state[nr][nc][0] = state[r][c][0] + 1 ## 시간 업데이트
+                    state[nr][nc][1] = state[r][c][1] ## 배양액(색) 업데이트
+                    q.append((nr,nc))
+                ## 수정한 부분 ## (질문) 아래와 결국 같은 내용?
+                ##  why? 방문한 곳의 state[i][j][1]에는 이미 'R'이나 'G'중 하나의 값이 들어가 있기 때문에 != 를 하면 결국 같은 내용 아닌지?
+                ## 이유 : 'F'가 되도 !=가 성립되기 때문에 같은 곳이 중복으로 세어짐.
+                elif state[nr][nc][1] == 'R':
+                    if state[r][c][1] == 'G' and state[nr][nc][0] == state[r][c][0] + 1:
+                        tmp += 1
+                        state[nr][nc][1] = 'F'
+                elif state[nr][nc][1] == 'G':
+                    if state[r][c][1] == 'R' and state[nr][nc][0] == state[r][c][0] + 1:
+                        tmp += 1
+                        state[nr][nc][1] = 'F'
+                ##############
+                '''
+                # 이전 사용한 코드
+                elif state[nr][nc][0] == state[r][c][0] + 1 and state[nr][nc][1] != state[r][c][1]:  ## 방문 시간이 같고, 배양액이 다른 경우
+                    tmp += 1
+                    state[nr][nc][1] = 'F'  ## 꽃 업데이트
+                '''
+    return tmp
+
+
+def DFS(index,red_cnt,green_cnt) :
+    global red_ground,green_ground,ans
+
+    if green_cnt+len(pos_ground)-index < G : ## 남은 토양에 배양액을 모두 부어도 배양액이 남는 경우
+        return
+
+    if red_cnt + len(pos_ground)-index < R :
+        return
+
+    if red_cnt == R and green_cnt == G : ## 배양액을 모두 사용한 경우
+        ##print("red",red_ground)
+        ##print("green",green_ground)
+        ##print(BFS())
+        ans = max(ans,BFS())
+        return
+
+    if index == len(pos_ground) :
+        return
+    else :
+        red_ground.append((pos_ground[index][0],pos_ground[index][1]))
+        DFS(index+1,red_cnt+1,green_cnt)
+        red_ground.pop()
+        green_ground.append((pos_ground[index][0],pos_ground[index][1]))
+        DFS(index+1,red_cnt,green_cnt+1)
+        green_ground.pop()
+        DFS(index+1,red_cnt,green_cnt) ## 배양액 x
+
+
+
+if __name__ == "__main__" :
+    N,M,G,R = map(int,input().split())
+    ground = []
+    for _ in range (N) :
+        ground.append(list(map(int,input().split()))) ## 0:호수 1:배양액 뿌릴수없는 땅 2:배양액 뿌릴 수 있는 땅
+
+    pos_ground = [] ## 배양액 뿌릴 수 있는 땅의 좌표
+
+    for i in range (N) :
+        for j in range (M) :
+            if ground[i][j] == 2 :
+                pos_ground.append((i,j))
+
+    red_ground = [] ## 빨간 배양액 좌표
+    green_ground = [] ## 초록 배양액 좌표
+    ans = 0 ## 피울 수 있는 꽃의 개수
+    DFS(0,0,0) ## 황토에 배양액을 뿌리는 조합
+    print(ans)

@@ -1,0 +1,59 @@
+퀵 정렬 구현
+----------------------------------------------------------------------------------------------------------------
+#include <stdio.h>
+
+int array[10] = { 5,9,44,12,17,77,1,99,100,96};
+
+void quick_sort(int *a, int s, int e)	// 배열 , 시작 인덱스, 마지막 인덱스
+{
+	int i, j, tmp, key;
+
+	if (s >= e)	 return;
+
+	key = s;	// pivot
+	i = s + 1;
+	j = e;
+
+	while (i <= j)
+	{
+		while (a[i] <= a[key] && i <= e)	i++;	// 왼->오 (pivot값보다 큰 값 찾기)
+		while (a[j] >= a[key] && j >= s + 1) j--;	// 오->왼 (pivot값보다 작은 값 찾기)
+
+		if (i > j)	// 엇갈린 경우
+		{
+			tmp = a[j];
+			a[j] = a[key];
+			a[key] = tmp;	// pivot과 j(작은 값)의 위치를 바꿈, 이 지점을 기준으로 좌 우 연산
+		}
+		else // 엇갈리지 않은 경우
+		{
+			tmp = a[i];
+			a[i] = a[j];
+			a[j] = tmp;
+		}
+	}
+
+	quick_sort(a, s, j - 1);
+	quick_sort(a, j + 1, e);
+}
+
+int main(void)
+{
+	int i;
+
+	for (i = 0; i < 10; i++)
+	{
+		printf("%d ", array[i]);
+	}
+
+	printf("\n");
+
+	quick_sort(array, 0, 9);
+
+	for (i = 0; i < 10; i++)
+	{
+		printf("%d ", array[i]);
+	}
+
+	return 0;
+}

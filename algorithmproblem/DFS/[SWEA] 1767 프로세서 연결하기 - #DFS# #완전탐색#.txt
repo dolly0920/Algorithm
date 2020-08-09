@@ -1,0 +1,96 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV4suNtaXFEDFAUf
+----------------------------------------------------------------------------------------------------------------
+//My sol
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,1,0,-1]
+dc = [1,0,-1,0]
+
+
+def DFS(index,cnt,length) : ## 인덱스, 코어의 갯수, 전선의 길이
+    global ans_cnt,ans_length ## 최대의 코어 갯수, 최소의 전선 길이
+    global ans_tmp
+
+    if cnt+len(core)-index < ans_cnt : ## 필요없는 부분 삭제
+        return
+
+    if index == len(core) :
+        if cnt >= ans_cnt :
+            if cnt > ans_cnt :
+                ans_cnt = cnt
+                ans_length = length
+            else :
+                if ans_length > length :
+                    #print(ans_tmp)
+                    ans_length = length
+        return
+    else :
+        sr = core[index][0]
+        sc = core[index][1]
+
+        for i in range (4) :
+            r = sr
+            c = sc
+            flag = 0
+            tmp_length = 0
+
+            while 0<=r+dr[i]<N and 0<=c+dc[i]<N : ## 범위 안
+                r += dr[i]
+                c += dc[i]
+                tmp_length += 1
+                if visit[r][c] == 1 or maxinos[r][c] == 1 : ## 전선이 있거나 코어가 있는 경우
+                    flag = 1
+                    break
+
+            if flag == 1 : ## 전선이 있거나 코어가 있는 경우
+                continue ## 다음 방향 탐색
+            else :
+                ## 감소되는 경우도 고려해야함
+                tr = 1
+                tc = 1
+                if dr[i] != 0 :
+                    tr = dr[i]
+                else :
+                    tc = dc[i]
+
+                for j in range (sr,r+tr,tr) :
+                    for k in range (sc,c+tc,tc) :
+                        visit[j][k] = 1 ## 전선 생성(방문 체크)
+                #ans_tmp.append((sr,sc,tmp_length))
+                DFS(index+1,cnt+1,length+tmp_length) ## 코어에 전원을 연결하고 다음 코어로 넘어감
+                #ans_tmp.pop()
+                for j in range (sr,r+tr,tr) :
+                    for k in range (sc,c+tc,tc) :
+                        visit[j][k] = 0 ## 전선 없앰(방문 해제)
+        DFS(index+1,cnt,length) ## 코어에 전원을 연결하지 않는 경우
+
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (T) :
+        N = int(input())
+        maxinos = []
+        for _ in range (N) :
+            maxinos.append(list(map(int,input().split())))
+
+        core_cnt = 0
+        core = []
+
+        ans_cnt = 0
+        ans_length = 1000000
+        for i in range (N) :
+            for j in range (N) :
+                if maxinos[i][j] == 1 : ## 코어인 경우
+                    if i==0 or i==N-1 or j==0 or j==N-1 : ## 가장자리인 경우
+                        core_cnt += 1
+                    else :
+                        core.append((i,j))
+        visit = [[0]*N for _ in range (N)]
+        ans_tmp = []
+        DFS(0,core_cnt,0)
+        #print(ans_cnt)
+        #print(len(core))
+        print("#%d %d"%(test_case+1,ans_length))

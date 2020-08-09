@@ -1,0 +1,42 @@
+https://www.acmicpc.net/problem/3172
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+
+def solve(left,right,node,start,end) : ## left,right : 구하는 구간
+    if start > right or end < left : ## 범위 벗어난 경우
+        return 0
+    if start >= left and end <= right : ## 범위 내부인 경우
+        return tree[node]
+    mid = (start+end) // 2
+    tmp = solve(left,right,node*2,start,mid) + solve(left,right,node*2+1,mid+1,end) ## left-right 구간 내의 요소의 갯수
+    return tmp
+
+def update(index,value,node,start,end) :
+    if index < start or index > end : ## 구간을 벗어날 때
+        return tree[node] ## 갯수의 합 트리 이므로 구간을 벗어나도 올바른 값이 들어가기 위해선 리턴을 해줘야 한다.
+    if start==end :
+        tree[node] = value
+        return tree[node]
+    mid = (start+end)//2
+    tree[node] = update(index,value,node*2,start,mid)+update(index,value,node*2+1,mid+1,end)
+    return tree[node]
+
+if __name__ == "__main__" :
+    N = int(input())
+    word = []
+    tree = [0]*400000 ## tree[i] = 1 : i번째 노드에 입력값이 있음
+    for i in range (1,N+1) :
+        word.append(input())
+    word.sort()
+    for i in range (len(word)) :
+        word[i] = word[i][len(word[i])-1::-1]
+    word = list(enumerate(word))
+    word.sort(key = lambda x:x[1])
+    ans = 0
+    for i in range (len(word)) :
+        ans += solve(word[i][0],N-1,1,0,N-1) ## word[i][0]~n-1 구간에 몇 개 존재하는지 센다. (뒤에서 reverse했을 때의 빠른 번호가 업데이트 되므로 이 때 들어가는 숫자는 빠른 번호 중 뒤에 있는 것)
+        update(word[i][0],1,1,0,N-1) ## word[i][0] index가 속하는 곳을 리프노드부터 차례대로 채워준다 (각 노드의 값은 구간에 속하는 요소의 갯수) value값을 1로 했으므로
+    print(ans)

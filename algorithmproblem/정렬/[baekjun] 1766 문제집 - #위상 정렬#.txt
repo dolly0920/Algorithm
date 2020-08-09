@@ -1,0 +1,32 @@
+https://www.acmicpc.net/problem/1766
+----------------------------------------------------------------------------------------------------------------
+import sys
+import heapq as hq
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split()) ## N개의 문제, 순서M
+    rank = [0]*(N+1)
+    path = {}
+    for _ in range (M) :
+        a,b = map(int,input().split())
+        if a in path :
+            path[a].append(b)
+        else :
+            path[a] = [b]
+        rank[b] += 1
+
+    pq = []
+    for i in range (1,N+1) :
+        if rank[i] == 0 :
+            hq.heappush(pq,i)
+
+    while pq :
+        point = hq.heappop(pq)
+        print(point,end=' ')
+        if point in path :
+            for x in path[point] :
+                rank[x] -= 1
+                if rank[x] == 0 :
+                    hq.heappush(pq,x)

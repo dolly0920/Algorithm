@@ -1,0 +1,39 @@
+N개의 도시가 있다. 그리고 한 도시에서 출발하여 다른 도시에 도착하는 M개의 버스가 있다. 우리는 A번째 도시에서 B번째 도시까지 가는데 드는 버스 비용을 최소화 시키려고 한다. A번째 도시에서 B번째 도시까지 가는데 드는 최소비용을 출력하여라. 도시의 번호는 1부터 N까지이다.
+----------------------------------------------------------------------------------------------------------------
+//My sol
+import sys
+import heapq as hq
+##input = sys.stdin.readline
+sys.stdin = open("input.txt","rt")
+
+INF = sys.maxsize
+
+def dijkstra(V,K,arr) : ## 정점 갯수, 시작점, 간선 정보
+    dis = [INF]*(V+1)
+    pq = []
+    hq.heappush(pq,[0,K])
+
+    while pq :
+        ##print(pq)
+        cur_dis,spot = hq.heappop(pq)
+        for x,y in arr[spot].items() :
+            next_dis = cur_dis + y
+            if dis[x] > next_dis : ## x까지 가는 거리 갱신
+                dis[x] = next_dis
+                hq.heappush(pq,[next_dis,x])
+    return dis
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## 지역
+    M = int(input()) ## 버스
+    path = [{} for _ in range (N+1)]
+    for _ in range (M) :
+        a,b,c = map(int,input().split())
+        if b in path[a] :
+            path[a][b] = min(path[a][b],c)
+        else :
+            path[a][b] = c
+    ##print(path)
+    start,end = map(int,input().split())
+    print(dijkstra(N,start,path)[end])

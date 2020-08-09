@@ -1,0 +1,41 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV15QRX6APsCFAYD&categoryId=AV15QRX6APsCFAYD&categoryType=CODE&&&
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def solve(x,y) :
+    global ans
+
+    q = deque()
+
+    q.append((x,y,0)) ## (r,c,cur_time)
+
+    while q :
+        r,c,cur_time = q.popleft()
+        for i in range (4) :
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if nr<0 or nr>=N or nc<0 or nc>=N : ## 범위를 벗어나는 경우
+                continue
+            if cur_time + MAP[nr][nc] >= dp[nr][nc] : ## 기존의 값보다 크거나 같은 경우 (이미 연산했으므로 연산할 필요가 없다) --> 방문 고려할 필요가 없는 이유 : MAP[nr][nc]값을 수정하지 않았으므로 다시 방문할 경우 이 조건에 위배된다.
+                continue
+            q.append((nr,nc,cur_time+MAP[nr][nc]))
+            dp[nr][nc] = cur_time+MAP[nr][nc]
+    return dp[N-1][N-1]
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        N = int(input()) ## 지도의 크기
+        MAP = []
+        dp = [[100000]*N for _ in range (N)] ## dp[x][y] : x,y에 방문하는 배열의 최소 복구 시간
+        for _ in range (N) :
+            MAP.append(list(map(int,input())))
+        dp[0][0] = 0
+        print("#%d %d"%(test_case,solve(0,0)))

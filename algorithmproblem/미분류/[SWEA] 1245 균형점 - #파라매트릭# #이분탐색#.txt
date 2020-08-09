@@ -1,0 +1,47 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV15MeBKAOgCFAYD&
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        if test_case != 1 :
+            print()
+        N = int(input())
+        pi_list = list(map(float,input().split()))
+        spot = pi_list[:N]
+        weight = pi_list[N:] ## 작은 값부터 순차적으로 입력된다.
+        ans = []
+
+        for x in range (N-1) : ## (N-1)개의 균형점을 구한다
+            start = float(spot[x])
+            end = float(spot[x+1])
+            while start <= end:
+                mid = float((start + end) / 2)
+
+                left_force = float(0)
+                right_force = float(0)
+
+                for i in range(N):
+                    ##print(spot[i],mid)
+                    if spot[i] < mid:  ## left_force
+                        ##print("1")
+                        left_force += float(weight[i] / float((spot[i] - mid) ** 2))
+                    else : ## right_force
+                        ##print("2")
+                        right_force += float(weight[i] / float((spot[i] - mid) ** 2))
+
+                if abs(left_force - right_force) == 0:  ## 두 힘의 차가 10^(-12)보다 작을 때 (같을 때)
+                    break
+                elif left_force > right_force:  ## 왼쪽의 인력이 더 강할 때
+                    start = float(mid + (10 ** (-12)))
+                else:
+                    end = float(mid - (10 ** (-12)))
+            ans.append(mid)
+
+        print("#%d"%(test_case),end=' ')
+        for result in ans :
+            print("%0.10f"%(result),end=' ')

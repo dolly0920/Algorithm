@@ -1,0 +1,38 @@
+https://programmers.co.kr/learn/courses/30/lessons/42627
+----------------------------------------------------------------------------------------------------------------
+import heapq as hq
+
+
+def solution(jobs):  ## jobs : [요청,작업소요]
+    check = [False] * len(jobs)  ## check[i] : i번째 작업의 수행 여부
+    answer = 0
+    pq = []
+    jobs.sort()  ## 오름 차순 정렬
+    answer += (jobs[0][1])
+    time = jobs[0][0] + jobs[0][1]
+    check[0] = True
+    cnt = 1
+
+    while cnt<len(jobs):
+        for i in range(len(jobs)):
+            if jobs[i][0] <= time and check[i] == False:  ## 이전 작업이 끝나기 전 요청된 작업
+                check[i] = True
+                hq.heappush(pq, [jobs[i][1], i])  ## (소요시간,인덱스)
+            elif jobs[i][0] > time:
+                break
+
+        if len(pq) == 0:  ## 먼저 처리해야할 작업이 없는 경우
+            time = jobs[i][0] + jobs[i][1]
+            answer += jobs[i][1]
+            check[i] = True
+            cnt += 1
+            i += 1
+        else:  ## 먼저 처리해야할 작업이 있는 경우
+            cnt += 1
+            work_time, num = hq.heappop(pq)
+            time += work_time
+            answer += (time - jobs[num][0])
+
+    answer = answer // len(jobs)
+
+    return answer

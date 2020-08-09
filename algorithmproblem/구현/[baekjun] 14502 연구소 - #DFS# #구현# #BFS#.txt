@@ -1,0 +1,62 @@
+https://www.acmicpc.net/problem/14502
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+from copy import deepcopy
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def solve() : ## 안전영역의 크기
+    visit = [[0]*M for _ in range (N)]
+    for x,y in virus :
+        visit[x][y] = 1 ## 방문 체크
+    q = deepcopy(virus)
+    cnt = 0
+    while q :
+        cnt += 1
+        r,c = q.popleft()
+        for i in range (4) :
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if nr<0 or nr>=N or nc<0 or nc>=M or visit[nr][nc] == 1 or MAP[nr][nc] == 1: ## 범위를 벗어나거나 방문한 곳인 경우, 벽인 경우
+                continue
+            visit[nr][nc] = 1 ## 방문 체크
+            q.append((nr,nc))
+    ## 안전 영역의 갯수 (M*N) - (벽의 갯수) - (바이러스)
+    return (M*N)-(wall_cnt+3)-cnt
+
+def DFS(depth,r,c) :
+    global ans
+    if depth == 3 :
+        ans = max(ans,solve())
+        return
+
+    for i in range (r,N) :
+        for j in range (c,M) :
+            if MAP[i][j] == 0 : ## 빈칸인 경우
+                MAP[i][j] = 1
+                DFS(depth+1,i,j+1)
+                MAP[i][j] = 0
+        c = 0 ## c는 0으로 초기화해야 다음 행 검색할 때 인덱스 0부터 탐색
+    return
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    MAP = []
+    for _ in range (N) :
+        MAP.append(list(map(int,input().split())))
+
+    virus = deque() ## 바이러스의 좌표 저장
+    wall_cnt = 0
+    for i in range (N) :
+        for j in range (M) :
+            if MAP[i][j] == 2 :
+                virus.append((i,j))
+            if MAP[i][j] == 1 : ## 벽의 갯수 카운트
+                wall_cnt += 1
+    ans = 0
+    DFS(0,0,0)
+    print(ans)

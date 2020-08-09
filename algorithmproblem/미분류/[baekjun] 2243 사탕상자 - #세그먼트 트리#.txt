@@ -1,0 +1,42 @@
+https://www.acmicpc.net/problem/2243
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def update_segtree(node,start,end,dif,num) : ## num의 번호를 dif만큼 업데이트 하는 경우
+    if num < start or num > end : ## 범위를 벗어나는 경우
+        return
+
+    tree[node] += dif
+
+    if start == end :
+        return
+
+    mid = (start+end)//2
+    update_segtree(2*node,start,mid,dif,num)
+    update_segtree(2*node+1,mid+1,end,dif,num)
+    return
+
+def search_segtree(node,start,end,order) : ## order번째의 사탕을 뺀다.
+    if start == end :
+        print(end)
+        return end
+
+    mid = (start+end)//2
+
+    if tree[node*2] >= order :
+        return search_segtree(node*2,start,mid,order)
+    else :
+        return search_segtree(node*2+1,mid+1,end,order-tree[node*2])
+
+
+if __name__ == "__main__" :
+    n = int(input()) ## 손을 댄 횟수
+    tree = [0]*(4*1000000) ## 세그먼트 트리 : 각 구간(사탕의 맛 정도 구분)의 사탕의 총 갯수
+    for _ in range (n) :
+        com = list(map(int,input().split()))
+        if com[0] == 2 : ## 사탕을 넣는 경우 ## com[0] : 명령 com[1] : 넣을 사탕의 맛 com[2] : 사탕의 갯수
+            update_segtree(1,0,1000000,com[2],com[1])
+        else : ## 사탕을 꺼내는 경우
+            update_segtree(1,0,1000000,-1,search_segtree(1,0,1000000,com[1]))

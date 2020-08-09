@@ -1,0 +1,55 @@
+https://www.acmicpc.net/problem/1194
+----------------------------------------------------------------------------------------------------------------
+## 비트마스킹 안쓰고 품 (나중에 비트마스킹 써서 풀어볼것)
+import sys
+from collections import deque
+from copy import deepcopy
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def BFS() :
+    visit = [[[] for _ in range (M)] for _ in range (N)] ## (가진 열쇠):1 꼴로 저장한다.
+    q = deque()
+    q.append((start_r,start_c,set())) ## (r,c,key)
+    visit[start_r][start_c].append(())
+
+    time = -1
+    while q :
+        time += 1
+        q_len = len(q)
+        while q_len :
+            q_len -= 1
+            r,c,keys = q.popleft()
+            if MAP[r][c] == '1' :
+                return time
+            for i in range (4) :
+                keys_tmp = deepcopy(keys)
+                nr = r + dr[i]
+                nc = c + dc[i]
+                if nr<0 or nr>=N or nc<0 or nc>=M :
+                    continue
+                if MAP[nr][nc] == '#' :
+                    continue
+                if ('A' <= MAP[nr][nc] <='F') and MAP[nr][nc].lower() not in keys_tmp :
+                    continue
+                if keys_tmp in visit[nr][nc] : ## 같은 상태로 방문한 적이 있는 경우
+                    continue
+                visit[nr][nc].append(keys_tmp)
+                if ('a'<=MAP[nr][nc]<='f') :
+                    keys_tmp.add(MAP[nr][nc])
+                q.append((nr,nc,keys_tmp))
+    return -1
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    MAP = []
+    for _ in range (N) :
+        MAP.append(list(input()))
+    for i in range (N) :
+        for j in range (M) :
+            if MAP[i][j] == '0' :
+                start_r,start_c = i,j
+    print(BFS())

@@ -1,0 +1,99 @@
+https://programmers.co.kr/learn/courses/30/lessons/42892
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.setrecursionlimit(10**6)
+
+class Tree : ## 트리 구성
+    def __init__(self,dataList):
+        self.data = max(dataList,key=lambda x:x[1]) ## dataList 배열에서 y좌표 값이 가장 큰 좌표 저장
+        leftList = list(filter(lambda x:x[0]<self.data[0],dataList)) ## dataList에서 x좌표 값이 뿌리 노드보다 작은 경우 leftList
+        rightList = list(filter(lambda x:x[0]>self.data[0],dataList))
+
+        if leftList != [] : ## 빈 배열이 아니라면 (left자식이 있다면)
+            self.left = Tree(leftList) ## 왼쪽 자식들에 대해서도 트리 구성을 해준다
+        else : ## 빈 배열인 경우
+            self.left = None
+
+        if rightList != [] : ## 빈 배열이 아니라면 (right 자식이 있다면)
+            self.right = Tree(rightList) ## 오른쪽 자식들에 대해서도 트리 구성
+        else :
+            self.right = None
+
+
+def fix(node,postList,preList) : ## tree형태의 node 매개변수,postList,preList
+    postList.append(node.data)
+    if node.left is not None :
+        fix(node.left,postList,preList)
+
+    if node.right is not None :
+        fix(node.right,postList,preList)
+
+    preList.append(node.data)
+
+
+def solution(nodeinfo):
+    answer = []
+    ##nodeinfo = list(enumerate(nodeinfo))
+    root = Tree(nodeinfo) ## 트리 구성
+    postList = []
+    preList = []
+
+    fix(root,postList,preList)
+
+    answer.append(list(map(lambda x:nodeinfo.index(x)+1,postList)))
+    answer.append(list(map(lambda x:nodeinfo.index(x)+1,preList)))
+    return answer
+
+if __name__ == "__main__" :
+    nodeinfo = [[5,3],[11,5],[13,3],[3,5],[6,1],[1,3],[8,6],[7,2],[2,2]]
+    print(solution(nodeinfo))
+
+###########(시간단축)
+import sys
+
+sys.setrecursionlimit(10**6)
+
+class Tree : ## 트리 구성
+    def __init__(self,dataList):
+        self.data = max(dataList,key=lambda x:x[1]) ## dataList 배열에서 y좌표 값이 가장 큰 좌표 저장
+        leftList = list(filter(lambda x:x[0]<self.data[0],dataList)) ## dataList에서 x좌표 값이 뿌리 노드보다 작은 경우 leftList
+        rightList = list(filter(lambda x:x[0]>self.data[0],dataList))
+
+        if leftList != [] : ## 빈 배열이 아니라면 (left자식이 있다면)
+            self.left = Tree(leftList) ## 왼쪽 자식들에 대해서도 트리 구성을 해준다
+        else : ## 빈 배열인 경우
+            self.left = None
+
+        if rightList != [] : ## 빈 배열이 아니라면 (right 자식이 있다면)
+            self.right = Tree(rightList) ## 오른쪽 자식들에 대해서도 트리 구성
+        else :
+            self.right = None
+
+
+def fix(node,postList,preList) : ## tree형태의 node 매개변수,postList,preList
+    postList.append(node.data)
+    if node.left is not None :
+        fix(node.left,postList,preList)
+
+    if node.right is not None :
+        fix(node.right,postList,preList)
+
+    preList.append(node.data)
+
+
+def solution(nodeinfo):
+    answer = []
+    ##nodeinfo = list(enumerate(nodeinfo))
+    dic = dict()
+    for i, x in enumerate(nodeinfo):
+        dic[tuple(x)] = i + 1
+    root = Tree(nodeinfo) ## 트리 구성
+    postList = []
+    preList = []
+
+    fix(root,postList,preList)
+
+    answer.append(list(map(lambda x:dic[tuple(x)],postList)))
+    answer.append(list(map(lambda x:dic[tuple(x)],preList)))
+    return answer

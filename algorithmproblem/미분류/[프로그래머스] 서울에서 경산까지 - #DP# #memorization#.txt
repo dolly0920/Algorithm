@@ -1,0 +1,27 @@
+https://programmers.co.kr/learn/courses/30/lessons/42899
+----------------------------------------------------------------------------------------------------------------
+def solution(K, travel):
+    answer = 0
+    dp = [{} for _ in range (len(travel))] ## dp[n][x] : 목적지 n에 x의 시간으로 도착할 때의 최대 모금액
+    dp[0][travel[0][0]] = travel[0][1]
+    dp[0][travel[0][2]] = travel[0][3]
+    for i in range (1,len(travel)) :
+        for time in dp[i-1] :
+            ## 도보로 i목적지에 갈 수 있는 경우
+            if time+travel[i][0] <= K :
+                if time + travel[i][0] not in dp[i]:
+                    dp[i][time + travel[i][0]] = 0
+                dp[i][time+travel[i][0]] = max(dp[i][time+travel[i][0]],dp[i-1][time]+travel[i][1])
+                answer = max(answer,dp[i][time+travel[i][0]])
+            ## 자전거로 i목적지에 갈 수 있는 경우
+            if time+travel[i][2] <= K :
+                if time + travel[i][2] not in dp[i]:
+                    dp[i][time + travel[i][2]] = 0
+                dp[i][time+travel[i][2]] = max(dp[i][time+travel[i][2]],dp[i-1][time]+travel[i][3])
+                answer = max(answer,dp[i][time+travel[i][2]])
+    return answer
+
+if __name__ == "__main__" :
+    K = 1650
+    travel = [[500, 200, 200, 100], [800, 370, 300, 120], [700, 250, 300, 90]]
+    print(solution(K,travel))

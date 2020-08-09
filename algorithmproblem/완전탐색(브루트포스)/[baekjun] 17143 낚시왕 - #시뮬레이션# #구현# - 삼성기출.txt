@@ -1,0 +1,64 @@
+https://www.acmicpc.net/problem/17143
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+dr = [-1,1,0,0]
+dc = [0,0,1,-1] ## 0:위, 1:아래, 2:오른쪽, 3:왼쪽
+
+def solve() :
+    ans = 0
+    col = 0 ## 낚시왕의 열좌표
+    cnt = M ## 물고기 갯수
+    while True :
+        if col == C :
+            break
+        ## 낚시왕
+        for i in range (R) : ## 세로 탐색
+            if space[i][col] : ## 비어있지 않은 배열이라면
+                ##print(space[i][col][0][0])
+                ans += space[i][col][0][0]
+                space[i][col] = [] ## 빈 배열로 (잡음)
+                cnt -= 1
+                break
+
+        if cnt == 0 : ## 물고기를 다 잡았으면
+            break
+
+        col += 1 ## 다음 열 탐색
+
+        ## 상어
+        tmp = []
+        for i in range (R) :
+            for j in range (C) :
+                if space[i][j] : ## 상어가 있다면
+                    size,speed,dir = space[i][j][0] ## 값 저장
+                    nr = i + dr[space[i][j][0][2]]*space[i][j][0][1]
+                    nc = j + dc[space[i][j][0][2]]*space[i][j][0][1]
+                    while nr < 0 or nc < 0 or nr >= R or nc >= C:  ## 좌표를 벗어나는 경우 좌표 수정
+                        if nr < 0:
+                            nr = -nr
+                            dir = 1  ## 아래로 방향 갱신
+                        if nc < 0:
+                            nc = -nc
+                            dir = 2  ## 오른쪽으로 방향 갱신
+                        if nr >= R:
+                            nr = 2 * R - nr - 2
+                            dir = 0  ## 위로 방향 갱신
+                        if nc >= C:
+                            nc = 2 * C - nc - 2
+                            dir = 3  ## 왼쪽으로 방향 갱신
+                    space[i][j] = [] ## 빈 배열로 만든다
+                    tmp.append((nr,nc,size,speed,dir)) ## 좌표,크기,속력,방향
+        for r,c,size,speed,dir in tmp :
+            if space[r][c] : ## 이미 있는 경우
+                cnt -= 1
+                if space[r][c][0][0] > size : ## 기존에 있는 상어가 더 큰 경우
+                    continue
+                else : ## 들어가는 상어가 더 큰 경우
+                    space[r][c].pop()
+                    space[r][c].append((size,speed,dir))
+            else : ## 없는 경우
+                space[r][c].append((size,speed,dir))
+    return ans

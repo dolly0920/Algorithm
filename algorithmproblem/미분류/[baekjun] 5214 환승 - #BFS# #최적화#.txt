@@ -1,0 +1,40 @@
+https://www.acmicpc.net/problem/5214
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+def solve() :
+    visit = [0]*(N+1) ## 방문한 역 체크
+    h_visit = [0]*(M) ## 방문한 하이퍼 튜브 체크
+    q = deque()
+    q.append((1,1)) ## (방문한 역의 갯수, 현재 역번호)
+    visit[1] = 1
+
+    while q :
+        s_cnt, cur_s = q.popleft()
+        if cur_s == N :
+            return s_cnt
+        for h_index in path_to_hypertube[cur_s] :
+            if h_visit[h_index] : ## 방문한 하이퍼 튜브라면 pass
+                continue
+            h_visit[h_index] = 1 ## 하이퍼튜브 방문 체크
+            for st in hypertube[h_index] :
+                if visit[st] :
+                    continue
+                visit[st] = 1 ## 방문체크
+                q.append((s_cnt+1,st)) ## (방문한 역의 갯수+1, 위치갱신)
+    return -1
+
+if __name__ == "__main__" :
+    N,K,M = map(int,input().split()) ## 역의 수(N), 하이퍼 튜브가 연결하는 역의 갯수(K), 하이퍼 튜브의 개수(M)
+    ## 하이퍼 튜브를 따로 설정한다.
+    path_to_hypertube=[[] for _ in range (N+1)] ## 연결되는 hypertube의 인덱스번호가 저장된다.
+    hypertube = [[] for _ in range (M)]
+    for i in range (M) :
+        tmp_list = list(map(int,input().split())) ## K길이의 배열
+        hypertube[i] = tmp_list
+        for j in range (K) :
+            path_to_hypertube[tmp_list[j]].append(i) ## 연결되는 하이퍼 튜브의 번호저장
+    print(solve())

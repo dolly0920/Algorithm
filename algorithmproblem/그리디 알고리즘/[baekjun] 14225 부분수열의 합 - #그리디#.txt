@@ -1,0 +1,18 @@
+https://www.acmicpc.net/problem/14225
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input())
+    S = list(map(int,input().split())) ## 수열
+    S.sort() ## 오름차순 정렬
+    num = 0 ## 체크할 숫자
+    ans = sum(S) + 1
+    for i in range (N) :
+        if num < S[i]-1 :
+            ans = num+1
+            break
+        num += S[i]
+    print(ans)

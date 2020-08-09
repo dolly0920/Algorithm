@@ -1,0 +1,48 @@
+https://www.acmicpc.net/problem/14501
+----------------------------------------------------------------------------------------------------------------
+## DFS풀이
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(day,money_sum) : ## 일 수, money_sum
+    global ans
+
+    if day == N :
+        ans = max(ans,money_sum)
+        return
+
+    if day+d[day] <= N :
+        DFS(day+d[day],money_sum+p[day]) ## day일의 상담을 하는 경우
+    DFS(day+1,money_sum) ## day일의 상담을 하지 않는 경우
+
+if __name__ == "__main__" :
+    N = int(input()) ## 일 수
+    d = []
+    p = []
+    for _ in range (N) :
+        T,P = map(int,input().split())
+        d.append(T)
+        p.append(P)
+    ans = 0
+    DFS(0,0)
+    print(ans)
+
+##DP풀이
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## 일 수
+    d = []
+    p = []
+    for _ in range (N) :
+        T,P = map(int,input().split())
+        d.append(T)
+        p.append(P)
+    dp = [0]*(N+1) ## dp[i] : i일까지의 최대 수입
+    for i in range (N) :
+        for j in range (i+d[i],N+1) :
+            dp[j] = max(dp[j],dp[i]+p[i])
+    print(dp[N])

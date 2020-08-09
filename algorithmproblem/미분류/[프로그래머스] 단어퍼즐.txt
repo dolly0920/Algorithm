@@ -1,0 +1,26 @@
+
+----------------------------------------------------------------------------------------------------------------
+## DFS(시간초과)
+def DFS(t_index,cnt,t,strs) :
+    global answer
+
+    if cnt >= answer :
+        return
+
+    if t_index == len(t) :
+        answer = min(answer,cnt)
+        return
+
+    for i in range (len(strs)) :
+        if strs[i] == t[t_index:t_index+len(strs[i])] :
+            DFS(t_index+len(strs[i]),cnt+1,t,strs)
+    return
+
+def solution(strs, t):
+    global answer
+    answer = 20000
+    strs.sort(key=lambda x:len(x),reverse=True)
+    DFS(0,0,t,strs)
+    if answer == 20000 :
+        answer = -1
+    return answer

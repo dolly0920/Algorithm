@@ -1,0 +1,52 @@
+홀수인 자연수 N(3≤N≤999)이 주어지면, 다음과 같이 1부터 N2까지의 자연수를 달팽이 모양으로 N*N의 표에 늘어놓을 수 있다.
+
+<그림>
+
+N이 주어졌을 때, 이러한 표를 출력하는 프로그램을 작성하시오. 또한 N2 이하의 자연수가 하나 주어졌을 때, 그 좌표도 함께 출력하시오. 예를 들어 N=5인 경우 6의 좌표는 (4,3)이다.
+----------------------------------------------------------------------------------------------------------------
+//My sol
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+dr = [-1,0,1,0]
+dc = [0,1,0,-1]
+
+def solve(r,c) :
+    global ans
+    a[r][c] = 1
+    dir = 0
+    cnt = 1
+    tmp = 0
+
+    while True :
+        for _ in range (cnt) :
+            nr = r+dr[dir]
+            nc = c+dc[dir]
+            if nr < 0 or nr >= N or nc < 0 or nc >= N : ## 범위를 벗어나면
+                return
+            a[nr][nc] = a[r][c] + 1
+            if a[nr][nc] == K :
+                ans = [nr+1,nc+1]
+            r, c = nr, nc
+
+        dir = (dir+1)%4
+        tmp += 1
+
+        if tmp == 2 :
+            tmp = 0
+            cnt += 1
+
+    return
+
+if __name__ == "__main__" :
+    N = int(input())
+    K = int(input())
+    a = [[0]*N for _ in range (N)]
+    solve(N//2,N//2)
+    for i in range (N) :
+        for j in range (N) :
+            print(a[i][j],end=' ')
+        print()
+    for x in ans :
+        print(x,end=' ')

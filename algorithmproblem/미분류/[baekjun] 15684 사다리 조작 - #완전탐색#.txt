@@ -1,0 +1,44 @@
+https://www.acmicpc.net/problem/15684
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def solve() :
+    for i in range (1,N) :
+        pos = i
+        for j in range (1,H+1) :
+            if ladder[j][pos] == 1 : ## 오른쪽 사다리
+                pos += 1
+            elif ladder[j][pos-1] == 1 : ## 왼쪽 사다리
+                pos -= 1
+        if pos != i :
+            return False
+    return True
+
+def DFS(cnt,x,y) :
+    global ans
+    if cnt > 3 or cnt > ans:
+        return
+
+    if solve() :
+        ans = min(ans,cnt)
+        return
+
+    for i in range (x,H+1) :
+        for j in range (y,N) :
+            if ladder[i][j] == 0 and ladder[i][j-1] == 0 and ladder[i][j+1] == 0 :
+                ladder[i][j] = 1
+                DFS(cnt+1,i,j)
+                ladder[i][j] = 0
+        y = 1
+
+if __name__ == "__main__" :
+    N,M,H = map(int,input().split())
+    ladder = [[0]*11 for _ in range (31)]
+    for _ in range (M) :
+        a,b = map(int,input().split())
+        ladder[a][b] = 1
+    ans = 4
+    DFS(0,1,1)
+    print(ans if ans != 4 else -1)

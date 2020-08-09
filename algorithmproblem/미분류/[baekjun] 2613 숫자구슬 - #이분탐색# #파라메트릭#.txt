@@ -1,0 +1,68 @@
+N개의 숫자 구슬이 <그림 1>과 같이 막대에 꿰어져 일자로 놓여 있다. 이들 구슬은 막대에서 빼낼수 없고 따라서 바꿀 수 없다.
+
+
+
+이 숫자 구슬을 M개의 그룹으로 나누었을 때 각각의 그룹의 합 중 최댓값이 최소가 되도록 하려 하다. 예를 들어 세 그룹으로 나눈다고 할 때 <그림 2>와 같이 그룹을 나누면 그룹의 합은 각각 11, 15, 18이 되어 그 중 최댓값은 18이 되고, <그림 3>과 같이 나누면 각 그룹의 합은 각각 17, 12, 15가 되어 그 중 최댓값은 17이 된다. 숫자 구슬의 배열이 위와 같을 때는 그룹의 합 중 최댓값이 17보다 작게 만들 수는 없다.
+
+
+
+각 그룹의 합 중 최댓값이 최소가 되도록 M개의 그룹으로 나누었을 때, 그 최댓값과 각 그룹을 구성하는 구슬의 개수를 찾아 출력하는 프로그램을 작성하시오.
+----------------------------------------------------------------------------------------------------------------
+//My sol
+import sys
+
+#sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split()) ## 구슬의 개수, 그룹의 수
+    a = list(map(int,input().split()))
+    ## 각 그룹의 합 중 최댓값이 최소!로 하는 최댓값 출력
+    ## 파라메트릭 서치
+    start = max(a)
+    end = 100*N
+    ans = 1000000000
+
+    while start<=end :
+        mid = (start+end)//2
+
+        tmp = 0
+        cnt = 1
+        for i in range (N) :
+            tmp += a[i]
+            if tmp > mid :
+                cnt+=1
+                tmp = a[i]
+        ## 그룹이 적어도 cnt개 이상은 있어야 한다. (의미)
+
+        if cnt <= M :
+            end = mid-1
+            ans = min(ans,mid)
+        else :
+            start = mid+1
+
+    print(ans)
+
+    cnt = 0
+    x = 0
+    cnt_list = []
+    for i in range (N) :
+        x += a[i]
+        if x > ans :
+            cnt_list.append(cnt)
+            x = a[i]
+            cnt = 0
+        cnt+=1
+    else :
+        cnt_list.append(cnt)
+
+    difference = M-len(cnt_list)
+
+    for i in range (len(cnt_list)) :
+        if cnt_list[i] == 1 :
+            print(cnt_list[i],end=' ')
+        else :
+            while (cnt_list[i]>=2 and difference > 0) :
+                print("1",end=' ');
+                cnt_list[i] -= 1
+                difference -= 1
+            print(cnt_list[i],end=' ')

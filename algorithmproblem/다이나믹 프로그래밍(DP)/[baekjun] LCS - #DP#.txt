@@ -1,0 +1,42 @@
+LCS(Longest Common Subsequence, 최장 공통 부분 수열)문제는 두 수열이 주어졌을 때, 모두의 부분 수열이 되는 수열 중 가장 긴 것을 찾는 문제이다.
+
+예를 들어, ACAYKP와 CAPCAK의 LCS는 ACAK가 된다.
+(결과값 LCS의 길이)
+----------------------------------------------------------------------------------------------------------------
+//My sol
+#include <stdio.h>
+
+char a[1000 + 10];
+char b[1000 + 10];
+int dp[1000 + 10][1000 + 10];
+
+int max(int a, int b)
+{
+	return (a > b) ? a : b;
+}
+
+int solve(int pos1, int pos2)
+{
+	if (pos1 == strlen(a)|| pos2 == strlen(b))	return 0;	// 문자열 인덱스 초과시 0 리턴
+
+	if (a[pos1] == b[pos2])	return 1 + solve(pos1 + 1, pos2 + 1);	// 각각의 인덱스의 1을 더한다 (두 문자열의 뒷 요소 탐색)
+
+	if (dp[pos1][pos2] != -1)	return dp[pos1][pos2];
+
+	return dp[pos1][pos2] = max(solve(pos1 + 1, pos2), solve(pos1, pos2 + 1));	// 여기서 두 개의 재귀가 실행될 때 dp가 없다면 똑같은 연산을 한번 더 하게 됨.
+}
+
+
+int main(void)
+{
+	int i;
+
+	scanf("%s", a);
+	scanf("%s", b);
+
+	memset(dp, -1, sizeof(dp));
+
+	printf("%d", solve(0, 0));
+
+	return 0;
+}

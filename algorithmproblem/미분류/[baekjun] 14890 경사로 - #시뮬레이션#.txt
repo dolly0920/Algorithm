@@ -1,0 +1,59 @@
+https://www.acmicpc.net/problem/14890
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def is_ok_road(arr) :
+    visit = [[0]*N for _ in range (N)]
+    for i in range (N-1) :
+        if arr[i] == arr[i+1] : ## 높이가 같으면
+            continue
+
+        if abs(arr[i+1]-arr[i]) > 1 : ## 높이 차이가 1보다 크면
+            return False
+        else : ## 높이 차이가 1인 경우
+            if arr[i+1]-arr[i] > 0 : ## <- 경사로 방향
+                if i-L+1 < 0 : ## 범위를 벗어나는 경우
+                    return False
+                else : ## 범위 내
+                    tmp = arr[i]
+                    for k in range (i,i-L,-1) :
+                        if arr[k] != tmp or visit[k] == 1: ## 높이가 일정하지 않거나 이미 그 자리에 경사로가 설치되어 있는 경우
+                            return False
+                    for k in range (i,i-L,-1) :
+                        visit[k] = 1 ## 방문 체크
+            else : ## 경사로 방향 ->
+                if i+L >= N : ## 범위를 벗어나는 경우
+                    return False
+                else :
+                    tmp = arr[i+1]
+                    for k in range (i+1,i+L+1) :
+                        if arr[k] != tmp or visit[k] == 1 :
+                            return False
+                    for k in range (i+1,i+L+1) :
+                        visit[k] = 1 ## 방문 체크
+    return True
+
+
+if __name__ == "__main__" :
+    N,L = map(int,input().split())
+    visit = [[0]*N for _ in range (N)]
+    road = []
+    ans = 0
+    for _ in range (N) :
+        road.append(list(map(int,input().split())))
+    ## 각각의 행,열을 추출하여 판단
+    for i in range (N) : ## 행 판단
+        if is_ok_road(road[i]) :
+            ##print("%d행"%(i))
+            ans += 1
+
+    for i in range (N) :
+        tmp = []
+        for j in range (N) :
+            tmp.append(road[j][i])
+        if is_ok_road(tmp) :
+            ##print("%d열"%(i))
+            ans += 1
+    print(ans)

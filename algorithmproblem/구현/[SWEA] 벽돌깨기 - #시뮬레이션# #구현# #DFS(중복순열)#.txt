@@ -1,0 +1,91 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AWXRQm6qfL0DFAUo
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+from copy import deepcopy
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def solve(MAP,per_col) :
+    arr = deepcopy(MAP)
+    q = deque()
+    for select_col in per_col :
+        for i in range (H) : ## 열 세로 탐색 (최초로 0이 아닌 지점 찾는 부분)
+            if arr[i][select_col] != 0 :
+                q.append((i,select_col,arr[i][select_col]))
+                arr[i][select_col] = 0 ## 제거
+                break
+        while q : ## 연쇄 제거 동작
+            r,c,length = q.popleft()
+            sr = r
+            sc = c
+            if length == 1 : ## 1인 경우 다음 탐색을 할 필요가 없다
+                continue
+            for i in range (4) : ## 4방향 탐색
+                r = sr
+                c = sc
+                for _ in range (length-1) : ## 각 방향 length-1 만큼 제거
+                    if r+dr[i]<0 or r+dr[i]>=H or c+dc[i]<0 or c+dc[i]>=W : ## 범위를 벗어나는 경우
+                        break
+                    r += dr[i]
+                    c += dc[i]
+                    if arr[r][c] > 1 : ## 1보다 큰 경우
+                        q.append((r,c,arr[r][c]))
+                    arr[r][c] = 0 ## 제거
+        ## 업데이트 (빈칸이 있는 경우 내려가야한다)
+        for i in range (W) : ## 열
+            flag = True
+            for j in range (H) : ## 행
+                if flag and arr[j][i] != 0 : ## 최초로 빈칸이 아닌 지점 찾기
+                    flag = False
+                    height = j ## 높이 저장
+                if flag==False and arr[j][i] == 0 : ## 빈칸인 부분을 만났을 때
+                    for k in range (j,height-1,-1) :
+                        arr[k][i] = arr[k-1][i] ## 한 칸씩 아래로 당긴다
+                    arr[height][i] = 0
+                    height += 1
+
+    ans_cnt = 0
+    for i in range (H) :
+        for j in range (W) :
+            if arr[i][j] != 0 : ## 블록인 부분
+                ans_cnt += 1
+
+    '''
+    for i in range (H) :
+        for j in range (W) :
+            print(arr[i][j],end=' ')
+        print()
+    print()
+    '''
+
+    return ans_cnt
+
+def per_DFS(depth) :
+    global per_col,ans
+    if ans == 0 : ## 답이 0이면
+        return ## 더이상 연산ㅇ ㅣ필요없음
+    if depth == N :
+        ans = min(ans,solve(MAP,per_col))
+        return
+
+    for i in range (W) :
+        per_col.append(i)
+        per_DFS(depth+1)
+        per_col.pop()
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        N,W,H = map(int,input().split())
+        MAP = []
+        for _ in range (H) :
+            MAP.append(list(map(int,input().split())))
+        ans = 100000
+        per_col = []
+        per_DFS(0)
+        print("#%d %d"%(test_case,ans))

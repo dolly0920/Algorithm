@@ -1,0 +1,47 @@
+방향그래프가 주어지면 주어진 시작점에서 다른 모든 정점으로의 최단 경로를 구하는 프로그램을 작성하시오. 단, 모든 간선의 가중치는 10 이하의 자연수이다.
+----------------------------------------------------------------------------------------------------------------
+//My sol
+import sys
+import heapq as hq
+
+input = sys.stdin.readline
+
+##sys.stdin = open("input.txt","rt")
+
+INF = sys.maxsize
+
+def dijkstra(V,K,G) :
+    dis = [INF]*(V+1)
+    priority_queue = []
+    hq.heappush(priority_queue,[0,K]) ## (거리,정점) : 정점까지 가는 거리
+
+    dis[K] = 0 ## 자기 자신까지의 거리는 0
+
+    while priority_queue :
+        cur_dis,point = hq.heappop(priority_queue) ## 최소 거리 pop
+
+        for x,y in G[point].items() : ## x,y는 정점과 거리 (정점까지의 거리)
+            next_dis = cur_dis + y
+            if next_dis < dis[x] : ## 시작위치에서 x까지의 거리보다 가깝다면
+                dis[x] = next_dis ## 거리 갱신
+                hq.heappush(priority_queue,[next_dis,x])
+
+    return dis
+
+
+
+if __name__ == "__main__" :
+    V,E = map(int,input().split()) ## 정점,간선
+    K = int(input()) ## 시작점
+    graph = [{} for _ in range (V+1)]
+    for _ in range (E) :
+        u,v,w = map(int,input().split())
+        if v in graph[u] :
+            graph[u][v] = min(graph[u][v],w)
+        else :
+            graph[u][v] = w
+        ## graph[u] : {v:w}형태의 값들이 저장됨
+        ## u에서 v로의 간선 가중치가 w이다.
+    ans = dijkstra(V,K,graph)
+    for x in ans[1:] :
+        print(x if x != INF else "INF")

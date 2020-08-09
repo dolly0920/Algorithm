@@ -1,0 +1,78 @@
+https://www.acmicpc.net/problem/17142
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+
+def solve(arr) :
+    q = deque()
+    visit = [[0]*N for _ in range (N)]
+    blank_cnt = cnt ## blank_cnt에 cnt값 복사
+
+    for x,y in arr : ## 활성화된 바이러스의 좌표를 넣는다.
+        visit[x][y] = 1
+        q.append((x,y))
+
+    time = 0 ## 시간
+    while q :
+        if blank_cnt == 0 :
+            break
+        q_size = len(q)
+        while q_size : ## 현재 큐에 들어있는 만큼만 연산 (1초)
+            q_size -= 1
+            r,c = q.popleft()
+            for i in range (4) :
+                nr = r + dr[i]
+                nc = c + dc[i]
+                if nr < 0 or nr >= N or nc < 0 or nc >= N or area[nr][nc] == 1 or visit[nr][nc] == 1: ## 범위를 벗어나는 경우, 벽인 경우, 방문한 곳인 경우
+                    continue
+                if area[nr][nc] == 0 : ## 빈칸인 경우
+                    blank_cnt -= 1
+                visit[nr][nc] = 1 ## 방문 체크
+                q.append((nr,nc))
+        time += 1
+
+    if blank_cnt == 0 : ## 빈 칸에 바이러스가 모두 퍼진 경우
+        return time
+    else : ## 남은 빈칸이 있는 경우
+        return sys.maxsize
+
+
+def DFS(depth,x,y) : ## 깊이,r행,c열부터 탐색 시작
+    global active_virus, ans
+    if depth == M :
+        ans = min(ans,solve(active_virus)) ## BFS연산
+        return
+
+    for i in range (x,N) :
+        for j in range (y,N) :
+            if area[i][j] == 2 : ## 바이러스인 경우
+                active_virus.append((i,j))
+                DFS(depth+1,i,j+1) ## (i,j+1)부터 탐색
+                active_virus.pop()
+        y = 0 ## 다음 행 연산에서는 0번 열부터 탐색
+
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    area = []
+    active_virus = []
+    for _ in range (N) :
+        area.append(list(map(int,input().split())))
+
+    cnt = 0
+    ans = sys.maxsize
+
+    for i in range (N) :
+        for j in range (N) :
+            if area[i][j] == 0 : ## 빈 칸
+                cnt += 1
+
+    DFS(0,0,0)
+
+    print(-1 if ans==sys.maxsize else ans)

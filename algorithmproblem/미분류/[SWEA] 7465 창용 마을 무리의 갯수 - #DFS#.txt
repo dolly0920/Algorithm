@@ -1,0 +1,31 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AWngfZVa9XwDFAQU
+----------------------------------------------------------------------------------------------------------------
+import sys
+sys.setrecursionlimit(10000)
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(x) :
+    for i in range (1,N+1) :
+        if path[x][i] == 1 and visit[i] == 0 : ## 연결되어 있고 방문하지 않은 사람인 경우
+            visit[i] = 1 ## 방문 표시
+            DFS(i)
+    return
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        N,M = map(int,input().split()) ## 사람 수, 관계 수
+        visit = [0]*(N+1) ## N번째 사람이 카운트 되었는지 확인
+        path = [[0]*(N+1) for _ in range (N+1)] ## path[i][j] = 1 : i,j 연결되어 있음
+        cnt = 0
+        for _ in range (M) :
+            a,b = map(int,input().split())
+            path[a][b] = 1
+            path[b][a] = 1
+        for i in range (1,N+1) :
+            if visit[i] == 0 : ## 카운트 되지 않은 사람
+                cnt += 1
+                visit[i] = 1
+                DFS(i)
+        print("#%d %d"%(test_case,cnt))

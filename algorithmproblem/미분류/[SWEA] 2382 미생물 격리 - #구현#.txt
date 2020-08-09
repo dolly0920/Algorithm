@@ -1,0 +1,109 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV597vbqAH0DFAVl
+----------------------------------------------------------------------------------------------------------------
+def move(index) :
+    ## 좌표 갱신 (이동)
+    if info[index][3] == 1 : ## 상
+        info[index][0] -= 1
+    elif info[index][3] == 2 : ## 하
+        info[index][0] += 1
+    elif info[index][3] == 3 : ## 좌
+        info[index][1] -= 1
+    elif info[index][3] == 4 : ## 우
+        info[index][1] += 1
+    ## 가장 자리 처리
+    if info[index][0] == 0 or info[index][0] == N-1 or info[index][1] == 0 or info[index][1] == N-1 :
+        info[index][2] = info[index][2]//2 ## 미생물 수 반으로
+        if info[index][3] == 1 :
+            info[index][3] = 2
+        elif info[index][3] == 2 :
+            info[index][3] = 1
+        elif info[index][3] == 3 :
+            info[index][3] = 4
+        elif info[index][3] == 4 :
+            info[index][3] = 3
+    return
+
+def check() :
+    for i in range (K) : ## 전체 탐색 (이중for문)
+        max_value = info[i][2]
+        max_dir = info[i][3]
+        tmp = info[i][2]
+        for j in range (i+1,K) :
+            if info[i][0] == info[j][0] and info[i][1] == info[j][1] : ## 좌표가 같은 경우
+                tmp += info[j][2] ## 미생물의 수를 합친다
+                if info[j][2] > max_value : ## 미생물의 수가 더 많다면
+                    max_value = info[j][2]
+                    max_dir = info[j][3]
+                    info[j][2] = 0
+                    info[j][3] = 0 ## 값 저장만 하고 값 삭제
+                else :
+                    info[j][2] = 0 ## 다른 미생물에 합쳐지므로
+                    info[j][3] = 0 ## 방향성을 잃는다
+        info[i][2] = tmp ## 미생물을 합친다
+        info[i][3] = max_dir ## 최대 방향
+
+    return
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        N,M,K = map(int,input().split())
+        info = []
+        for _ in range (K) :
+            info.append(list(map(int,input().split()))) ## info[i] : r,c,n,d (좌표,미생물갯수,방향)
+
+        while M :
+            M-=1
+            ##print("##")
+            ##print(info)
+            for i in range (K) :
+                move(i) ## i 미생물 이동
+            ##print(info)
+            check() ## 동일 좌표인 미생물 처리
+            ##print(info)
+
+        ans = 0
+        for i in range (K) :
+            ans += info[i][2]
+        print("#%d %d"%(test_case,ans))
+
+
+#############
+T = int(input());
+ 
+for test_case in range(1, T + 1):
+    N, M, K = map(int, input().split()) # 셀의 개수, 격리 시간, 군집의 개수
+    dx = [0, 0, 0, -1, 1]
+    dy = [0, -1, 1, 0, 0]
+    reverse_dir = {1: 2, 2: 1, 3: 4, 4: 3}
+    micro = [list(map(int, input().split())) for _ in range(K)]
+ 
+    for time in range(M):
+        micro_maps = {}
+        for i in range(len(micro)):
+            y = micro[i][0] + dy[micro[i][3]]
+            x = micro[i][1] + dx[micro[i][3]]
+            if y == 0 or y == N-1 or x == 0 or x == N-1:
+                micro[i][2] //= 2
+                micro[i][3] = reverse_dir[micro[i][3]]
+            if micro[i][2]:
+                if micro_maps.get((y, x)):
+                    micro_maps[(y, x)].append([y, x, micro[i][2], micro[i][3]])
+                else:
+                    micro_maps[(y, x)] = [[y, x, micro[i][2], micro[i][3]]]
+        micro.clear()
+        for micro_map in micro_maps.values():
+            max_val = [0, 0] # 값과 방향
+            num_of_micro = 0
+            for m in micro_map:
+                num_of_micro += m[2]
+                if max_val[0] < m[2]:
+                    max_val[0] = m[2]
+                    max_val[1] = m[3]
+            micro.append([m[0], m[1], num_of_micro, max_val[1]])
+ 
+    remain_micro = 0
+    for m in micro:
+        remain_micro += m[2]
+    print("#{} {}".format(test_case, remain_micro))

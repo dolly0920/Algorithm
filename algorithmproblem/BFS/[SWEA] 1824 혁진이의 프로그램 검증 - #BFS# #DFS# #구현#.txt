@@ -1,0 +1,142 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV4yLUiKDUoDFAUx&categoryId=AV4yLUiKDUoDFAUx&categoryType=CODE
+----------------------------------------------------------------------------------------------------------------
+//My sol
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def BFS() :
+    visit = [[[[0]*16 for _ in range (4)] for _ in range (C)] for _ in range (R)]
+    ##visit = [[-1]*C for _ in range (R)]
+    q = deque()
+    visit[0][0][0][0] = 1  ## r,c지점에 방문했을 때의 방향과 메모리
+    q.append((0,0,0,0)) ## (r,c,memory,direction)
+    dir = 0 ## 처음 방향 오른쪽
+
+    while q:
+        r,c,dir,m = q.popleft()
+        ##print(r,c,m)
+        ##visit[행][열][방향][메모리] = 1 : 행,열에 방향으로 메모리값이 들어온 적이 있다
+        ##visit[r][c][dir][m] = 1 ## r,c지점에 방문했을 때의 방향과 메모리
+        if msg[r][c] == '@' :
+            return "YES"
+        if msg[r][c] == '?' :
+            for i in range (4) :
+                nr = (r + dr[i])%R
+                nc = (c + dc[i])%C
+                if visit[nr][nc][i][m] == 1 : ## 이전에 도착했을때 같은 상태 있었다면
+                    continue
+                visit[nr][nc][i][m] = 1 ## 방문체크
+                q.append((nr,nc,i,m))
+        else :
+            n_memory = m
+            if msg[r][c] == '<' :  dir = 1
+            elif msg[r][c] == '>' : dir = 0
+            elif msg[r][c] == '^' : dir = 3
+            elif msg[r][c] == 'v' : dir = 2
+            elif msg[r][c] == '_' :
+                if m == 0 : dir = 0
+                else : dir = 1
+            elif msg[r][c] == '|' :
+                if m==0 : dir = 2
+                else : dir = 3
+            elif msg[r][c].isdecimal() : ## 숫자인 경우
+                n_memory = int(msg[r][c])
+            elif msg[r][c] == '+' :
+                if m==15 : n_memory = 0
+                else : n_memory += 1
+            elif msg[r][c] == '-' :
+                if m==0 : n_memory = 15
+                else : n_memory -= 1
+
+            nr = (r + dr[dir])%R
+            nc = (c + dc[dir])%C
+            if visit[nr][nc][dir][n_memory] == 1 :
+                continue ## 이전에 같은 값이 들어간 일이 있는 경우
+            visit[nr][nc][dir][n_memory] = 1 ## 방문체크
+            q.append((nr,nc,dir,n_memory))
+    return "NO"
+
+if __name__ == "__main__" :
+    T = int(input())
+    for tc in range (1,T+1) :
+        R,C = map(int,input().split())
+        msg = []
+        for _ in range (R) :
+            msg.append(list(input()))
+        ##print(msg[R-1])
+        print("#%d %s"%(tc,BFS()))
+
+######################(20.05.15) 풀이 #######
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dic = {'^':3,'v':2,'>':0,'<':1}
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def solve() :
+    q = deque()
+    q.append((0,0,0,0)) ## (r,c,dir,memory)
+    visit[0][0][0][0] = 1 ## 방문 체크
+
+    while q :
+        r,c,dir,memory = q.popleft()
+        if MAP[r][c] == '?' : ## 네방향 탐색
+            for i in range (4) :
+                nr = (r + dr[i])%R
+                nc = (c + dc[i])%C
+                ndir = i
+                if visit[nr][nc][ndir][memory] == 0 :
+                    visit[nr][nc][ndir][memory] = 1
+                    q.append((nr,nc,ndir,memory))
+        elif MAP[r][c] == '.' : ## 아무것도 하지 않는 경우 (방향 유지)
+            nr = (r + dr[dir])%R
+            nc = (c + dc[dir])%C
+            if visit[nr][nc][dir][memory] == 0 :
+                visit[nr][nc][dir][memory] = 1
+                q.append((nr,nc,dir,memory))
+        else :
+            if MAP[r][c] == '_' :
+                if memory == 0 : dir = 0
+                else : dir = 1
+            elif MAP[r][c] == '|' :
+                if memory == 0 : dir = 2
+                else : dir = 3
+            elif MAP[r][c] == '@' :
+                return True
+            elif '0'<=MAP[r][c]<='9' :
+                memory = int(MAP[r][c])
+            elif MAP[r][c] == '+' :
+                memory = (memory+1) % 16
+            elif MAP[r][c] == '-' :
+                memory = (memory-1) % 16
+            else : ## MAP[r][c] : '^','v',.... 의 모양인 경우
+                dir = dic[MAP[r][c]]
+            nr = (r + dr[dir]) % R
+            nc = (c + dc[dir]) % C
+            if visit[nr][nc][dir][memory] == 0 :
+                visit[nr][nc][dir][memory] = 1
+                q.append((nr,nc,dir,memory))
+    return False
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        R,C = map(int,input().split())
+        MAP = []
+        for _ in range (R) :
+            MAP.append(list(map(str,input())))
+        visit = [[[[0]*16 for _ in range (4)] for _ in range (C)] for _ in range (R)]
+        if solve() :
+            ans = "YES"
+        else :
+            ans = "NO"
+        print("#%d %s"%(test_case,ans))

@@ -1,0 +1,66 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV5VwAr6APYDFAWu
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+dir = [(1,1),(1,-1),(-1,-1),(-1,1)]
+
+def solve(r1,c1,r2,c2,r3,c3,r4,c4) :
+    tmp = []
+    cnt = 0
+    dir_index = 0
+    r = r1
+    c = c1
+    ##print(r1,c1,r2,c2,r3,c3,r4,c4)
+    while True :
+        ##print(r,c)
+        if cafe[r][c] in tmp :
+            return 0 ## 같은 디저트가 있는 경우 불가능
+        cnt += 1 ## 갯수 추가
+        tmp.append(cafe[r][c])
+        r += dir[dir_index][0]
+        c += dir[dir_index][1]
+        if r==r2 and c==c2 :
+            dir_index += 1
+        elif r==r3 and c==c3 :
+            dir_index += 1
+        elif r==r4 and c==c4 :
+            dir_index += 1
+        elif r==r1 and c==c1 :
+            return cnt
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        N = int(input()) ## 한 변의 길이
+        cafe = []
+        for _ in range (N) :
+            cafe.append(list(map(int,input().split())))
+
+        ans = 0
+        for r1 in range (N) :
+            for c1 in range (N) :
+                if c1 == 0 or c1 == N-1 or r1 >= N-2: ## 가장자리 x
+                    continue
+                for d1 in range (1,N) :
+                    if r1+d1 >= N or c1+d1 >= N : ## 범위를 벗어나는 경우
+                        break
+                    r2 = r1+d1
+                    c2 = c1+d1
+                    for d2 in range (1,N) :
+                        if r2+d2 >= N or c2-d2 < 0 :
+                            break
+                        r3 = r2+d2
+                        c3 = c2-d2
+                        if r3-d1 < 0 or c3-d1 < 0 :
+                            break
+                        r4 = r3-d1
+                        c4 = c3-d1
+                        ans = max(ans,solve(r1,c1,r2,c2,r3,c3,r4,c4))
+
+        if ans == 0 :
+            ans = -1
+
+        print("#%d %d"%(test_case,ans))

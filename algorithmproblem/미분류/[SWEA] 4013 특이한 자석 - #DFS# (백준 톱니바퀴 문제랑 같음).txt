@@ -1,0 +1,38 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AWIeV9sKkcoDFAVH
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(num,dir) :
+    tire_dir[num] = dir ## 방향 체크
+    used[num] = 1 ## 사용 체크
+
+    if num-1 >= 0 and used[num-1] == 0: ## 왼쪽 톱니바퀴가 체크하지 않은 존재하는 경우
+        if MAP[num-1][2] != MAP[num][6] : ## 극성이 다른 경우
+            DFS(num-1,-dir) ## 반대 방향 회전
+
+    if num+1 < 4 and used[num+1] == 0: ## 오른쪽 톱니바퀴가 체크하지 않은 존재하는 경우
+        if MAP[num+1][6] != MAP[num][2] : ## 극성이 다른 경우
+            DFS(num+1,-dir)
+
+    return
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        K = int(input()) ## 회전 횟수
+        MAP = deque()
+        for _ in range (4) :
+            MAP.append(deque(list(map(int,input().split())))) ## 0 : N극, 1 : S극
+        for _ in range (K) :
+            tire_dir = [0]*4 ## 톱니바퀴 회전방향 결정
+            used = [0]*4 ## 톱니바퀴 체크
+            num,dir = map(int,input().split()) ## 톱니바퀴 번호, 회전방향 (1 : 시계, -1 : 반시계)
+            DFS(num-1,dir)
+            for i in range(4):  ## 회전
+                MAP[i].rotate(tire_dir[i])
+        score = MAP[0][0] + MAP[1][0]*2 + MAP[2][0]*4 + MAP[3][0]*8
+        print("#%d %d"%(test_case,score))

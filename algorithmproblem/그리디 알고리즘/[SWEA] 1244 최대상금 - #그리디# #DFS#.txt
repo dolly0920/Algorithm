@@ -1,0 +1,64 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV15Khn6AN0CFAYD&categoryId=AV15Khn6AN0CFAYD&categoryType=CODE
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.setrecursionlimit(10000000)
+
+##sys.stdin = open("input.txt","rt")
+
+def dfs(index,depth) :
+    global ans
+    if depth == k :
+        tmp = 0
+        ##print(depth)
+        for i in range (len(a)) :
+            tmp += a[i]*(10**(len(a)-1-i))
+        ##if (tmp>ans) : print(a)
+        ans = max(ans,tmp)
+        return
+    flag = True
+    for i in range (index,len(a)) :
+        for j in range (i+1,len(a)) :
+            if a[i] <= a[j] : ## 뒤의 요소가 앞의 요소보다 크거나 같을 때
+                flag = False
+                tmp = a[i]
+                a[i] = a[j]
+                a[j] = tmp ## swap
+                dfs(i,depth+1)
+                tmp = a[i]
+                a[i] = a[j]
+                a[j] = tmp ## 원래의 상태로 swap
+    if flag and depth != k:
+        if (k-depth)%2 == 1 :
+            tmp = 0
+            for i in range (len(a)) :
+                if i == len(a)-2 :
+                    tmp += a[i]
+                elif i == len(a)-1 :
+                    tmp += a[i]*10
+                else :
+                    tmp += a[i]*(10**(len(a)-1-i))
+            ##print(tmp)
+            ans = max(ans,tmp)
+            return
+        else :
+            tmp = 0
+            ##print(depth)
+            for i in range(len(a)):
+                tmp += a[i] * (10 ** (len(a) - 1 - i))
+            ##if (tmp>ans) : print(a)
+            ans = max(ans, tmp)
+            return
+    return
+
+
+if __name__ == "__main__" :
+    global com_list
+    T = int(input())
+    for test_case in range (1,T+1) :
+        a,k = map(str,input().split())
+        a = list(map(int,a))
+        k = int(k)
+        ans = 0
+        dfs(0,0)
+        print("#%d %d"%(test_case,ans))

@@ -1,0 +1,76 @@
+https://www.acmicpc.net/problem/17825
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(index,score) :
+    global ans
+
+    if index == 10 :
+        ans = max(ans,score)
+        return
+
+    for i in range (4) : ## 말 선택
+        s_stage = horse[i][0]
+        s_index = horse[i][1]
+
+        if s_index == len(game_map[s_stage])-1 : ## 현재 위치가 도착점일 때 (도착점을 넘어설 때)
+            continue
+
+        n_stage = s_stage
+        n_index = s_index + dice[index]
+
+        if s_stage == 0 :
+            if n_index == 5 or n_index == 10 or n_index == 15 :
+                n_stage = n_index//5
+                n_index = 0
+            elif n_index == 20 :
+                n_stage = 4
+                n_index = 3
+        elif s_stage < 4 : ## stage 1-3인 경우
+            if n_index >= len(game_map[s_stage]) - 1 : ## 끝 좌표인 경우
+                n_stage = 4
+                n_index = n_index - len(game_map[s_stage]) + 1
+
+        if n_index >= len(game_map[n_stage]) : ## stage 0 or 4에서 도착지를 넘는 경우
+            n_index = len(game_map[n_stage]) - 1 ## 도착 점
+
+        if game_map[n_stage][n_index] != 0 : ## 점수가 있는 칸
+            if [n_stage,n_index] in horse : ## 겹치는지 확인
+                continue
+
+        horse[i][0] = n_stage
+        horse[i][1] = n_index
+        DFS(index+1,score+game_map[n_stage][n_index])
+        horse[i][0] = s_stage
+        horse[i][1] = s_index
+
+    return
+
+
+if __name__ == "__main__" :
+    ## main
+    main = list(range(0,42,2))
+    main.append(0)
+    ## sub1
+    sub1 = [10,13,16,19,25]
+    ## sub2
+    sub2 = [20,22,24,25]
+    ## sub3
+    sub3 = [30,28,27,26,25]
+    ## sub4
+    sub4 = [25,30,35,40,0]
+    ## game_map
+    game_map = []
+    game_map.append(main)
+    game_map.append(sub1)
+    game_map.append(sub2)
+    game_map.append(sub3)
+    game_map.append(sub4) ## stage 0~4
+    ##
+    horse = [[0,0],[0,0],[0,0],[0,0]] ## 말 4개의 정보 : (stage,index)
+    dice = list(map(int,input().split()))
+    ans = 0
+    DFS(0,0)
+    print(ans)

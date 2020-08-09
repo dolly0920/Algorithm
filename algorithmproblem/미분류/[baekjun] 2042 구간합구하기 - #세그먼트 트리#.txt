@@ -1,0 +1,47 @@
+https://www.acmicpc.net/problem/2042
+----------------------------------------------------------------------------------------------------------------
+import sys
+sys.setrecursionlimit(1000000)
+sys.stdin = open("input.txt","rt")
+## 제출할 때는 input = sys.stdin.readline ## .rstrip() 공백제거
+def make_tree(start,end,node) : ## 세그먼트 트리 만들기
+    if start == end :
+        tree[node] = num_list[start]
+        return tree[node]
+    mid = (start+end)//2
+    tree[node] = make_tree(start,mid,2*node) + make_tree(mid+1,end,2*node+1)
+    return tree[node]
+def transform_tree(start,end,node,index,dif) :
+    if index < start or index > end : ## 범위를 벗어난 경우
+        return
+    tree[node] += dif
+    if start == end : ## 범위 끝
+        return
+    mid = (start + end) // 2
+    transform_tree(start,mid,2*node,index,dif)
+    transform_tree(mid+1,end,2*node+1,index,dif)
+    return
+def sum_tree(start,end,node,left,right) :
+    if start > right or end < left :
+        return 0
+    if start >= left and end <= right : ## 범위 내
+        return tree[node]
+    mid = (start+end)//2
+    return sum_tree(start,mid,node*2,left,right)+sum_tree(mid+1,end,node*2+1,left,right)
+if __name__ == "__main__" :
+    N,M,K = map(int,input().split())
+    tree = [0]*(N*4)
+    num_list = []
+    for _ in range (N) :
+        num_list.append(int(input()))
+    make_tree(0,N-1,1)
+    ##print(tree)
+    for _ in range (M+K) :
+        a,b,c = map(int,input().split()) ## a가 1인 경우 : b->c  / 2인 경우 : b-c 합
+        if a==1 :
+            dif = c-num_list[b-1]
+            num_list[b-1] = c ## 값 갱신을 해줘야 다음에 오류가 안생김 (같은 인덱스를 또 바꾸는 경우가 생기기 때문에)
+            transform_tree(0,N-1,1,b-1,dif)
+        elif a==2 :
+            print(sum_tree(0,N-1,1,b-1,c-1))
+        ##print(tree)

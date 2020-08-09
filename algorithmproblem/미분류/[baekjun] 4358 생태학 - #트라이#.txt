@@ -1,0 +1,86 @@
+https://www.acmicpc.net/problem/4358
+## 입력 부분 확인 (파이썬 개행입력 관련)
+## 자료구조(트라이) 구현에서 필요없는 부분이 많음
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+class Node() : ## Trie 자료구조의 하나의 객체
+    def __init__(self,key,data=None):
+        self.key = key ## 노드의 값 (문자하나)
+        self.data = data ## flag나 data사용 (문자열의 끝을 체크한다)
+        self.num = 0
+        self.children = {} ## 자식 노드 연결
+
+class Trie() :
+    def __init__(self): ## 초기값 설정
+        self.head = Node(None) ## 초기값 (key=None)인 노드
+
+    def insert(self,string) : ## 문자열 삽입 (트라이 만드는 과정)
+        curr_node = self.head ## root노드부터 탐색 시작
+
+        ##print(string)
+        ##print("--------")
+        for char in string :
+            if char not in curr_node.children : ## 없다면 새로운 노드를 만들어준다
+                curr_node.children[char] = Node(char)
+                ##print(curr_node.children)
+            curr_node = curr_node.children[char] ## 노드 갱신 (그림으로 보면 아래의 노드로 내려가는 과정)
+
+        curr_node.num += 1
+        curr_node.data = string ## 문자열이 끝나는 부분 체크
+        ##print(curr_node.data)
+
+    def search(self,string): ## 단어 찾기
+        curr_node = self.head ## root노드부터 탐색 시작
+
+        for char in string :
+            if char in curr_node.children : ## 자식 노드에 있는 경우 갱신
+                curr_node = curr_node.children[char]
+            else : ## 없는 경우 False 반환 -> 없는 문자열
+                return False
+        if curr_node.data != None : ## data(flag)가 체크 -> 문자열의 끝을 뜻함 -> 있는 문자열
+            return curr_node.num
+
+    def starts_with(self,prefix) : ## prefix로 시작하는 문자열 찾기
+        curr_node = self.head
+        result = []
+        subtrie = None
+
+        for char in prefix :
+            if char in curr_node.children :
+                curr_node = curr_node.children[char]
+                subtrie = curr_node
+            else :
+                return False ## prefix가 Trie에 존재하지 않는다
+        ## BFS보단 DFS에 가까운 듯 (이유 : stack 활용이라서 깊이우선탐색)
+        queue = list(subtrie.children.values())
+        while queue :
+            curr = queue.pop()
+            if curr.data != None : ## data에 저장된 값은 완전한 문자열(삽입할 때 그렇게 정함)
+                result.append(curr.data) ## 탐색과정에서 문자열의 끝이 있다면 prefix로 시작하는 문자열 중 하나이다.
+
+            queue += list(curr.children.values()) ## 다음 노드로 값을 추가
+
+        return result
+
+
+if __name__ == "__main__" :
+    T = Trie()
+    str_list = []
+    try:
+        while True:
+            tmp = input()
+            str_list.append(tmp)
+            T.insert(tmp)
+    except EOFError:
+        pass
+
+    total = len(str_list)
+    str_list = list(set(str_list))
+    str_list.sort()
+
+    for string in str_list :
+        cnt = T.search(string)
+        print("%s %0.4f"%(string,(cnt/total)*100))

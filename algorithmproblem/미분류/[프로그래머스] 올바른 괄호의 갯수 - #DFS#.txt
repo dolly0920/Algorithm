@@ -1,0 +1,61 @@
+https://programmers.co.kr/learn/courses/30/lessons/12929
+----------------------------------------------------------------------------------------------------------------
+// 첫번째 푼 방법 (마지막 테스트케이스 시간초과나옴)
+import sys
+sys.setrecursionlimit(10000)
+
+def solve(depth,cnt,n) :
+    global answer
+    if depth == 2*n and cnt == 0 :
+        answer += 1
+        return
+    elif depth == 2*n and cnt > 0 :
+        return
+    if cnt < n : ## 여는 괄호
+        solve(depth+1,cnt+1,n)
+    if cnt != 0 : ## 닫는 괄호
+        solve(depth+1,cnt-1,n)
+
+def solution(n):
+    global answer
+    answer = 0
+    solve(0,0,n)
+    return answer
+
+//인터넷 보고 카탈란 수 사용
+def factorial(n) :
+    if n == 1 :
+        return 1
+    number = n * factorial(n-1)
+    return number
+
+def solution(n):
+    answer = factorial(2*n) / (factorial(n)*factorial(n+1)) ## 카탈란 수 정의
+    return answer
+
+// 처음에 썼던 재귀문에 조건 추가해서 통과
+import sys
+sys.setrecursionlimit(10000)
+
+def solve(depth,o_cnt,c_cnt,n) : ## 깊이, 열리는 괄호 갯수, 닫히는 괄호 갯수, n
+    global answer
+    if o_cnt - c_cnt < 0 : ## 항상 열리는 괄호 갯수가 크거나 많아야 한다.
+        return
+
+    if o_cnt > c_cnt+2*n-depth : ## 남은 괄호 갯수를 다 더해도 같지 않은 경우
+        return
+
+    if depth == 2*n and o_cnt == c_cnt :
+        answer += 1
+        return
+    elif depth == 2*n : ## 깊이는 2*n이지만 o_cnt와 c_cnt가 다른 경우
+        return
+
+    solve(depth+1,o_cnt+1,c_cnt,n) ## 열리는 괄호 추가
+    solve(depth+1,o_cnt,c_cnt+1,n) ## 닫히는 괄호 추가
+
+def solution(n):
+    global answer
+    answer = 0
+    solve(0,0,0,n)
+    return answer

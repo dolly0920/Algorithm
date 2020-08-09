@@ -1,0 +1,24 @@
+https://www.acmicpc.net/problem/1173
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    ## 운동과정을 끝내는데 걸리는 최솟값 => 운동할 수 있을 땐 운동하는게 최소시간 출력
+    N,m,M,T,R = map(int,input().split()) ## N : N분 운동, m최소맥박, M최대맥박(넘으면 운동x),T : 증가하는 맥박수, R : 감소하는 맥박수
+    time = 0
+    cur_heart = m ## 시작 심박수
+    while N :
+        if m + T > M: ## 최소심박수 + 운동할때 증가하는 맥박수 > 최대맥박수 -> 운동을 할 수 없는 상태 (-1 출력)
+            time = -1
+            break
+        time += 1
+        if cur_heart+T <= M : ## 현재 심박수 + 증가심박수 <= 최대심박수 : 운동가능한 상태 (바로 운동)
+            N -= 1
+            cur_heart += T
+        else : ## 휴식이 필요한 상태
+            cur_heart -= R ## 휴식 했으므로 심박수 감소
+            if cur_heart < m : ## 최저 심박수로 수정
+                cur_heart = m
+    print(time)

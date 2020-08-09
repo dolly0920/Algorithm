@@ -1,0 +1,49 @@
+https://www.acmicpc.net/problem/16637
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.setrecursionlimit(100000)
+
+sys.stdin = open("input.txt","rt")
+
+def solve(a,b,c) :
+    if b=='+' :
+        ans = int(a)+int(c)
+        return ans
+    elif b=='-' :
+        ans = int(a)-int(c)
+        return ans
+    elif b == '*' :
+        ans = int(a)*int(c)
+        return ans
+
+
+def DFS(index) :
+    global answer
+    if index == N :
+        ans = tmp[0]
+        for i in range (1,len(tmp),2) :
+            ans = solve(ans,tmp[i],tmp[i+1])
+        answer = max(answer,ans)
+        return
+
+    if index%2 == 0 and index != N-1: ## [index%2] 에는 숫자만 있다
+        tmp.append(solve(problem[index],problem[index+1],problem[index+2]))
+        DFS(index+3)
+        tmp.pop()
+    tmp.append(problem[index])
+    DFS(index+1)
+    tmp.pop()
+    return
+
+    return
+if __name__ == "__main__" :
+    N = int(input())
+    problem = list(input())
+    tmp = []
+    if N == 1 :
+        print(int(problem[0]))
+    else :
+        answer = -sys.maxsize
+        DFS(0)
+        print(answer)

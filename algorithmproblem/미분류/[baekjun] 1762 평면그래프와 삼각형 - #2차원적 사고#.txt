@@ -1,0 +1,17 @@
+https://www.acmicpc.net/problem/1762
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    path = [set() for _ in range (N+1)]
+    ans = 0
+    for _ in range (M) :
+        a,b = map(int,input().split()) ##  a,b를 잇는 간선
+        ans += len(path[a]&path[b]) ## a-b간선이 이어져 있다면 a,b노드에서 공통적으로 이어져있는 노드를 찾으면 삼각형이 된다.
+        path[a].add(b)
+        path[b].add(a)
+    ## 중복되는 경우를 생각할 이유가 없는게 간선이 순차적으로 들어오면서 처리하기 때문이다. 이전에 존재하는 간선에 대해서만 교집합 연산을 수행하기 때문.
+    print(ans)

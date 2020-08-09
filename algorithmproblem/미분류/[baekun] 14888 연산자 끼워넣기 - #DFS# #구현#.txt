@@ -1,0 +1,49 @@
+https://www.acmicpc.net/problem/14888
+----------------------------------------------------------------------------------------------------------------
+import sys
+sys.setrecursionlimit(10000)
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(index,res) : ## index,연산값
+    global min_ans,max_ans
+    if index == N :
+        min_ans = min(min_ans,res)
+        max_ans = max(max_ans,res)
+        return
+
+    if operator[0] > 0 : ## 덧셈 사용가능
+        operator[0] -= 1
+        DFS(index+1,res+num_list[index])
+        operator[0] += 1
+
+    if operator[1] > 0 : ## 뺄셈 사용가능
+        operator[1] -= 1
+        DFS(index+1,res-num_list[index])
+        operator[1] += 1
+
+    if operator[2] > 0 : ## 곱셈 사용가능
+        operator[2] -= 1
+        DFS(index+1,res*num_list[index])
+        operator[2] += 1
+
+    if operator[3] > 0 : ## 나눗셈 사용 가능
+        operator[3] -= 1
+        if res < 0 : ## 음수인 경우
+            DFS(index+1,-(abs(res)//num_list[index])) ## 음수를 양수로 바꾼 다음 연산 후 다시 음수로 만들어 준다
+        else : ## 양수인 경우
+            DFS(index+1,res//num_list[index])
+        operator[3] += 1
+
+    return
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## 숫자의 갯수
+    num_list = list(map(int,input().split()))
+    operator = list(map(int,input().split())) ##+,-,*,/ 의 갯수
+    min_ans = sys.maxsize
+    max_ans = 0
+    DFS(1,num_list[0])
+    print(max_ans)
+    print(min_ans)

@@ -1,0 +1,142 @@
+개구리가 연못 위에서 놀고 있다. 개구리는 N개의 연 잎 들을 이용해서 이리저리 뛰어 놀고 있다.
+ 
+개구리가 뛰는 장면을 보던 철수는 개구리가 도약을 하는 경우가 얼마나 있는지 궁금해졌다. 여기서 도약은 아래 조건을 만족하는 경우를 말한다.
+ 
+1. 개구리가 뛴 거리가 이전에 뛴 거리 이상 뛰지만 그 2배보다 멀리 뛰지는 않는다.
+2. 개구리는 오른쪽으로만 뛴다.
+3. 개구리는 두 번만 뛴다.
+4. 위 세 가지 조건을 만족한다면 어느 곳에서든 시작할 수 있다.
+ 
+허나, 연 잎 들이 너무 많기 때문에 가능한 횟수가 매우 많아질 것 같다고 생각한 철수는, 개구리가 오른쪽으로 도약하는 경우가 얼마나 되는지 구해달라고 했다. 철수를 위해 프로그램을 짜주자.
+----------------------------------------------------------------------------------------------------------------
+// My Sol (3중 루프 사용)
+#include <stdio.h>
+
+int N, sol;
+int a[1000 + 10]; // 연 잎의 좌표가 들어있는 배열
+
+void sort(void)	// 오름차순 정렬
+{
+	int i,j,tmp;
+
+	for (i = 0; i < N; i++)
+	{
+		for (j = i + 1; j < N; j++)
+		{
+			if (a[i] > a[j])
+			{
+				tmp = a[i];
+				a[i] = a[j];
+				a[j] = tmp;
+			}
+		}
+	}
+}
+
+int main(void)
+{
+	int i,j,k;
+	// 여기서부터 작성
+	scanf("%d", &N);
+
+	for (i = 0; i < N; i++)
+	{
+		scanf("%d", &a[i]);
+	}
+
+	sort();
+	
+	for (i = 0; i < N; i++)
+	{
+		for (j = i + 1; j < N; j++)
+		{
+			for (k = j + 1; k < N; k++)
+			{
+				if (((a[k]-a[j])>=(a[j]-a[i])) && ((a[k]-a[j])<=(2*(a[j]-a[i]))))
+				{
+					sol++;
+				}
+			}
+		}
+	}
+
+	printf("%d", sol);
+
+	return 0;
+}
+---------------------------------------------------------------------------------------------------------------------
+// 2중 루프 및 이진 탐색 사용
+/** [USACO] - 도약 **/
+/**  작성자 블로그 : http://ys90diary.tistory.com **/
+#include <stdio.h>
+ 
+int pos[1000 + 1]; // 연잎 배열
+int tmp[1000 + 1]; // merge sort를 위한 tmp 배열
+ 
+void mergeSort(int s, int e) { // 연잎 좌표에 따라 오름차순으로 정렬
+    int i, j, k, m;
+ 
+    if (s >= e)
+        return;
+ 
+    m = (s + e) / 2;
+    i = k = s;
+    j = m + 1;
+ 
+    mergeSort(s, m);
+    mergeSort(j, e);
+ 
+    while ((i <= m) || (j <= e)) {
+        if ((i > m) || ((j <= e) && (pos[i] > pos[j])))
+            tmp[k++] = pos[j++];
+        else
+            tmp[k++] = pos[i++];
+    }
+ 
+    for (i = 1; i <= e; i++)
+        pos[i] = tmp[i];
+}
+ 
+int bs_up(int s, int e, int d) { // d보다 작은 값 중에 가장 큰 값 찾는 함수 (Binary Search 변형)
+    int m, sol = -1;
+ 
+    while (s <= e) {
+        m = (s + e) / 2;
+ 
+        if (pos[m] < d)
+            s = sol = m + 1;
+        else
+            e = m - 1;  
+    }
+ 
+    return sol;
+}
+ 
+int main(void) {
+    int n, jump, ans = 0;
+    register int i, j, k;
+ 
+    scanf("%d", &n);
+ 
+    for (i = 1; i <= n; i++)
+        scanf("%d", &pos[i]);
+ 
+    mergeSort(1, n);
+ 
+    for (i = 1; i <= n - 2; i++) { //  i는 n-2까지
+        for (j = i + 1; j <= n - 1; j++) {  // j는 n - 1까지
+            jump = pos[j] - pos[i]; // 1번째 점프
+         
+            // bs_up 함수를 이용하여 "1번째 점프의 2배 + 1"보다 작은 값중에 가장 큰 값과
+            // "1번째 점프"보다 작은 값중에 가장 큰 값 사이 값의 개수를 센다.
+            ans += bs_up(1, n, pos[j] + 2 * jump + 1) - bs_up(1, n, pos[j] + jump);         
+        }
+    }
+ 
+    printf("%d\n", ans);
+ 
+    return 0;
+}
+
+
+출처: https://ys90diary.tistory.com/4 [月下翼松]

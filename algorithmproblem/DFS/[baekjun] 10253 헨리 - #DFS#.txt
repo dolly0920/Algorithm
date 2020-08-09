@@ -1,0 +1,26 @@
+https://www.acmicpc.net/problem/10253
+----------------------------------------------------------------------------------------------------------------
+import sys
+sys.setrecursionlimit(100000)
+sys.stdin = open("input.txt","rt")
+
+def solve_num(a,b) : ## 최대 숫자 구하기
+    if int(b/a) == b/a : ## 정수일 때
+        return int(b/a)
+    else :
+        return int(b/a)+1
+
+def DFS(a,b) :
+    if (b/a) == solve_num(a,b) : ## 마지막 요소로 지워질 때
+        print(solve_num(a,b))
+        return
+    tmp = solve_num(a,b) ## x1 구하기
+    #print(tmp)
+    DFS(a*tmp-b,b*tmp)
+
+if __name__ == "__main__" :
+    T = int(input())
+    for _ in range (T) :
+        a,b = map(int,input().split())
+        #print(solve_num(a,b))
+        DFS(a,b)

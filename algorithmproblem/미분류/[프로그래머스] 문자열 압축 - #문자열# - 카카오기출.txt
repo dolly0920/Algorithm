@@ -1,0 +1,41 @@
+https://programmers.co.kr/learn/courses/30/lessons/60057
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def solve(msg,c) : ## 문자, 건너뛰는 갯수
+    ans = ''
+    cnt = 1
+   ## print("##%d"%(c))
+    flag = False
+    for i in range (0,len(msg),c) :
+        if msg[i:i+c] == msg[i+c:i+2*c] :
+            ##print("?")
+            cnt += 1
+        else :
+            if cnt != 1 :
+                ans += str(cnt)
+                ans += msg[i:i+c]
+                cnt = 1
+            else :
+                ans += msg[i:i+c]
+        if len(msg[i:i+c]) != len(msg[i+c:i+2*c]) : ## 길이가 안맞는 경우
+            flag = True
+            i += c
+            break
+
+    if flag :
+        ans += msg[i:len(msg)]
+
+    print(ans)
+
+    return len(ans)
+
+def solution(s) :
+    ans = 1001
+    if len(s) == 1 :
+        return 1
+    for i in range (1,len(s)//2+1) :
+        ans = min(ans,solve(s,i))
+    return ans

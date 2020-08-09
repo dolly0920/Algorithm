@@ -1,0 +1,82 @@
+
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    T = int(input())
+    for _ in range (T) :
+        n = int(input())
+        last = list(map(int,input().split()))
+        rank = [0]*(n+1) ## rank[i] : i번 팀의 진입 차수
+        path = [[0]*(n+1) for _ in range (n+1)] ## path[i][j] : i,j의 우위관계
+        for i in range (n) : ## 1등은 진입 차수 0 ~ 2등은 1 ~.... x등은 x-1
+            for j in range (i+1,n) :
+                path[last[i]][last[j]] = 1
+                rank[last[j]] += 1
+        m = int(input())
+        for _ in range (m) :
+            a,b = map(int,input().split()) ## 상대적인 순위가 바뀜 (올해 : 작년의 순위와 다름)
+            if path[a][b] :
+                path[a][b] = 0
+                path[b][a] = 1
+                rank[a] += 1
+                rank[b] -= 1
+            else : ## 작년에 a가 순위가 더 높았다면
+                path[a][b] = 1
+                path[b][a] = 0
+                rank[a] -= 1
+                rank[b] += 1
+
+        q = deque()
+        ans = []
+        for i in range (1,n+1) :
+            if rank[i] == 0 :
+                q.append(i)
+
+        flag = False
+        while q :
+            if len(q) > 1 : ## 1보다 크다면
+                flag = True
+                break
+
+            x = q.popleft()
+            ans.append(x)
+
+            for i in range (1,n+1) :
+                if path[x][i] == 1 :
+                    rank[i] -= 1 ## 진입차수 -1
+                    if rank[i] == 0 :
+                        q.append(i)
+
+
+        if flag :
+            print("?")
+        elif len(ans) == n :
+            for x in ans :
+                print(x,end=' ')
+            print()
+        else :
+            print("IMPOSSIBLE")
+##테스트 케이스
+4
+5
+5 4 3 2 1
+2
+2 4
+3 4
+3
+2 3 1
+0
+4
+1 2 3 4
+3
+1 2
+3 4
+2 3
+5
+1 2 3 4 5
+1
+3 4

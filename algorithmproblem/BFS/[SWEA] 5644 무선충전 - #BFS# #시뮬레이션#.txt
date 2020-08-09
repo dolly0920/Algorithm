@@ -1,0 +1,63 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AWXRDL1aeugDFAUo
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,-1,0,1,0]
+dc = [0,0,1,0,-1]
+
+
+def solve(r1,c1,r2,c2) :
+    BC1_pos = [0]*A ## 가능한 BC
+    BC2_pos = [0]*A
+
+    for i in range (A) : ## 각각의 BC에 대해 체크
+        if abs(BC_info[i][0]-r1) + abs(BC_info[i][1]-c1) <= BC_info[i][2] :
+            BC1_pos[i] = 1 ## 가능
+        if abs(BC_info[i][0]-r2) + abs(BC_info[i][1]-c2) <= BC_info[i][2] :
+            BC2_pos[i] = 1 ## 가능
+
+    max_battery = 0
+    for i in range (A) :
+        for j in range (A) :
+            if BC1_pos[i] == 1 and BC2_pos[j] == 1 : ## 둘다 가능
+                if i==j : ## 같은 bc인 경우
+                    max_battery = max(max_battery,BC_info[i][3])
+                else : ## 다른 bc인 경우
+                    max_battery = max(max_battery,BC_info[i][3]+BC_info[j][3])
+            elif BC1_pos[i] == 1 and BC2_pos[j] == 0 : ## 하나만 가능
+                max_battery = max(max_battery,BC_info[i][3])
+            elif BC1_pos[i] == 0 and BC2_pos[j] == 1 : ## 하나만 가능
+                max_battery = max(max_battery,BC_info[j][3])
+            else : ## 둘다 0인 경우
+                continue
+    return max_battery
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        M,A = map(int,input().split()) ## 총 이동시간(M), BC의 개수(A)
+        A_move = list(map(int,input().split()))
+        B_move = list(map(int,input().split()))
+        BC_info = []
+        for _ in range (A) :
+            X,Y,C,P = map(int,input().split()) ## (X,Y) : BC의 좌표, C:충전범위, P:처리량
+            BC_info.append((Y-1,X-1,C,P))
+
+        A_r,A_c = 0,0
+        B_r,B_c = 9,9
+
+        ans = 0
+        ## 처음 (0,0), (9,9)일 때의 충전값도 더해줘야한다.
+        ans += solve(A_r, A_c, B_r, B_c)
+        for i in range (M) : ## 각각의 상황에 가능한 최대값을 더해주는식으로 하자.
+            ## 좌표 갱신
+            A_r += dr[A_move[i]]
+            A_c += dc[A_move[i]]
+            B_r += dr[B_move[i]]
+            B_c += dc[B_move[i]]
+            ##
+            ans += solve(A_r,A_c,B_r,B_c) ## 각 점에서의 합의 최대값을 더해준다.
+        print("#%d %d"%(test_case,ans))

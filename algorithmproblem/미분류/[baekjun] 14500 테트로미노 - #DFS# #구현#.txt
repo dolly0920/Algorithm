@@ -1,0 +1,57 @@
+https://www.acmicpc.net/problem/14500
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def DFS(r,c,depth,num) :
+    global ans
+    if depth == 4 :
+        ans = max(ans,num)
+        return
+
+    for i in range (4) :
+        nr = r + dr[i]
+        nc = c + dc[i]
+        if nr<0 or nr>=N or nc<0 or nc>=M or visit[nr][nc] == 1 :
+            continue
+        visit[nr][nc] = 1
+        DFS(nr,nc,depth+1,num+MAP[nr][nc])
+        visit[nr][nc] = 0
+    return
+
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    MAP = []
+    for _ in range (N) :
+        MAP.append(list(map(int,input().split())))
+    visit = [[0]*M for _ in range (N)]
+    ans = 0
+    for i in range (N) :
+        for j in range (M) :
+            visit[i][j] = 1
+            DFS(i,j,1,MAP[i][j])
+            visit[i][j] = 0
+
+            if (i==0 or i==N-1) and (j==0 or j==M-1) : ## 4 끝점인 경우
+                continue
+
+            if i==0 and 1<=j<M-1 : ## ㅜ
+                ans = max(ans,MAP[i][j-1]+MAP[i][j]+MAP[i][j+1]+MAP[i+1][j])
+            elif i==N-1 and 1<=j<M-1 : ## ㅗ
+                ans = max(ans,MAP[i][j-1]+MAP[i][j]+MAP[i][j+1]+MAP[i-1][j])
+            elif j==0 and 1<=i<N-1 : ## ㅏ
+                ans = max(ans,MAP[i-1][j]+MAP[i][j]+MAP[i+1][j]+MAP[i][j+1])
+            elif j==M-1 and 1<=i<N-1 : ## ㅓ
+                ans = max(ans,MAP[i-1][j]+MAP[i][j]+MAP[i+1][j]+MAP[i][j-1])
+            else :
+                tmp = MAP[i-1][j]+MAP[i][j-1]+MAP[i][j]+MAP[i][j+1]+MAP[i+1][j]
+                for k in range (4) :
+                    nr = i + dr[k]
+                    nc = j + dc[k]
+                    ans = max(ans,tmp-MAP[nr][nc])
+    print(ans)

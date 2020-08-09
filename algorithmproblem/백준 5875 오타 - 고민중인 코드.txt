@@ -1,0 +1,46 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def solve_cnt(arr) : ## 숫자 배열을 만든다
+    ans = []
+    cnt = 0
+    for i in range (len(arr)) :
+        if arr[i] == '(' :
+            cnt += 1
+        else :
+            cnt -= 1
+        ans.append(cnt)
+    return ans
+
+## 예상 시간복잡도 : 100,000(숫자 배열 만드는) + 100,000(숫자 배열의 오류를 찾는 과정) = 200,000?!
+if __name__ == "__main__" :
+    tmp = list(input())
+    cnt = 0
+    N = len(tmp) ## 최대 100,000
+    arr = solve_cnt(tmp)
+    open_cnt = 0
+    close_cnt = 0
+    for i in range (N) :
+        ## 괄호의 갯수
+        if tmp[i] == '(' :
+            open_cnt += 1
+        else :
+            close_cnt += 1
+        ## 조건 처리 (아래의 조건을 위반하는 순간 그 이전 까지의 범위 안에서 값을 수정해야 한다.)
+        if arr[i] < 0 : ## 닫는 괄호가 더 많은 경우
+            ans = close_cnt
+            for j in range (i+1,N) :
+                if arr[i]+2 < 0 : ## 뒤의 부분에서 또 오류가 발생한다면 불가능하다
+                    ans = 0
+                    break
+            print(ans)
+            break
+        elif arr[i] > N-i : ## 여는 괄호가 더 많은 경우
+            ans = open_cnt - 1
+            if arr[-1]-2 != 0 : ## 끝이 0으로 끝나지 않으면 올바른 괄호열이 아니다.
+                ans = 0
+            print(ans)
+            break
+    else: ## 이 부분이 필요없을듯?!
+        print(0) ## 정상적인 괄호입력이므로 수정할 시 올바른 괄호가 아니게 된다.

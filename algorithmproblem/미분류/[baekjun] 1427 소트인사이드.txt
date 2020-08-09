@@ -1,0 +1,87 @@
+배열을 정렬하는 것은 쉽다. 수가 주어지면, 그 수의 각 자리수를 내림차순으로 정렬해보자.
+----------------------------------------------------------------------------------------------------------------
+//My sol
+#include <stdio.h>
+
+int N,cnt;
+int  a[10 + 10];
+
+void sort(void)
+{
+	int i, j,tmp;
+
+	for (i = 0; i <= cnt; i++)
+	{
+		for (j = i + 1; j <= cnt; j++)
+		{
+			if (a[i] <= a[j])
+			{
+				tmp = a[i];
+				a[i] = a[j];
+				a[j] = tmp;
+			}
+		}
+	}
+
+
+}
+
+int main(void)	
+{
+	int i;
+
+	scanf("%d", &N);
+
+	// 각 자리수 구하기
+	while (1)
+	{
+		a[cnt] = N % 10;	// 자리 수
+		if (N / 10 == 0)	break;
+		N /= 10;
+		cnt++;
+	}
+
+	sort();
+
+	for (i = 0; i <= cnt; i++)
+	{
+		printf("%d", a[i]);
+	}
+
+	return 0;
+}
+----------------------------------------------------------------------------------------------------------------
+// 답안
+#include <stdio.h>
+
+char N[10 + 10];
+
+void sort(void)
+{
+	int i, j, index, tmp;
+
+	index = strlen(N);
+
+	for (i = 0; i < index; i++)
+	{
+		for (j = i + 1; j < index; j++)
+		{
+			if (N[i] <= N[j])	// 여기서 아마 ascii코드로 인식되어 계산되는거 같음
+			{
+				tmp = N[i];
+				N[i] = N[j];
+				N[j] = tmp;
+			}
+		}
+	}
+}
+
+int main(void)
+{
+	scanf("%s", N);	// 숫자입력받음 (문자열로 들어옴)
+
+	sort();
+
+	printf("%s", N);
+	return 0;
+}

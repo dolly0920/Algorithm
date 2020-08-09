@@ -1,0 +1,68 @@
+
+----------------------------------------------------------------------------------------------------------------
+//My sol
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+def search_blank(r,c,arr) : ## arr : info
+    for i in range (len(arr)) :
+        for j in range (len(arr[0])) :
+            if arr[i][j] == 1 and paper[r+i][c+j] == 1 : ## 블록이 채워져야할 부분이 이미 채워져있다면
+                ##print(i,j)
+                return False
+
+    for i in range (len(arr)) : ## 스티커를 붙히는 과정
+        for j in range (len(arr[0])) :
+            if arr[i][j] == 1 :
+                paper[r+i][c+j] = 1
+    return True
+
+def is_possible(arr) : ## arr : info
+    for i in range (N-len(arr)+1) :
+        for j in range (M-len(arr[0])+1) :
+            #if (arr[0][0]==0 and paper[i][j] == 1) or (arr[0][0]==1 and paper[i][j] == 0) : ## 탐색 시작
+            if search_blank(i,j,arr) :
+                return True
+
+    return False
+
+def rotate_info(arr) : ## arr : info (시계방향 90도 회전) ## 정상 작동
+    tmp = [[0]*len(arr) for _ in range (len(arr[0]))]
+    r1,c1 = 0,0
+    for j in range (len(arr[0])) :
+        for i in range (len(arr)-1,-1,-1) : ## 행 읽는 방향
+            tmp[r1][c1] = arr[i][j] ## 이게 들어가는 순서임
+            c1 += 1
+            if c1 == len(tmp[0]) :
+                c1 = 0
+                r1 += 1
+    return tmp
+
+if __name__ == "__main__" :
+    N,M,K = map(int,input().split()) ## 세로, 가로, 스티커의 개수
+    paper = [[0]*M for _ in range (N)] ## 모눈종이
+    ##i번째 스티커가 인쇄된 모눈종이의 행의 개수와 열의 개수
+    for _ in range (K) :
+        R,C = map(int,input().split()) ## i번째 스티커에 대한 정보
+        info = []
+        for _ in range (R) :
+            info.append(list(map(int,input().split()))) ## 각 스티커의 모양
+
+        state = 0
+
+        while True :
+            if is_possible(info) : ## 넣을 수 있으면 break
+                break
+            else :
+                if state == 3 :
+                    break
+                info = rotate_info(info)
+                ##print(info)
+                state += 1
+    ans = 0
+    for i in range (N) :
+        for j in range (M) :
+            if paper[i][j] == 1 :
+                ans+=1
+    print(ans)

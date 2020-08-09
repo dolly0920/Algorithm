@@ -1,0 +1,40 @@
+https://programmers.co.kr/learn/courses/30/lessons/43163
+----------------------------------------------------------------------------------------------------------------
+def test(word1,word2) :
+    cnt = 0
+    for i in range (len(word1)) :
+        if word1[i] != word2[i] :
+            cnt += 1
+    if cnt == 1 :
+        return True
+    else :
+        return False
+
+
+def DFS(word,target,word_list,cnt) :
+    global answer,used
+    if cnt >= answer :
+        return
+
+    if word == target :
+        answer = min(answer,cnt)
+        return
+
+    for i in range (len(word_list)) :
+        if not used[i] and test(word,word_list[i]): ## 사용하지 않은 단어, 단어 차이가 1인 경우
+            used[i] = True ## 사용 체크
+            DFS(word_list[i],target,word_list,cnt+1)
+            used[i] = False ## 사용 체크 해제
+
+    return
+
+
+def solution(begin, target, words):
+    global answer,used
+    answer = 100
+    if target not in words :
+        answer = 0
+    else :
+        used = [False]*len(words)
+        DFS(begin,target,words,0)
+    return answer

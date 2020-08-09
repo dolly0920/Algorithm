@@ -1,0 +1,70 @@
+https://swexpertacademy.com/main/code/problem/problemDetail.do?contestProbId=AV5V1SYKAaUDFAWu
+----------------------------------------------------------------------------------------------------------------
+import sys
+sys.stdin = open("input.txt","rt")
+
+def test() : ## 필름 테스트
+    for i in range (W) :
+        max_cnt = 1
+        tmp = MAP[0][i]
+        cnt = 1
+        for j in range (1,D) :
+            if cnt+D-j < K : ## (최적화) 남은 부분이 모두 같은 성질이어도 불가능한 경우
+                return False
+            if tmp == MAP[j][i] : ## 이전 값과 같다면
+                cnt += 1
+                max_cnt = max(max_cnt,cnt)
+            else : ## 이전 값과 다르다면
+                cnt = 1 ## 카운트 초기화
+                tmp = MAP[j][i] ## 비교값 변경
+            if max_cnt >= K : ## (최적화) 다음 열 비교를 빠르게 하기 위한 최적화 (K를 넘으면 바로 다음 열 탐색)
+                break
+        if max_cnt < K : ## (최적화) 최대값이 합격기준 미달이라면
+            return False
+    return True ## 합격
+
+
+def DFS(select_num,target_num,index) : ## 고른 갯수(약품 투입 횟수), 조합 목표 갯수, 인덱스
+    global flag
+
+    if select_num+(D-index) < target_num : ## (조합 최적화) 남은 갯수를 모두 바꿔도 목표 갯수에 도달하지 못하는 경우 cut
+        return
+
+    if flag : ## (최적화) 이전에 검사에 합격한 경우가 있는 경우 flag=true가 되므로 cut-edge 가능
+        return
+
+    if select_num == target_num :
+        if test() : ## 검사에 합격하면
+            flag = True
+        return
+
+    if index == D :
+        return
+
+    tmp = MAP[index] ## 원래 행 값 저장
+    MAP[index] = [0]*W
+    DFS(select_num+1,target_num,index+1) ## A약품 투여
+    MAP[index] = [1]*W
+    DFS(select_num+1,target_num,index+1) ## B약품 투여
+    MAP[index] = tmp
+    DFS(select_num,target_num,index+1) ## 약품을 투여하지 않은 경우
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for test_case in range (1,T+1) :
+        D,W,K = map(int,input().split()) ## 세로 가로 합격기준
+        MAP = []
+        for _ in range (D) :
+            MAP.append(list(map(int,input().split())))
+        if K == 1 :
+            print("#%d %d"%(test_case,0))
+        elif test() : ## test 합격 시
+            print("#%d %d"%(test_case,0))
+        else :
+            for i in range (1,K+1) : ## i는 조합의 갯수
+                flag = False
+                DFS(0,i,0)
+                if flag :
+                    break
+            print("#%d %d"%(test_case,i))
