@@ -1,0 +1,70 @@
+https://www.acmicpc.net/problem/3055
+---------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def BFS() :
+    q = deque()
+    water = deque()
+    visit = [[0]*C for _ in range (R)]
+
+    for i in range (R) :
+        for j in range (C) :
+            if MAP[i][j] == 'S' :
+                q.append((i,j))
+            if MAP[i][j] == '*' :
+                water.append((i,j))
+
+    time = -1
+    while q :
+        time += 1
+        q_len = len(q) ## 동시간 좌표
+        water_len = len(water) ## 물 확산 체크
+
+        ## 물 확산
+        while (water_len) :
+            water_len -= 1
+            r,c = water.popleft()
+            for i in range (4) :
+                nr = r + dr[i]
+                nc = c + dc[i]
+                if nr<0 or nr>=R or nc<0 or nc>=C :
+                    continue
+                if MAP[nr][nc] == 'X' or MAP[nr][nc] == '*' or MAP[nr][nc] == 'D' : ## 벽이거나 물인 경우
+                    continue
+                MAP[nr][nc] = '*' ## 물 확산
+                water.append((nr,nc))
+        ## 좌표 이동
+        while (q_len) :
+            q_len -= 1
+            r,c = q.popleft()
+            if (MAP[r][c] == 'D') :
+                print(time)
+                return
+            for i in range (4) :
+                nr = r + dr[i]
+                nc = c + dc[i]
+                if nr<0 or nr>=R or nc<0 or nc>=C :
+                    continue
+                if MAP[nr][nc] == 'X' or MAP[nr][nc] == '*' :
+                    continue
+                if visit[nr][nc] == 1 :
+                    continue
+                visit[nr][nc] = 1
+                q.append((nr,nc))
+
+    print("KAKTUS")
+    return
+
+
+if __name__ == "__main__" :
+    R,C = map(int,input().split())
+    MAP = []
+    for _ in range (R) :
+        MAP.append(list(input()))
+    BFS()
