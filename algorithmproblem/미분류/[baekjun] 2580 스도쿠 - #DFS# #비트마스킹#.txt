@@ -1,0 +1,119 @@
+https://www.acmicpc.net/problem/2580
+----------------------------------------------------------------------------------------------------------------
+## 일반 DFS (4000ms)
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+def vertical(c,num) : ##(x,c)좌표에 num가 들어갈 수 있는지 확인
+    for i in range (9) :
+        if MAP[i][c] == num : ## 숫자가 있다면 False
+            return False
+    return True
+
+def horizontal(r,num) : ## (r,x)좌표에 num가 들어갈 수 있는지 확인
+    for i in range (9) :
+        if MAP[r][i] == num :
+            return False
+    return True
+
+def box_test(r,c,num) : ## (r,c)좌표가 속한 3*3 박스에 들어갈 수 있는지 확인
+    sr = int(r/3)*3
+    sc = int(c/3)*3 ## 시작점 정의
+    for i in range (sr,sr+3) :
+        for j in range (sc,sc+3) :
+            if MAP[i][j] == num :
+                return False
+    return True
+
+def DFS(index) : ## index는 blank(빈칸) 좌표 집합의 인덱스
+    if index==len(blank) :
+        for i in range (9) :
+            for j in range (9) :
+                print(MAP[i][j],end=' ')
+            print()
+        sys.exit()
+
+    r = blank[index][0]
+    c = blank[index][1]
+    for i in range (1,10) : ## 1-9까지의 숫자 대입
+        ## 가로,세로, 3*3
+        if vertical(c,i) and horizontal(r,i) and box_test(r,c,i) :
+            MAP[r][c] = i
+            DFS(index+1)
+            MAP[r][c] = 0
+    return
+
+if __name__ == "__main__" :
+    MAP = []
+    for _ in range (9) :
+        MAP.append(list(map(int,input().split())))
+
+    blank = []
+    for i in range (9) :
+        for j in range (9) :
+            if MAP[i][j] == 0 :
+                blank.append((i,j))
+    DFS(0)
+
+###########################################################
+##비트마스킹##
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def clear_bit(r,c,num) : ## (r,c)좌표에 대해서 가로,세로,3*3 배열 비트체크
+    bit_tmp = ~(1<<num) ## 반전되어서 01111이런꼴이 된다.
+    bit_r[r] &= bit_tmp
+    bit_c[c] &= bit_tmp
+    bit_square[(r//3)*3+(c//3)] &= bit_tmp ## 0b01111010 ==> 0이 체크된 부분이 숫자가 있는 곳 (사용체크)
+    return
+
+def set_bit(r,c,num) :
+    bit_tmp = (1<<num)
+    bit_r[r] |= bit_tmp
+    bit_c[c] |= bit_tmp
+    bit_square[(r//3)*3+(c//3)] |= bit_tmp ## 이전에 0으로 만들었던 부분을 다시 1로 만든다 (사용해제)
+    return
+
+def number_test(r,c,num) : ##(r,c)에 num가 가능한지
+    return (1<<num) & bit_r[r] & bit_c[c] & bit_square[(r//3)*3 + (c//3)]
+
+def DFS(index) :
+    if index==len(blank) :
+        for i in range (9) :
+            for j in range (9) :
+                print(MAP[i][j],end=' ')
+            print()
+        sys.exit(0)
+
+    r = blank[index][0]
+    c = blank[index][1]
+    for i in range (1,10) :
+        if number_test(r,c,i) :
+            MAP[r][c] = i
+            clear_bit(r,c,i)
+            DFS(index+1)
+            set_bit(r,c,i)
+            ##MAP[r][c] = 0
+
+    return
+
+
+if __name__ == "__main__" :
+    MAP = []
+    blank = [] ## 빈칸
+
+    bit_num = 0b1111111111
+    bit_r = [bit_num]*9
+    bit_c = [bit_num]*9
+    bit_square = [bit_num]*9 ## 3*3도 9개이므로
+    for i in range (9) :
+        MAP.append(list(map(int,input().split())))
+        for j in range (9) :
+            if MAP[i][j] : ## 숫자가 0이 아니라면
+                clear_bit(i,j,MAP[i][j])
+            else :
+                blank.append((i,j))
+
+    DFS(0)
