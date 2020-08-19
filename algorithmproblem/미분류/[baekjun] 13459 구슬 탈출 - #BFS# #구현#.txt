@@ -1,0 +1,69 @@
+https://www.acmicpc.net/problem/13459
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def move (r,c,dir) :
+    cnt = 0
+    while True :
+        nr = r + dr[dir]
+        nc = c + dc[dir]
+        if Board[nr][nc] == '#' : ## 벽인 경우
+            break
+        r = nr
+        c = nc
+        cnt += 1
+        if Board[r][c] == 'O' : ## 구멍인 경우
+            break
+    return r,c,cnt
+
+
+def BFS() :
+    for i in range (N) :
+        for j in range (M) :
+            if Board[i][j] == 'R' :
+                rr,rc = i,j
+            if Board[i][j] == 'B' :
+                br,bc = i,j
+    q = deque()
+    q.append((rr,rc,br,bc,0))
+    visit[rr][rc][br][bc] = 1 ## 방문 체크
+    while q :
+        ##print(q)
+        s_rr,s_rc,s_br,s_bc,cnt = q.popleft()
+        if cnt >= 10 : ## cnt는 현재 기울인 횟수를 의미함 (x,x,x,x,cnt) : cnt번 기울였을 때의 좌표
+            break
+        for i in range (4) :
+            n_rr,n_rc,rdis = move(s_rr,s_rc,i)
+            n_br,n_bc,bdis = move(s_br,s_bc,i)
+            ##print(n_rr,n_rc,n_br,n_bc)
+            if Board[n_br][n_bc] == 'O' :
+                continue
+            if Board[n_rr][n_rc] == 'O':
+                return 1
+            if n_br==n_rr and n_bc==n_rc : ## 같은 경우
+                if rdis > bdis :
+                    n_rr -= dr[i]
+                    n_rc -= dc[i]
+                else :
+                    n_br -= dr[i]
+                    n_bc -= dc[i]
+            if visit[n_rr][n_rc][n_br][n_bc] == 1 : ## 방문한 경우
+                continue
+            visit[n_rr][n_rc][n_br][n_bc] = 1 ## 방문체크
+            q.append((n_rr,n_rc,n_br,n_bc,cnt+1))
+    return 0
+
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    Board = []
+    for _ in range (N) :
+        Board.append(list(input()))
+    visit = [[[[0]*M for _ in range (N)] for _ in range (M)] for _ in range (N)]
+    print(BFS())
