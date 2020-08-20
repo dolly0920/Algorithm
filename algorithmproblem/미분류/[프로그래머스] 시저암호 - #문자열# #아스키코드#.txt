@@ -1,0 +1,18 @@
+https://programmers.co.kr/learn/courses/30/lessons/12926
+----------------------------------------------------------------------------------------------------------------
+def solution(s, n):
+    answer = ''
+    for x in s :
+        if 65<=ord(x)<=90 : ## 대문자
+            next = ord(x) + n
+            if next > 90 : ## 'Z'를 넘는 경우
+                next -= 26
+            answer += chr(next)
+        elif 97<=ord(x)<=122 : ## 소문자
+            next = ord(x) + n
+            if next > 122 :
+                next -= 26
+            answer += chr(next)
+        else :
+            answer += x
+    return answer
