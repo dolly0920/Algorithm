@@ -1,0 +1,83 @@
+https://www.acmicpc.net/problem/11724
+---------------------------------------------------------
+##유니온파인드 사용
+import sys
+
+input = sys.stdin.readline
+
+sys.stdin = open("input.txt","rt")
+
+def find_parent(x) :
+    if parent[x] == x :
+        return x
+    parent[x] = find_parent(parent[x])
+    return parent[x]
+
+def union(x,y) :
+    x = find_parent(x)
+    y = find_parent(y)
+    if x == y :
+        return False
+
+    if rank[x] > rank[y] : ## x가 깊이가 더 깊은 경우
+        parent[y] = x
+    else :
+        parent[x] = y
+        if rank[x] == rank[y] :
+            rank[y] += 1
+    return True
+
+
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    parent = list(range(N+1))
+    rank = [0]*(N+1)
+    for _ in range (M) :
+        a,b = map(int,input().split())
+        union(a,b) ## a,b노드를 합친다.
+
+    res = set()
+    for i in range (1,N+1) :
+        res.add(find_parent(i))
+    print(len(res))
+
+## BFS 사용
+import sys
+
+input = sys.stdin.readline
+##sys.stdin = open("input.txt","rt")
+
+def find_parent(x) :
+    if parent[x] == x :
+        return x
+    return find_parent(parent[x])
+
+def union(x,y) :
+    x = find_parent(x)
+    y = find_parent(y)
+    if x == y :
+        return False
+
+    if rank[x] > rank[y] : ## x가 깊이가 더 깊은 경우
+        parent[y] = x
+    else :
+        parent[x] = y
+        if rank[x] == rank[y] :
+            rank[y] += 1
+    return True
+
+
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    parent = list(range(N+1))
+    rank = [0]*(N+1)
+    for _ in range (M) :
+        a,b = map(int,input().split())
+        union(a,b) ## a,b노드를 합친다.
+
+    res = set()
+    for i in range (1,N+1) :
+        res.add(find_parent(i))
+    print(len(res))
