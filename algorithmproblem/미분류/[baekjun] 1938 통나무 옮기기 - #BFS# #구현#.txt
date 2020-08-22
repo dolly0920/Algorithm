@@ -1,0 +1,88 @@
+https://www.acmicpc.net/problem/1938
+----------------------------------------------------------------------------------------------------------------
+## 시간최적화가 굉장히 부족한 코드이다. 다시 최적화해서 코드 업데이트 예정
+import sys
+from collections import deque
+
+##sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1,1,1,-1,-1]
+dc = [1,-1,0,0,1,-1,1,-1]
+
+def dir_test(cur_tree,i) :  ## 상하좌우 움직임 : 불가능한 경우 -1 리턴
+    nr1,nc1 = cur_tree[0][0]+dr[i], cur_tree[0][1]+dc[i]
+    nr2,nc2 = cur_tree[1][0]+dr[i], cur_tree[1][1]+dc[i]
+    nr3,nc3 = cur_tree[2][0]+dr[i], cur_tree[2][1]+dc[i]
+    if nr1<0 or nr1>=N or nc1<0 or nc1>=N or MAP[nr1][nc1] == '1' :
+        return [(-1,-1),(-1,-1),(-1,-1)]
+    if nr2<0 or nr2>=N or nc2<0 or nc2>=N or MAP[nr2][nc2] == '1' :
+        return [(-1,-1),(-1,-1),(-1,-1)]
+    if nr3<0 or nr3>=N or nc3<0 or nc3>=N or MAP[nr3][nc3] == '1' :
+        return [(-1,-1),(-1,-1),(-1,-1)]
+    return [(nr1,nc1),(nr2,nc2),(nr3,nc3)]
+
+def rotate_test(cur) :
+    r1,c1,r2,c2,r3,c3 = cur[0][0],cur[0][1],cur[1][0],cur[1][1],cur[2][0],cur[2][1]
+    for i in range (8) : ## 중심점을 기준으로 8방향 탐색 (3*3) 검색
+        nr = r2 + dr[i]
+        nc = c2 + dc[i]
+        if nr<0 or nr>=N or nc<0 or nc>=N or MAP[nr][nc] == '1' :
+            return [(-1,-1),(-1,-1),(-1,-1)]
+    if (r1==r2 and r2==r3) : ## 가로인 경우
+        return [(r2-1,c2),(r2,c2),(r2+1,c2)]
+    else : ## 세로인 경우
+        return [(r2,c2-1),(r2,c2),(r2,c2+1)]
+
+
+def BFS(tree) :
+    visit = []
+    q = deque()
+    visit.append(tree)
+    q.append(tree)
+    ans = 0
+
+    while q :
+        ##print(q)
+        q_len = len(q)
+        while q_len :
+            q_len -= 1
+            cur_tree = q.popleft()
+            if cur_tree == dest :
+                return ans
+            for i in range (4) : ## 상하좌우
+                next_tree = dir_test(cur_tree,i) ## 방향 테스트
+                if (next_tree[0][0] == -1) : ## 불가능한 경우
+                    continue
+                if next_tree in visit :
+                    continue
+                ##next_tree.sort(key=lambda x:(x[0],x[1]))
+                ##print(next_tree)
+                visit.append(next_tree)
+                q.append(next_tree)
+            ## 회전 테스트
+            next_tree = rotate_test(cur_tree)
+            if (next_tree[0][0] == -1) :
+                continue
+            if next_tree in visit :
+                continue
+            ##print(cur_tree)
+            ##print(next_tree)
+            visit.append(next_tree)
+            q.append(next_tree)
+        ans += 1
+    return 0 ## 이동 불가능
+
+
+if __name__ == "__main__" :
+    N = int(input())
+    MAP = []
+    tree = []
+    dest = []
+    for i in range (N) :
+        MAP.append(list(input()))
+        for j in range (N) :
+            if MAP[i][j] == 'B' :
+                tree.append((i,j))
+            if MAP[i][j] == 'E' :
+                dest.append((i,j))
+    print(BFS(tree))
