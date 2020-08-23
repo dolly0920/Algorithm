@@ -87,6 +87,9 @@ if __name__ == "__main__" :
                 dest.append((i,j))
     print(BFS(tree))
 
+
+
+########################################################################################
 ## 시간최적화한 코드(약 250ms)
 import sys
 from collections import deque
