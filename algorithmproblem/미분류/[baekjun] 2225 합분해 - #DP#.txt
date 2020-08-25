@@ -1,0 +1,14 @@
+https://www.acmicpc.net/problem/2225
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N,K = map(int,input().split())
+    dp = [0]*(N+1) ## dp[i] : 숫자 i를 K개의 숫자 조합으로 만들 수 있는 갯수
+    dp[0] = 1
+    for _ in range (K) : ## K번 반복 
+        for i in range (1,N+1) :
+            dp[i] = (dp[i] + dp[i-1])%1000000000
+    print(dp[N])

@@ -1,0 +1,23 @@
+https://www.acmicpc.net/problem/1316
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input())
+    cnt = 0
+    for _ in range (N) :
+        word = input()
+        alphabet = [0]*26
+        flag = 1
+        for i in range (len(word)) :
+            if alphabet[ord(word[i])-ord('a')] == 0 :
+                alphabet[ord(word[i])-ord('a')] = 1
+            else :
+                if word[i] != word[i-1] :
+                    flag = 0
+                    break
+        if flag :
+            cnt += 1
+    print(cnt)

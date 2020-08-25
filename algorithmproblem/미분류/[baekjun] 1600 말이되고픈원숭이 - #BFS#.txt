@@ -1,0 +1,56 @@
+https://www.acmicpc.net/problem/1600
+----------------------------------------------------------------------------------------------------------------
+## 시간재고 빠르게 푼 코드 ( 19분 소요) -> 나중에 최적화한 코드 다시 작성해볼것!
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr1 = [-2,-1,-2,-1,1,2,1,2]
+dc1 = [-1,-2,1,2,-2,-1,2,1] ## 말의 이동방식
+dr2 = [1,-1,0,0]
+dc2 = [0,0,1,-1] ## 원숭이의 이동방식
+
+def BFS() :
+    q = deque()
+    visit[0][0].append(0) ## visit[i][j]-> 배열 (흉내낸횟수의 갯수가 담긴다) (ex) visit[3][4] = [2,3] -> (3,4) 좌표에 말을 각각 2,3번 따라한 상태로 방문한적이있다.
+    q.append((0,0,0)) ## (r,c,cnt) : (r,c) 말흉내 cnt번
+
+    res = -1 ## 이동횟수
+
+    while q :
+        q_len = len(q)
+        res += 1
+        while q_len :
+            q_len -= 1
+            r,c,cnt = q.popleft()
+            if (r==H-1 and c==W-1) :
+                return res
+            if cnt < K : ## 말 흉내를 낼 수 있는 경우
+                for i in range(8) :
+                    nr = r+dr1[i]
+                    nc = c+dc1[i]
+                    if nr<0 or nr>=H or nc<0 or nc>=W or (cnt+1 in visit[nr][nc]) or MAP[nr][nc] == 1: ## 방문체크할때 예외케이스 발생할듯?! (상태가 다르기 때문에) -> 해결
+                        continue
+                    visit[nr][nc].append(cnt+1)
+                    q.append((nr,nc,cnt+1))
+            for i in range (4) :
+                nr = r + dr2[i]
+                nc = c + dc2[i]
+                if nr<0 or nr>=H or nc<0 or nc>=W or (cnt in visit[nr][nc]) or MAP[nr][nc] == 1:
+                    continue
+                visit[nr][nc].append(cnt)
+                q.append((nr,nc,cnt))
+    return -1
+
+
+
+
+if __name__ == "__main__" :
+    K = int(input()) ## K번 말흉내가능
+    W,H = map(int,input().split()) ## 가로 W, 세로 H
+    MAP = []
+    for _ in range (H) :
+        MAP.append(list(map(int,input().split())))
+    visit = [[[] for _ in range (W)] for _ in range (H)]
+    print(BFS())
