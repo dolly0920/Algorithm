@@ -1,0 +1,28 @@
+https://www.acmicpc.net/problem/5014
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+def BFS() :
+    q = deque()
+    visit[S] = 1
+    q.append((S,0))
+
+    while q :
+        cur,cnt = q.popleft()
+        if cur == G :
+            return cnt
+        if cur+U <= F and visit[cur+U] == 0 : ## 위로 가는 경우
+            visit[cur+U] = 1
+            q.append((cur+U,cnt+1))
+        if cur-D > 0 and visit[cur-D] == 0 : ## 아래로 가는 경우
+            visit[cur-D] = 1
+            q.append((cur-D,cnt+1))
+    return "use the stairs"
+
+if __name__ == "__main__" :
+    F,S,G,U,D = map(int,input().split()) ## 총 F층의 건물, S : 시작층, G : 도착층, U : 올라가는 층수, D : 내려가는 층수
+    visit = [0]*(F+1)
+    print(BFS())
