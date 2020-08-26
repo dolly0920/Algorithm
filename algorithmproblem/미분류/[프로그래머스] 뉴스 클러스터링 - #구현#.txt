@@ -1,15 +1,10 @@
 def solution(str1, str2):
     str1 = str1.upper()
     str2 = str2.upper()
-    common_words = {}
-    str1_cnt = 0
+    common_words = {} ## dictionary
+    str1_cnt = 0 ## 원소갯수 확인
     for i in range (len(str1)-1) :
-        flag = 1
-        for j in range (2) : ## 두 글자 점검
-            if ord(str1[i+j])<ord('A') or ord('Z')<ord(str1[i+j])<ord('a') or ord(str1[i+j])>ord('z')  :
-                flag = 0
-                break
-        if flag :
+        if (str1[i:i+2].isalpha()) :
             str1_cnt += 1
             if str1[i:i+2] in common_words :
                 common_words[str1[i:i+2]] += 1
@@ -17,19 +12,15 @@ def solution(str1, str2):
                 common_words[str1[i:i + 2]] = 1
 
     common_cnt = 0 ## 교집합 원소 갯수
-    str2_cnt = 0
+    str2_cnt = 0 ## 원소갯수 확인
     for i in range (len(str2)-1) :
-        flag = 1
-        for j in range (2) :
-            if ord(str2[i+j])<ord('A') or ord('Z')<ord(str2[i+j])<ord('a') or ord(str2[i+j])>ord('z') :
-                flag = 0
-                break
-        if flag :
+        if (str2[i:i+2].isalpha()) :
             str2_cnt += 1
             if str2[i:i+2] in common_words and common_words[str2[i:i+2]] != 0 :
                 common_words[str2[i:i+2]] -= 1
                 common_cnt += 1
     sum_cnt = str1_cnt + str2_cnt - common_cnt
+    print(common_cnt)
     if sum_cnt != 0 :
         answer = int((common_cnt/sum_cnt)*65536)
     else :
