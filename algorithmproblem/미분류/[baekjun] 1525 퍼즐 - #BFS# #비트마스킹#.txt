@@ -1,0 +1,52 @@
+https://www.acmicpc.net/problem/1525
+----------------------------------------------------------------------------------------------------------------
+## 단순 BFS 풀이
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def BFS(str) :
+    q = deque()
+    visit = {str:1}
+    q.append(str)
+    answer = -1
+
+    while q :
+        q_len = len(q)
+        answer += 1
+        while q_len :
+            q_len -= 1
+            s = q.popleft()
+            if s == "123456780" :
+                return answer
+            zero_index = s.index('0')
+            zero_r = zero_index//3
+            zero_c = zero_index%3
+            for i in range (4) :
+                nr = zero_r + dr[i]
+                nc = zero_c + dc[i]
+                if nr<0 or nr>=3 or nc<0 or nc>=3 :
+                    continue
+                next_index = nr*3 + nc
+                copy_s = list(s)
+                copy_s[zero_index],copy_s[next_index] = copy_s[next_index],copy_s[zero_index]
+                copy_str = ""
+                for x in copy_s :
+                    copy_str += x
+                if copy_str in visit :
+                    continue
+                visit[copy_str] = 1
+                q.append(copy_str)
+    return -1
+
+if __name__ == "__main__" :
+    MAP = ""
+    for _ in range (3) :
+        tmp = list(map(str,input().split()))
+        for x in tmp :
+            MAP += x
+    print(BFS(MAP))
