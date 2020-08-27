@@ -1,0 +1,103 @@
+https://www.acmicpc.net/problem/2931
+-----------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+input = sys.stdin.readline
+##sys.stdin = open("input.txt","rt")
+
+dr = [-1,0,1,0]
+dc = [0,-1,0,1] ## 상(0),좌(1),하(2),우(3)
+
+pipe = {'+':[0,1,2,3],'|':[0,2],'-':[1,3],'1':[0,1],
+        '2':[1,2],'3':[2,3], '4':[0,3]}
+
+direction_trans = {'|':[0,-1,2,-1], '-' : [-1,1,-1,3],
+                   '+':[0,1,2,3],'1':[3,2,-1,-1],
+                   '2':[-1,0,3,-1],'3':[-1,-1,1,0],
+                   '4':[1,-1,-1,2]}
+
+if __name__ == "__main__" :
+    R,C = map(int,input().split())
+    MAP = []
+    for i in range (R) :
+        MAP.append(list(input()))
+        for j in range (C) :
+            if MAP[i][j] == 'M' :
+                start_r,start_c = i,j
+            if MAP[i][j] == 'Z' :
+                dest_r,dest_c = i,j
+
+    q = deque()
+    flag = 1
+    ## 시작점을 결정
+    for i in range (4) :
+        nr = start_r + dr[i]
+        nc = start_c + dc[i]
+        if nr<0 or nr>=R or nc<0 or nc>= C :
+            continue
+        if MAP[nr][nc] in pipe and i in pipe[MAP[nr][nc]] :
+            flag = 0
+            q.append((nr,nc,i)) ## (r,c,prev_dir)
+            break
+    if flag : ## 'M'주변에 들어갈 수 있는 블록이 없는 경우
+        for i in range (4) :
+            nr = dest_r + dr[i]
+            nc = dest_c + dc[i]
+            if nr<0 or nr>=R or nc<0 or nc>=C :
+                continue
+            if MAP[nr][nc] in pipe and i in pipe[MAP[nr][nc]] :
+                q.append((nr,nc,i))
+                break
+    ## 경로 탐색
+    if len(q) == 0: ## 파이프가 1개이고 그 파이프를 가린 경우 ('M','Z'은 인접하지 않는다는 전제가 있으므로 사이거리는 무조건 1이다.)
+        if start_r == dest_r : ## 행이 같다면 '-'
+            block = '-'
+        else :
+            block = '|'
+        print(int((start_r+dest_r)/2 + 1),int((start_c+dest_c)/2 + 1),block)
+    while q :
+        ##print(q)
+        r,c,prev_dir = q.popleft()
+        n_dir = direction_trans[MAP[r][c]][prev_dir]
+        nr = r + dr[n_dir]
+        nc = c + dc[n_dir] ## 다음 위치
+        if MAP[nr][nc] == '.' : ## 빈칸이라면 파이프를 채워야할 곳이다.
+            for p_shape in pipe.keys() :
+                if p_shape == '+' : ## 4방향 고려
+                    if nr==0 or nr==R-1 or nc==0 or nc==C-1 : ## 블록을 둘 수 없다.
+                        continue
+                    ## 진행방향
+                    if MAP[nr+dr[n_dir]][nc+dc[n_dir]] == '.' :
+                        continue
+                    if MAP[nr+dr[n_dir]][nc+dc[n_dir]] == 'M' or MAP[nr+dr[n_dir]][nc+dc[n_dir]] == 'Z' :
+                        continue
+                    if n_dir not in pipe[MAP[nr+dr[n_dir]][nc+dc[n_dir]]] :
+                        continue
+                    if MAP[nr+dr[(n_dir+1)%4]][nc+dc[(n_dir+1)%4]] == '.' :
+                        continue
+                    if MAP[nr+dr[(n_dir+1)%4]][nc+dc[(n_dir+1)%4]] == 'M' or MAP[nr+dr[(n_dir+1)%4]][nc+dc[(n_dir+1)%4]] == 'Z' :
+                        continue
+                    if (n_dir+1)%4 not in pipe[MAP[nr+dr[(n_dir+1)%4]][nc+dc[(n_dir+1)%4]]] :
+                        continue
+                    if MAP[nr + dr[(n_dir + 3) % 4]][nc + dc[(n_dir + 3) % 4]] == '.' :
+                        continue
+                    if MAP[nr + dr[(n_dir + 3) % 4]][nc + dc[(n_dir + 3) % 4]] == 'M' or MAP[nr + dr[(n_dir + 3) % 4]][nc + dc[(n_dir + 3) % 4]] == 'Z' :
+                        continue
+                    if (n_dir + 3) % 4 not in pipe[MAP[nr + dr[(n_dir + 3) % 4]][nc + dc[(n_dir + 3) % 4]]]:
+                        continue
+                    print(nr+1,nc+1,'+')
+                    sys.exit()
+                else : ## 이외의 모양인 경우 하나의 경우만 확인하면 된다.
+                    nn_dir = direction_trans[p_shape][n_dir]
+                    if nr+dr[nn_dir]<0 or nr+dr[nn_dir]>=R or nc+dc[nn_dir]<0 or nc+dc[nn_dir]>=C :
+                        continue
+                    if MAP[nr+dr[nn_dir]][nc+dc[nn_dir]] == '.' : ## .인 경우는 고려할 필요가 없다.
+                        continue
+                    if MAP[nr+dr[nn_dir]][nc+dc[nn_dir]] == 'M' or MAP[nr+dr[nn_dir]][nc+dc[nn_dir]] == 'Z' :
+                        continue
+                    if nn_dir in pipe[MAP[nr+dr[nn_dir]][nc+dc[nn_dir]]] :
+                        print(nr+1,nc+1,p_shape)
+                        sys.exit()
+        else : ## 무조건 파이프이다.
+            q.append((nr,nc,n_dir))
