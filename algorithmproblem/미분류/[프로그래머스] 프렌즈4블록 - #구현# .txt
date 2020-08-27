@@ -1,0 +1,53 @@
+https://programmers.co.kr/learn/courses/30/lessons/17679
+---------------------------------------------------------------------------------------
+def test(r,c,arr) : ## arr배열의 r,c에서 2*2 탐색
+    for i in range (2) :
+        for j in range (2) :
+            if arr[r+i][c+j] != arr[r][c] :
+                return False
+    return True
+
+
+def print_arr(arr) :
+    for i in range (len(arr)) :
+        for j in range (len(arr[0])) :
+            print(arr[i][j], end=' ')
+        print()
+    print()
+    return
+
+def solution(m, n, board):
+    answer = 0
+    for i in range (m) : ## 배열형태로 변환
+        board[i] = list(board[i])
+
+    while(True) :
+        flag = 1
+        visit = [[0]*n for _ in range (m)]
+        for i in range (m-1) :
+            for j in range (n-1) :
+                if board[i][j] != 0 and test(i,j,board) :
+                    flag = 0
+                    visit[i][j],visit[i+1][j],visit[i][j+1],visit[i+1][j+1] = 1,1,1,1 ## 지워질 블록 체크
+        if flag :
+            break
+        ##print_arr(board)
+        for i in range (m) :
+            for j in range (n) :
+                if visit[i][j] == 1 :
+                    answer += 1
+                    board[i][j] = 0 ## 블록 제거
+        ##print_arr(board)
+        ## 중력 작용 (세로 탐색)
+        for j in range (n) : ## 열
+            for i in range (m-1,-1,-1) :
+                if board[i][j] == 0 : ## 없는 블록
+                    index = i
+                    for k in range (i-1,-1,-1) :
+                        if board[k][j] != 0 :
+                            board[index][j] = board[k][j]
+                            board[k][j] = 0
+                            index -= 1
+        ##print_arr(board)
+
+    return answer
