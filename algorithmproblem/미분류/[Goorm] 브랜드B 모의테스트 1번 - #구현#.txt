@@ -1,0 +1,27 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N, K = map(int, input().split())  ## 수열의 길이, 연속으로 고를 수 있는 숫자의 갯수
+    numbers = list(map(int, input().split()))
+    answer = sys.maxsize
+    for i in range(N):
+        if numbers[i] == 1:  ## 고려해야할 지점
+            index = i
+            break
+    for i in range (index - K + 1, index + 1):  ## i는 시작점 좌표
+        cnt = 0
+        ## 좌측
+        if (i%(K-1) == 0) :
+            cnt += i//(K-1)
+        else :
+            cnt += i//(K-1) + 1
+        ## 우측
+        if (N-i-1)%(K-1) == 0 :
+            cnt += (N-i-1)//(K-1)
+        else :
+            cnt += ((N-i-1)//(K-1))+1
+        answer = min(answer,cnt)
+    print(answer)
+----------------------------------------------------------------------------------------------------------------

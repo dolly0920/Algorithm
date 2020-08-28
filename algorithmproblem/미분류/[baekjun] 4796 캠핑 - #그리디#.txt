@@ -1,0 +1,18 @@
+https://www.acmicpc.net/problem/4796
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    index = 0
+    while(1) :
+        index += 1
+        L,P,V = map(int,input().split()) ## 연속되는 P일 중 L일 사용 가능
+        if L==0 and P==0 and V==0 :
+            break
+        if V%P <= L :
+            answer = (V//P)*L + (V%P)
+        else :
+            answer = (V//P)*L + L
+        print("Case %d: %d"%(index,answer))

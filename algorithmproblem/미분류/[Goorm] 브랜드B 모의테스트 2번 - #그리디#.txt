@@ -1,0 +1,9 @@
+
+----------------------------------------------------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# UTF-8 encoding when using korean
+T = int(input())
+
+for _ in range (T) :
+	N,M = map(int,input().split())
+	print(min(N//5,(M+N)//12))
