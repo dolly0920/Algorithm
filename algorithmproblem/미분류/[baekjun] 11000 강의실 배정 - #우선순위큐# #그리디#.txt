@@ -1,0 +1,24 @@
+https://www.acmicpc.net/problem/11000
+----------------------------------------------------------------------------------------------------------------
+import sys
+import heapq as hq
+from collections import deque
+
+input = sys.stdin.readline
+##sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## N개의 수업
+    lecture = []
+    for _ in range (N) :
+        lecture_time = list(map(int,input().split()))
+        lecture.append(lecture_time)
+    pq = [] ## pq에는 끝나는 시간이 저장된다.
+    lecture.sort(key=lambda x:(x[0],x[1])) ## 끝나는 시간, 시작 시간 오름 차순 -> (같은 시간에 시작한다면 빨리 끝나는 수업이 앞에 위치한다.)
+    lecture = deque(lecture)
+    while lecture :
+        start,end = lecture.popleft()
+        if len(pq) != 0 and pq[0] <= start :
+            hq.heappop(pq)
+        hq.heappush(pq,end)
+    print(len(pq))

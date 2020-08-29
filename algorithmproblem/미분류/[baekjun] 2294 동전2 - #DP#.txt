@@ -1,0 +1,18 @@
+https://www.acmicpc.net/problem/2294
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__":
+    n, k = map(int, input().split())
+    num_list = []
+    for _ in range(n):
+        num_list.append(int(input()))
+    dp = [10001] * (k + 1) ## dp[i] : i원을 만들 수 있는 동전의 최소 갯수
+    num_list.sort()  ## 오름차순 정렬
+    dp[0] = 0
+    for x in num_list:
+        for j in range(x, k + 1):
+            dp[j] = min(dp[j], dp[j - x] + 1)
+    print(dp[k] if dp[k] != 10001 else -1)
