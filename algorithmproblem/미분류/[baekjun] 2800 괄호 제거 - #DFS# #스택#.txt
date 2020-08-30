@@ -1,0 +1,42 @@
+https://www.acmicpc.net/problem/2800
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(index) :
+    global remove_index,answer
+
+    for i in range (index,len(str)) :
+        if str[i] == '(' : ## 여는 괄호일 때 (제거한다면)
+            remove_index.append(i)
+            remove_index.append(dic[i])
+            DFS(i+1)
+            remove_index.pop()
+            remove_index.pop()
+
+    if len(remove_index) != 0 :
+        tmp = ""
+        for i in range (len(str)) :
+            if i not in remove_index :
+                tmp += str[i]
+        answer.append(tmp)
+    return
+
+if __name__ == "__main__" :
+    str = input()
+    stack = [] ## '(' 괄호의 인덱스 저장
+    dic = {} ## 괄호의 쌍이 되는 인덱스 저장 ('여는 괄호 인덱스':'닫는 괄호 인덱스')
+
+    for i in range (len(str)) :
+        if str[i] == '(' :
+            stack.append(i) ## 여는 괄호 인덱스 저장
+        if str[i] == ')' : ## 닫는 괄호
+            dic[stack.pop()] = i ## 쌍이 되는 여는 괄호의 인덱스
+    answer = []
+    remove_index = []
+    DFS(0)
+    answer = list(set(answer))
+    answer.sort()
+    for x in answer :
+        print(x)

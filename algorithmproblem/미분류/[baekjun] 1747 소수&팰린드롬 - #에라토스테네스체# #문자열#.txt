@@ -1,0 +1,32 @@
+https://www.acmicpc.net/problem/1747
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def check(num) : ## 팰린드롬체크
+    num_str = str(num)
+    if num_str == num_str[::-1] :
+        return True
+    else :
+        return False
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## N이상의 소수, 팰린드롬
+    ## N이상의 수 중 팰린드롬이 있는 범위를 찾자.
+    ## 천만 => 메모리초과 (백만은 메모리 초과 안남)
+    ## 1<=N<=1000000 ## N = 1000000 이라면 답은 ? 1003001 ==> 천만넣고 계산해서 구함.
+    sosu = [0]*1000000
+    sosu[1] = 1 ## 1은 소수가 이니다.
+    ## 에라토스테네스의 체
+    for i in range (2,1000) :
+        if sosu[i] == 0 :
+            for j in range (i+i,1000000,i) :
+                sosu[j] = 1
+    ans = 0
+    for i in range (N,1000000) :
+        if check(i) and sosu[i] == 0 : ## 팰린드롬, 소수
+            ans = i
+            break
+    print(ans if ans !=0 else 1003001)
