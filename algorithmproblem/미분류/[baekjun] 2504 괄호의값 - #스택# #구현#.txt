@@ -1,0 +1,47 @@
+https://www.acmicpc.net/problem/2504
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+response = {')':'(',']':'['}
+operator = {')':2,']':3}
+bracket_count = {'(':0,'[':0}
+
+if __name__ == "__main__" :
+    bracket = list(input())
+    answer = 0
+    stack = []
+
+    for x in bracket :
+        ##print(stack)
+        if x == ')' or x == ']' : ##
+            bracket_count[response[x]] -= 1
+            if bracket_count[response[x]] < 0 :
+                print(0)
+                sys.exit()
+            tmp1 = 0 ## 더하는 숫자
+            while stack :
+                tmp2 = stack.pop()
+                if tmp2 == response[x] :
+                    if tmp1 == 0 : tmp1 = 1
+                    stack.append(str(tmp1*operator[x]))
+                    break
+                elif tmp2.isdigit() : ## 숫자라면
+                    tmp1 += int(tmp2)
+            else : ## stack에서 만족하는 여는 괄호를 만나지 못한 경우
+                print(0)
+                sys.exit()
+        else :
+            bracket_count[x] += 1
+            stack.append(x)
+
+    for x,y in bracket_count.items() :
+        if y != 0 :
+            print(0)
+            sys.exit()
+
+    while stack :
+        tmp = stack.pop()
+        answer += int(tmp)
+    print(answer)
