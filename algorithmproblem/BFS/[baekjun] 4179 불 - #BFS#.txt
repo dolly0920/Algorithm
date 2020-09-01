@@ -1,0 +1,59 @@
+https://www.acmicpc.net/problem/4179
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+if __name__ == "__main__" :
+    R,C = map(int,input().split())
+    MAP = []
+    jihun = deque()
+    fire = deque()
+    for i in range (R) :
+        MAP.append(list(input()))
+        for j in range (C) :
+            if MAP[i][j] == 'J' : ## 지훈이
+                jihun.append((i,j))
+            if MAP[i][j] == 'F' : ## 불
+                fire_r,fire_c = i,j
+                fire.append((i,j))
+
+    answer = 0
+    while True :
+        fire_len = len(fire)
+        while fire_len :
+            fire_len -= 1
+            r,c = fire.popleft()
+            for i in range (4) :
+                nr = r + dr[i]
+                nc = c + dc[i]
+                if nr<0 or nr>=R or nc<0 or nc>=C :
+                    continue
+                if MAP[nr][nc] == 'F' or MAP[nr][nc] == '#':
+                    continue
+                MAP[nr][nc] = 'F'
+                fire.append((nr,nc))
+        jihun_len = len(jihun)
+        cnt = 0
+        while jihun_len :
+            jihun_len -= 1
+            r,c = jihun.popleft()
+            for i in range (4) :
+                nr = r + dr[i]
+                nc = c + dc[i]
+                if nr<0 or nr>=R or nc<0 or nc>=C :
+                    print(answer+1)
+                    sys.exit()
+                if MAP[nr][nc] != '.' :
+                    continue
+                cnt += 1
+                MAP[nr][nc] = 'J'
+                jihun.append((nr,nc))
+        if cnt == 0 :
+            print("IMPOSSIBLE")
+            sys.exit()
+        answer += 1
