@@ -1,0 +1,27 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def lis(arr) :
+    arr = [-sys.maxsize] + arr
+    N = len(arr)
+    cache = [-1]*N ## cache[i] : 인덱스 i에서 시작하는 최대 부분 증가수열의 길이
+
+    def find(start) :
+        if cache[start] != -1 :
+            return cache[start]
+
+        ret = 0
+        for nxt in range (start+1,N) :
+            if arr[start] < arr[nxt] :
+                ret = max(ret,find(nxt)+1)
+
+        cache[start] = ret
+        return ret
+
+    return find(0)
+
+if __name__ == "__main__" :
+    N = int(input())
+    data = list(map(int,input().split()))
+    print(lis(data))

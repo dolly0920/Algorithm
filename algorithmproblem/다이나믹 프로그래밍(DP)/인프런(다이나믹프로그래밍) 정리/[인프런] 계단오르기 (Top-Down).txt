@@ -1,0 +1,17 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(n) :
+    if dp[n] != 0 :
+        return dp[n]
+    if n==0 or n==1 or n==2 :
+        return n
+    dp[n] = DFS(n-1) + DFS(n-2)
+    return dp[n]
+
+if __name__ == "__main__" :
+    N = int(input()) ## 계단의 개수 (계단을 오를 때 한 계단 또는 두 계단 씩 올라간다)
+    ## N은 3이상
+    dp = [0]*(N+1)
+    print(DFS(N))

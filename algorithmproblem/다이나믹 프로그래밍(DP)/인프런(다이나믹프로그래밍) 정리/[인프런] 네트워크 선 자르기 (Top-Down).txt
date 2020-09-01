@@ -1,0 +1,16 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def dfs(n) :
+    if dp[n] != 0 :
+        return dp[n]
+    if n == 1 or n == 2 :
+        return n
+    dp[n] = dfs(n-1) + dfs(n-2)
+    return dp[n]
+
+if __name__ == "__main__" :
+    N = int(input()) ## 네트워크 선의 총길이 ## 네트워크선은 1m 와 2m 짜리가 있다.
+    dp = [0]*(N+1) ## dp[i] : 길이 i인 네트워크의 자르는 가지 수
+    print(dfs(N))

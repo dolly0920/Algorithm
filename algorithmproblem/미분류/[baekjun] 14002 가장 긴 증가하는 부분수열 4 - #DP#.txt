@@ -1,0 +1,52 @@
+https://www.acmicpc.net/problem/14002
+----------------------------------------------------------------------------------------------------------------
+## 반례
+##8
+##5 6 7 1 2 8 9 10
+##
+
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def lower_bound(left,right,n,arr) :
+    res = -1
+    while left<=right :
+        mid = (left+right)//2
+        if arr[mid] >= n :
+            res = mid
+            right = mid-1
+        else :
+            left = mid+1
+    return res
+
+if __name__ == "__main__" :
+    N = int(input())
+    data = list(map(int,input().split()))
+    INF = sys.maxsize
+    dp = [INF] * (N+1)
+    dp[0] = -INF
+    dp[1] = data[0]
+    tmp_length = 1
+
+    process = []
+
+    for x in data :
+        if x > dp[tmp_length] :
+            tmp_length += 1
+            dp[tmp_length] = x
+            process.append((tmp_length,x))
+        else :
+            next_loc = lower_bound(0,tmp_length,x,dp)
+            dp[next_loc] = x
+            process.append((next_loc,x))
+    ## 뒤에 있을 수록 최근에 업데이트
+    print(tmp_length)
+    answer = []
+    for i in range (len(process)-1,-1,-1) :
+        if process[i][0] == tmp_length :
+            answer.append(process[i][1])
+            tmp_length -= 1
+    answer.reverse()
+    for x in answer :
+        print(x,end=' ')

@@ -1,0 +1,12 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## 네트워크 선의 총길이 ## 네트워크선은 1m 와 2m 짜리가 있다.
+    dp = [0]*(N+1) ## dp[i] : 길이가 i인 네트워크 선의 가지수
+    dp[1] = 1 ## 길이가 1 => 1
+    dp[2] = 2 ## 길이가 2 => 1+1, 2
+    for i in range (3,N+1) :
+        dp[i] = dp[i-1]+dp[i-2] ## 그림그려 생각해보자! (i-1)길이에서 1m짜리 선을 이어붙힌 경우, (i-2)길이에서 2m짜리 선을 이어붙힌 경우
+    print(dp[N])

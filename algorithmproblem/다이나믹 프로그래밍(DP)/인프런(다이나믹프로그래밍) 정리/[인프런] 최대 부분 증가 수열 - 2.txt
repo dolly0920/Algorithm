@@ -1,0 +1,37 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+INF = sys.maxsize
+
+def search(left,right,n) : ## left-right 범위 n 탐색 (lower-bound) => n 이상의 수 인덱스
+    res = 0
+    while left <= right :
+        mid = (left+right)//2
+        if dp[mid] == n : ## 이 앞의 숫자들은 무조건 n보다 작으므로 탐색할 필요가 없다
+            return mid
+        elif dp[mid] > n : ## 앞의 숫자를 탐색해야한다.
+            res = mid
+            right = mid-1
+        else : ## 뒤를 탐색해야 한다.
+            left = mid + 1
+    return res
+
+
+if __name__ == "__main__" :
+    N = int(input())
+    data = list(map(int,input().split()))
+    dp = [INF]*(N+1) ## dp[i] : 최장 길이가 i인 수열의 최소 끝 값
+    dp[0] = -INF
+    dp[1] = data[0]
+    tmp_length = 1
+
+    for x in data :
+        ##print(dp)
+        if x > dp[tmp_length] :
+            tmp_length += 1
+            dp[tmp_length] = x
+        else :
+            next_index = search(1,tmp_length,x) ## x가 들어갈 자리 탐색
+            dp[next_index] = x
+    print(tmp_length)

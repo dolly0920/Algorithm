@@ -1,0 +1,12 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## 계단의 개수 (계단을 오를 때 한 계단 또는 두 계단 씩 올라간다)
+    dp = [0]*(N+2)
+    dp[1] = 1
+    dp[2] = 2
+    for i in range (3,N+2) :
+        dp[i] = dp[i-1] + dp[i-2]
+    print(dp[N+1])
