@@ -1,0 +1,15 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input())
+    coin = list(map(int,input().split()))
+    M = int(input())
+    INF = sys.maxsize
+    dp = [INF] * (M+1) ## dp[i] : i원을 거슬러 주는데 필요한 동전의 최소 개수
+    dp[0] = 0
+    for x in coin :
+        for i in range (x,M+1) :
+            dp[i] = min(dp[i],dp[i-x]+1)
+    print(dp[M])

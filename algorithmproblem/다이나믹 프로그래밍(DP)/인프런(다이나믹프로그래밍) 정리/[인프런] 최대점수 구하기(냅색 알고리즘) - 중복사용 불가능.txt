@@ -1,0 +1,13 @@
+import sys
+
+#sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    n,m = map(int,input().split())
+    dp = [0]*(m+1) ## dp[i] : i를 제한 시간으로 했을 때 얻을 수 있는 최대 점수
+    for _ in range (n) :
+        s,t = map(int,input().split()) ## 문제의 개수는 한 개임! 무한이 아님!
+        for j in range (m,t-1,-1) : ## 뒤로 탐색함으로써 2차원 배열안써도됨
+            dp[j] = max(dp[j],dp[j-t]+s)
+
+    print(dp[m])

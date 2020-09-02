@@ -1,0 +1,14 @@
+import sys
+
+#sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    n,m = map(int,input().split())
+    x = []
+    y = []
+    dp = [0] * (m+1) ## dp[x] : 가방의 무게가 x일 때까지의 최대 가치
+    for _ in range (n) :
+        a,b = map(int,input().split()) ## 무게, 가치
+        for i in range (a,m+1) :
+            dp[i] = max(dp[i],dp[i-a]+b) ## dp[j-w] : w의 무게를 담아야하는 경우를 고려하므로 빈공간 마련하는 것
+    print(dp[m])
