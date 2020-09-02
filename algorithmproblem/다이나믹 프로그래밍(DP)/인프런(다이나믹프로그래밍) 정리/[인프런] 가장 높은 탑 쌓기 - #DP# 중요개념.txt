@@ -1,0 +1,22 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## 벽돌의 수
+    wall = []
+    for _ in range (N) :
+        a,b,c = map(int,input().split()) ## 밑면, 높이, 무게 ## 같은 밑면, 무게를 가진 벽돌은 없다.
+        wall.append((a,b,c))
+    ## 두개의 제한 조건 : 밑면의 넓이, 무게
+    INF = sys.maxsize
+    dp = [0]*(N) ## dp[i] : i번째 벽돌을 밑면을 했을 때의 최대 높이
+    wall.sort(key=lambda x:x[0]) ## 밑면의 넓이에 대해 오름 차순 정렬
+    res = 0
+    for i in range (N) :
+        for j in range (i) : ## i보다 앞의 원소들 => i보다 밑면의 넓이가 작은 벽돌 탐색
+            if wall[i][2] > wall[j][2] : ## i보다 무게가 작은 벽돌 (가능한 경우)
+                dp[i] = max(dp[i],dp[j]) ## 둘 중 더 큰 경우 고려
+        dp[i] += wall[i][1] ## 높이를 더한다. (i의 벽돌은 j의 탐색 범위에서의 벽돌보다 무조건 크기 때문이다) 모든 탐색 후 아래에 붙인다고 생각하면 됨
+        res = max(res,dp[i])
+    print(res)
