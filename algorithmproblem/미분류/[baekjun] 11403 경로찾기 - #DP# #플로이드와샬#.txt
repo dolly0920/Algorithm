@@ -1,0 +1,23 @@
+https://www.acmicpc.net/problem/11403
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## 정점의 갯수
+    path = []
+    for _ in range (N) :
+        path.append(list(map(int,input().split())))
+
+    answer = [[0]*N for _ in range (N)]
+    for k in range (N) : ## 경로
+        for i in range (N) :
+            for j in range (N) : ## 좌표
+                if path[i][k] == 1 and path[k][j] == 1 :
+                    path[i][j] = 1
+
+    for i in range (N) :
+        for j in range (N) :
+            print(path[i][j],end=' ')
+        print()

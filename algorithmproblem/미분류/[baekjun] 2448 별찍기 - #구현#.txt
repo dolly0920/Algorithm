@@ -1,0 +1,23 @@
+https://www.acmicpc.net/problem/2448
+----------------------------------------------------------------------------------------------------------------
+import sys
+import math
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## N은 3*2^k인 수이다. (3의 배수) => k = log2(N/3) => 파이썬 로그는?
+    ##      *
+    ##     * *
+    ##    ***** => 이 모양들의 반복이다.
+    shape = ['  *   ',' * *  ','***** ']
+    k = int(math.log(int(N/3),2))
+    for i in range (k) :
+        ## 2^k만큼 밀림
+        tmp = len(shape) ## 배열의 길이를 기억한다. (뒤에서 길이로 돌리면 append하면서 오류발생)
+        for j in range (tmp) :
+            x = shape[j]+shape[j] ## 같은 행끼리 더한다 ('   *   ' + '   *   ') 공백도 자동으로 인식됨 => '   *      *   ' + '   *      *   ' 이런 꼴
+            shape.append(x)
+            shape[j] = "   "*(2**i) + shape[j] + "   "*(2**i) ## 양 옆의 공백 공간을 늘리면서 맞춰준다. => 새로운 도형이 생성되면서 밀어주는 단계
+    for x in shape :
+        print(x)
