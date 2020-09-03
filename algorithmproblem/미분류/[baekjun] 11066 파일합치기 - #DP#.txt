@@ -1,0 +1,43 @@
+https://www.acmicpc.net/problem/11066
+----------------------------------------------------------------------------------------------------------------
+## 확실한 이해가 되지 않아 다시 공부해야함.
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+INF = sys.maxsize
+
+def solve_dp(start,end) : ## start-end를 구성하는데 필요한 모든 과정들의 합
+    if start==end :
+        return file[start]
+
+    if dp[start][end] != -1 :
+        return dp[start][end]
+
+    dp[start][end] = INF
+
+    ## 합칠 때의 비용
+    sum_cost = presum[end+1]-presum[start]
+    for i in range (start,end) :
+        dp[start][end] = min(dp[start][end],solve_dp(start,i)+solve_dp(i+1,end)+sum_cost)
+
+    return dp[start][end]
+
+def solve(num) : ## 두 부분의 합으로 정의할 수 있다. 마지막 두 부분의 합은 마지막 연산이므로 따로 연산해주는 것이 편리
+    ret = INF
+    for i in range (num) :
+        ret = min(ret,solve_dp(0,i)+solve_dp(i+1,num))
+    return ret
+
+if __name__ == "__main__" :
+    T = int(input())
+    for _ in range (T) :
+        K = int(input())
+        file = list(map(int,input().split()))
+        presum = [0]*(K+1) ## presum[i] : i 이전 인덱스까지의 합
+        tmp = 0
+        for i in range (1,K+1) :
+            tmp += file[i-1]
+            presum[i] = tmp
+        dp = [[-1]*K for _ in range (K)] ## dp[i][j] : i-j의 파일을 합치는데 드는 최소 비용
+        print(solve(K-1))
