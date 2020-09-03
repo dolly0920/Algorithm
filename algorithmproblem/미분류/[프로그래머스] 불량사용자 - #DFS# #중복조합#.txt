@@ -1,0 +1,45 @@
+https://programmers.co.kr/learn/courses/30/lessons/64064
+----------------------------------------------------------------------------------------------------------------
+def DFS(index,ban_list) : ## 인덱스 번호로 조합 만들기
+    global used, ans_list
+    if index==len(banned_id) :
+        if sorted(used) not in ans_list :  ## sort대신 set을 활용해도 된다. set(used) 이런식으로?! ==> 이렇게 쓰려면 used도 매개변수로 써야할듯
+            ans_list.append(sorted(used))
+        return
+
+    for x in ban_list[index] :
+        if x not in used :
+            used.append(x)
+            DFS(index+1,ban_list)
+            used.pop()
+
+def solution(user_id, banned_id):
+    global used,ans_list
+    answer = 0
+    ban_list = []
+    for x in banned_id :
+        tmp = []
+        for y in user_id :
+            if len(x) == len(y) :
+                flag = 1
+                for i in range (len(x)) :
+                    if x[i] == '*' :
+                        continue
+                    if x[i] != y[i] :
+                        flag = 0
+                        break
+                if flag : ## 밴이 가능한 아이디인 경우
+                    tmp.append(y)
+        ban_list.append(tmp)
+    ## 경우의 수 찾기
+    ban_list.sort(key=lambda x:(len(x)))
+    used = []
+    ans_list = []
+    DFS(0,ban_list)
+    answer = len(ans_list)
+    return answer
+
+if __name__ == "__main__" :
+    user_id = ["frodo", "fradi", "crodo", "abc123", "frodoc"]
+    banned_id = ["fr*d*", "*rodo", "******", "******"]
+    print(solution(user_id,banned_id))

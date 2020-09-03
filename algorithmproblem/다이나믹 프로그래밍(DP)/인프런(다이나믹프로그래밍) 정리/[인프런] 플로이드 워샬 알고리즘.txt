@@ -1,0 +1,26 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+INF = sys.maxsize
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    path = [[INF]*(N+1) for _ in range (N+1)]
+    for _ in range (M) :
+        a,b,c = map(int,input().split())
+        path[a][b] = c
+
+    for i in range (1,N+1) :
+        path[i][i] = 0 ## 자기 자신에 대한 비용은 0으로 한다.
+
+    ## 노드 k를 거쳐 가는 모든 경우의 수를 생각해본다.
+    for k in range (1,N+1) :
+        for i in range (1,N+1) :
+            for j in range (1,N+1) :
+                path[i][j] = min(path[i][j],path[i][k]+path[k][j])
+
+    for i in range (1,N+1) :
+        for  j in range (1,N+1) :
+            print(path[i][j] if path[i][j] != sys.maxsize else 'M',end=' ')
+        print()
