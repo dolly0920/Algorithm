@@ -1,0 +1,43 @@
+https://www.acmicpc.net/problem/6209
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def solve(distance) : ## 최소거리가 distance일 때의 제거된 섬의 '최소' 개수 ## 최소거리 보다 작은 섬 간격이 나온다면 그 섬 제거
+    cur = 0 ## 시작점(현재위치) 좌표
+    cnt = 0 ## 제거된 섬의 갯수
+    pointer = 0 ## 섬의 좌표가 적혀있는 리스트의 인덱스
+    while True :
+        if pointer == n :
+            break
+        if info[pointer]-cur < distance : ## 최소거리보다 작다면 섬 제거 (필수!)
+            pointer += 1
+            cnt += 1
+        else : ## 최소거리보다 크거나 같은 경우 (이 경우에도 제거할 수 있지만 함수의 리턴값 조건에 맞게 제거를 하지 않는다.)
+            cur = info[pointer]
+            pointer += 1
+
+    return cnt ## 제거된 섬의 개수
+
+
+if __name__ == "__main__" :
+    d,n,m = map(int,input().split()) ## 탈출구까지의 거리 d, 작은 돌섬의 수 n, 제거할 수 있는 섬의 개수 m
+    info = []
+    for _ in range (n) : ## 작은 돌섬 각각의 거리
+        info.append(int(input()))
+    info.sort()
+    max_distance = 0
+
+    ## 학생들이 점프할 수 있는 최소거리의 최댓값
+    left = 0
+    right = d ## 최대거리로 잡는다.
+    answer = 0
+    while left<=right :
+        mid = (left+right)//2 ## mid=>섬 간의 최소거리
+        if solve(mid) <= m : ## 제거된 섬의 개수가 m보다 작거나 같다면(조건 만족)
+            answer = mid ## 답 저장
+            left = mid+1 ## 최소값중 최댓값을 찾아야 하므로 (조건을 만족하는 값들 중 최댓값을 찾아야한다)
+        else : ## 제거된 섬의 개수가 m보다 크다면
+            right = mid-1
+    print(answer)

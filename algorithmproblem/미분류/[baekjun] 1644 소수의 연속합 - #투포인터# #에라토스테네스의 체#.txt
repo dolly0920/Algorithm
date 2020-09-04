@@ -1,0 +1,43 @@
+https://www.acmicpc.net/problem/1644
+----------------------------------------------------------------------------------------------------------------
+## 투포인터 : deque을 통해 구현함 ==> prefix_sum을 통해 left right 포인터 활용도 가능
+import sys
+import math
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input())
+    check = [0]*(N+1) ## check[i]=0 : i는 소수임을 뜻한다.
+    check[1] = 1
+    ## 에라토스테네스의 체
+    for i in range (2,int(math.sqrt(N))) :
+        if check[i] == 0 : ## 소수라면
+            for j in range (i+i,N+1,i) :
+                check[j] = 1 ## 소수의 배수는 소수가 아니다.
+
+    answer = 0 ## N을 소수의 합으로 나타낼 수 있는 가지수
+
+    res = 0 ## 중간과정의 소수들의 합
+    q = deque() ## 합친 소수들의 배열 ( q.popleft()를 통해 연속된 소수들 중 가장 작은 소수를 빼고 연산을 할 것이다. )
+    for i in range (1,N+1) :
+        if check[i] == 0 : ## 소수라면
+            if res+i > N : ## 소수 i를 더했을 때 N보다 커진다면
+                while True :
+                    tmp = q.popleft() ## 현재 더해져 있는 소수들 중 가장 작은 소수 pop
+                    res -= tmp ## 값에서 뺀다.
+                    if res+i <= N : ## 작거나 같다면
+                        break
+                q.append(i) ## q에 더한다.
+                res += i ## 값을 합친다.
+                if res == N :
+                    answer += 1 ## 경우의 수 추가
+            elif res+i == N : ## 소수 i를 더했을 때 N이 된다면
+                answer += 1 ## 경우의 수 추가
+                res += i
+                q.append(i) ## 이 경우 res==N이 된다.
+            else : ## res+i < N 인 경우
+                res += i
+                q.append(i)
+    print(answer)
