@@ -1,0 +1,71 @@
+https://www.acmicpc.net/problem/18428
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def test() : ## 선생님들의 감시에 학생들이 걸리는지 여부 확인
+    '''
+    print("-------")
+    for i in range (N) :
+        for j in range (N) :
+            print(MAP[i][j],end=' ')
+        print()
+    '''
+    for x in teacher :
+        ## x[0],x[1] : 선생님 좌표
+        ##print(x)
+        for i in range (N) : ## 상
+            if x[0]-i < 0 or MAP[x[0]-i][x[1]] == 'O': ## 범위를 벗어나거나 장애물을 만났을 때
+                break
+            if MAP[x[0]-i][x[1]] == 'S' :
+                ##print("상")
+                return False
+        for i in range (N) : ## 하
+            if x[0]+i >= N or MAP[x[0]+i][x[1]] == 'O' :
+                break
+            if MAP[x[0]+i][x[1]] == 'S' :
+                ##print("하")
+                return False
+        for i in range (N) : ## 좌
+            if x[1]-i < 0 or MAP[x[0]][x[1]-i] == 'O' :
+                break
+            if MAP[x[0]][x[1]-i] == 'S' :
+                ##print("좌")
+                return False
+        for i in range (N) : ## 우
+            if x[1]+i >= N or MAP[x[0]][x[1]+i] == 'O' :
+                break
+            if MAP[x[0]][x[1]+i] == 'S' :
+                ##print("우")
+                return False
+    return True
+
+
+def DFS(depth,index) :
+    global tmp
+    if depth == 3 :
+        if test() :
+            print("YES")
+            sys.exit()
+        return
+
+    for i in range (index,len(obstacle)) :
+        MAP[obstacle[i][0]][obstacle[i][1]] = 'O' ## 장애물
+        DFS(depth+1,i+1)
+        MAP[obstacle[i][0]][obstacle[i][1]] = 'X' ## 빈칸
+
+if __name__ == "__main__" :
+    N = int(input())
+    MAP = []
+    obstacle = [] ## 장애물 좌표
+    teacher = [] ## 선생님 좌표
+    for i in range (N) :
+        MAP.append(list(map(str,input().split())))
+        for j in range (N) :
+            if MAP[i][j] == 'X' :
+                obstacle.append((i,j))
+            if MAP[i][j] == 'T' :
+                teacher.append((i,j))
+    DFS(0,0)
+    print("NO")
