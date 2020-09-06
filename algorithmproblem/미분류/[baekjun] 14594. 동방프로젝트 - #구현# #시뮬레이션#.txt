@@ -1,0 +1,16 @@
+https://www.acmicpc.net/problem/14594
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input())
+    M = int(input())
+    room = [1]*(N+1)
+    room[0] = 0
+    for _ in range (M) :
+        a,b = map(int,input().split())
+        for i in range (a,b) : ## b 점은 1로 그대로 놔두면 0000으로 합쳐진 방은 한개로 처리된다.
+            room[i] = 0 ## 벽을 허무는 과정
+    print(room.count(1))
