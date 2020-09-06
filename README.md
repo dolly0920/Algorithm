@@ -1,7 +1,5 @@
 # Algorithm
-> 코딩테스트에 필요한 알고리즘 
-
-**BFS** / **DFS** / **Union Find** / **위상정렬** / **다익스트라** / **트라이**
+> 코딩테스트에 필요한 알고리즘 **BFS** / **DFS** / **Union Find** / **위상정렬** / **다익스트라** / **트라이**
 
 ### BFS ([대표문제 백준 7576번 토마토](https://www.acmicpc.net/problem/7576))
   import sys
