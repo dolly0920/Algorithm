@@ -49,6 +49,3 @@
                       print(day)
                       sys.exit()
       print(-1)
-
-
-
