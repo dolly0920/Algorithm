@@ -55,4 +55,99 @@ Code(Python3):
                         sys.exit()
         print(-1)
  
-End codeblock
+
+## DFS ([대표문제 백준 15683번 감시](https://www.acmicpc.net/problem/15683))
+
+Code(Python3) :
+
+    import sys
+    from copy import deepcopy
+
+    sys.stdin = open("input.txt","rt")
+
+    INF = sys.maxsize
+
+
+    def make_arr(r,c,arr,space) :
+        space = deepcopy(space)
+        for x in arr :
+            if x == 0 :
+                for i in range (c,-1,-1) :
+                    if space[r][i] == 6 :
+                        break
+                    if space[r][i] == 0 :
+                        space[r][i] = 9
+            elif x == 1 :
+                for i in range (c,M) :
+                    if space[r][i] == 6 :
+                        break
+                    if space[r][i] == 0 :
+                        space[r][i] = 9
+            elif x == 2 :
+                for i in range (r,-1,-1) :
+                    if space[i][c] == 6 :
+                        break
+                    if space[i][c] == 0 :
+                        space[i][c] = 9
+            elif x == 3 :
+                for i in range (r,N) :
+                    if space[i][c] == 6 :
+                        break
+                    if space[i][c] == 0 :
+                        space[i][c] = 9
+
+        return space
+
+
+    def solve(camera,space,index) :
+        global ans
+
+        if index == len(camera) :
+            cnt = 0
+            for i in range (N) :
+                for j in range (M) :
+                    if space[i][j] == 0 :
+                        cnt += 1
+            ans = min(ans,cnt)
+            return
+
+        if camera[index][2] == 1 :
+            arr = [[0],[1],[2],[3]]
+            for x in arr :
+                next_space = make_arr(camera[index][0],camera[index][1],x,space)
+                solve(camera,next_space,index+1)
+        elif camera[index][2] == 2 :
+            arr = [[0,1],[2,3]]
+            for x in arr :
+                next_space = make_arr(camera[index][0],camera[index][1],x,space)
+                solve(camera,next_space,index+1)
+        elif camera[index][2] == 3 :
+            arr = [[2,1],[1,3],[3,0],[0,2]]
+            for x in arr :
+                next_space = make_arr(camera[index][0],camera[index][1],x,space)
+                solve(camera,next_space,index+1)
+        elif camera[index][2] == 4 :
+            arr = [[0,2,1],[2,1,3],[1,3,0],[2,0,3]]
+            for x in arr :
+                next_space = make_arr(camera[index][0],camera[index][1],x,space)
+                solve(camera,next_space,index+1)
+        elif camera[index][2] == 5 :
+            arr = [[0,1,2,3]]
+            for x in arr :
+                next_space = make_arr(camera[index][0],camera[index][1],x,space)
+                solve(camera,next_space,index+1)
+
+
+    if __name__ == "__main__" :
+        N,M = map(int,input().split())
+        space = []
+        ans = INF
+        for _ in range (N) :
+            space.append(list(map(int,input().split())))
+        camera = []
+        for i in range (N) :
+            for j in range (M) :
+                if 1 <= space[i][j] <=5 :
+                    camera.append((i,j,space[i][j]))
+        solve(camera,space,0)
+        print(ans)
