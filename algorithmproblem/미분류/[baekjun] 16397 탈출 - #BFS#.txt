@@ -1,0 +1,48 @@
+https://www.acmicpc.net/problem/16397
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+def Button_B(num) : ## 버튼 B를 눌렀을 때 처리
+    num = num*2 ## 2를 곱한다.
+    if num > 99999 :
+        return -1
+    num_length = len(str(num))
+    num -= 10**(num_length-1)
+    return num
+
+def BFS(num,limit,target) : ## 숫자, 횟수, 타겟
+    q = deque()
+    visit = [0]*100000
+    visit[N] = 1
+    q.append(num)
+    cnt = 0
+
+    while q :
+        q_len = len(q)
+        if cnt > limit :
+            return "ANG"
+        while q_len :
+            q_len -= 1
+            number = q.popleft()
+            if number == target :
+                return cnt
+            ## 버튼 A를 누르는 경우
+            if number+1 <= 99999 and visit[number+1] == 0:
+                visit[number+1] = 1
+                q.append(number+1)
+            ## 버튼 B를 누르는 경우
+            if number == 0 : ## 0인 경우 B를 눌러도 변화가 없다.
+                continue
+            tmp = Button_B(number)
+            if tmp != -1 and tmp <= 99999 and visit[tmp] == 0 :
+                visit[tmp] = 1
+                q.append(tmp)
+        cnt += 1
+    return "ANG"
+
+if __name__ == "__main__" :
+    N,T,G = map(int,input().split()) ## 숫자, 버튼 누르는 횟수, target
+    print(BFS(N,T,G))
