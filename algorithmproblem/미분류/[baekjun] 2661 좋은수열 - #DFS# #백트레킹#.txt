@@ -1,0 +1,29 @@
+https://www.acmicpc.net/problem/2661
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+def test(n) :
+    n = str(n)
+    length = len(n)
+    for i in range (length) : ## 시작점
+        for j in range (1,(length-i)//2+1) :
+            if n[i:i+j] == n[i+j:i+j+j] :
+                return False
+    return True
+
+def DFS(depth,num) :
+    if test(num) == False :
+        return
+
+    if depth == N :
+        print(num)
+        sys.exit()
+
+    for i in range (1,4) :
+        DFS(depth+1,num*10+i)
+
+if __name__ == "__main__" :
+    N = int(input())
+    DFS(0,0)
