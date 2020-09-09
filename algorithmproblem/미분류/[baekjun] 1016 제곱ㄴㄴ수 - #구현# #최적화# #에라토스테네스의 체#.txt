@@ -1,0 +1,26 @@
+https://www.acmicpc.net/problem/1016
+----------------------------------------------------------------------------------------------------------------
+import sys
+import math
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    MIN,MAX = map(int,input().split()) ## min,max ## min-max에서 제곱수로 나누어 떨어지지 않는 수
+    ## 제곱수 체크
+    check = [True]*(MAX-MIN+1)
+
+    cnt = 0
+    for i in range (2,int(math.sqrt(MAX)+1)) : ## 1 - MAX의 제곱근 까지의 숫자
+        square = i*i ## 제곱수
+        j = MIN//square ## 시작 숫자 ( 이전은 탐색할 필요가 없다 )
+        while True :
+            if square*j > MAX :
+                break
+            ## square*j => 제곱의 배수 (실제 숫자)
+            index = square*j - MIN
+            if index >= 0 and check[index]: ## 위의 배열에 들어갈 수 있다면
+                check[index] = False
+                cnt += 1 ## 범위 내 제곱수의 배수 갯수 카운트
+            j += 1
+    print(MAX-MIN+1-cnt)

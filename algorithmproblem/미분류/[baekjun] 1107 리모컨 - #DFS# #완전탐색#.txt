@@ -1,0 +1,31 @@
+https://www.acmicpc.net/problem/1107
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(num) : ## string형태의 number가 온다 ("")
+    global answer
+    if len(num) == 6 :
+        return
+
+    for x in number :
+        cur = num + x
+        answer = min(answer,len(cur)+abs(N-int(cur)))
+        DFS(cur)
+    return
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## 수빈이가 이동하려고 하는 채널 (현재 채널은 100이다) ## N 최대 500000
+    M = int(input()) ## 고장난 버튼의 갯수
+    if (M==0) :
+        print(min(len(str(N)),abs(N-100)))
+    else :
+        number = {'0','1','2','3','4','5','6','7','8','9'}
+        broken = set(input().split())
+        number -= broken ## 차집합
+        ##print(number)
+        answer = abs(N - 100)
+        DFS('')
+        print(answer)
