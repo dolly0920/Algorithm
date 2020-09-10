@@ -1,0 +1,33 @@
+https://www.acmicpc.net/problem/2629
+--------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(left,right,index) :
+    global visit,possible
+    weight = abs(left-right)
+    if weight not in possible : ## 중복값 처리
+        possible.append(weight)
+    if index == N :
+        return
+    if weight not in visit[index] : ## 같은 상태로 방문한 적이 없는 경우
+        visit[index].append(weight) ## 방문체크
+        DFS(left,right,index+1) ## 추를 사용하지 않는 경우
+        DFS(left+sinker[index],right,index+1) ## 왼쪽에 추를 올리는 경우
+        DFS(left,right+sinker[index],index+1) ## 오른쪽에 추를 올리는 경우
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## 추의 갯수
+    sinker = list(map(int,input().split())) ## 추의 무게 (오름차순)
+    M = int(input()) ## 구슬의 갯수
+    marble = list(map(int,input().split())) ## 구슬의 무게
+    visit = [[] for _ in range (N)]
+    possible = []
+    DFS(0,0,0)
+    for x in marble :
+        if x in possible :
+            print("Y",end=' ')
+        else :
+            print("N",end=' ')
