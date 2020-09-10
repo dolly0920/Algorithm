@@ -1,0 +1,28 @@
+https://programmers.co.kr/learn/courses/30/lessons/17687
+--------------------------------------------------------------------------------------------------------------
+trans_num = {0:'0',1:'1',2:'2',3:'3',4:'4',5:'5',6:'6',7:'7',8:'8',9:'9',10:'A',11:'B',12:'C',13:'D',14:'E',15:'F'}
+
+def transform(n,num) : ## 십진수 num를 n진법 수로 반환하여 return
+    if num == 0 :
+        return "0"
+    res = ""
+    while num>0 :
+        res += trans_num[num%n]
+        num = num//n
+    res = res[::-1]
+    return res
+
+def solution(n, t, m, p): ## m명이라면 => 나머지연 산 ~ m-1까지
+    answer = ''
+    order = 0
+    i = 0
+    while True :
+        tmp = transform(n,i)
+        for j in range (len(tmp)) :
+            ## order의 순서에 말하는 문자 tmp[j]
+            if order == p-1 :
+                answer += tmp[j]
+                if len(answer) == t :
+                    return answer
+            order = (order+1)%m
+        i+=1

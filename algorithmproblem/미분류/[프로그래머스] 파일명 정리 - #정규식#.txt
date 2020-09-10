@@ -1,0 +1,8 @@
+https://programmers.co.kr/learn/courses/30/lessons/17686
+-----------------------------------------------------------------------
+import re
+
+def solution(files):
+    ## re 정규식 활용
+    answer = ["".join(x) for x in sorted([re.split(r"([0-9]+)",s) for s in files],key=lambda x:(x[0].lower().lstrip(),int(x[1])))]
+    return answer
