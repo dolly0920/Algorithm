@@ -1,0 +1,40 @@
+https://programmers.co.kr/learn/courses/30/lessons/17682
+----------------------------------------------------------------------------------------------------------------
+def solution(dartResult):
+    score = {'S': 1, 'D': 2, 'T': 3}
+    gain = []
+    cur = 0
+    flag = 0
+    prev = ""
+    for x in dartResult:
+        if x.isdecimal():
+            if flag and not prev.isdecimal(): ## 숫자가 처리되지 않았고 이전이 숫자가 아니라면
+                gain.append(cur) ## append한 후 처리도 해줘야함
+
+            if prev.isdecimal() : ## 이전 문자가 숫자인 경우
+                cur = 10
+            else :
+                flag = 1
+                cur = int(x)
+                prev = x
+        elif x in score:
+            cur = cur ** score[x]
+            prev = x
+        elif x == '*':  ## 스타상 => 해당 점수와 바로 전에 얻은 점수를 각 2배로 만든다.
+            if gain :
+                gain[-1] *= 2
+            cur *= 2
+            gain.append(cur)
+            cur = 0
+            flag = 0
+            prev = x
+        elif x == '#':  ## 아차상 => 해당 점수는 마이너스 된다.
+            gain.append(-cur)
+            cur = 0
+            flag = 0
+            prev = x
+    if cur != 0:
+        gain.append(cur)
+    ##print(gain)
+    answer = sum(gain)
+    return answer

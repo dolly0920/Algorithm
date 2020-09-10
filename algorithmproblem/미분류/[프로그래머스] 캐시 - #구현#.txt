@@ -1,0 +1,22 @@
+https://programmers.co.kr/learn/courses/30/lessons/17680
+----------------------------------------------------------------------------------------------------------------
+def solution(cacheSize, cities):
+    answer = 0
+    cache = []
+    if cacheSize == 0 :
+        return len(cities)*5
+    for x in cities :
+        if x.lower() in cache : ## hit
+            cache.pop(cache.index(x.lower()))
+            cache.append(x.lower())
+            answer += 1
+        else :
+            if len(cache) < cacheSize :
+                cache.append(x.lower())
+                answer += 5
+            else :
+                cache.pop(0)
+                cache.append(x.lower())
+                answer += 5
+    
+    return answer

@@ -1,0 +1,51 @@
+https://programmers.co.kr/learn/courses/30/lessons/17683
+--------------------------------------------------------------------------------
+def compare_str(str1,str2) : ## str1 배열에 str2 배열이 있는지 확인 (#제외)
+    for i in range (len(str1)) :
+        if str1[i] == str2[0] and i+len(str2) <= len(str1) :
+            flag = 1
+            for j in range (len(str2)) :
+                if str1[i+j] != str2[j] :
+                    flag = 0
+                    break
+            if flag :
+                return True
+    return False
+
+
+def solution(m, musicinfos):
+    answer = "'(None)'"
+    info = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    actual_m = []
+    for i in range(len(m)):
+        if not m[i].isalpha():
+            continue
+        if i + 1 < len(m) and m[i:i + 2] in info:
+            actual_m.append(m[i:i + 2])
+        else:
+            actual_m.append(m[i])
+    ans_play = -1
+    for x in musicinfos:
+        x = x.split(',')
+        start, end, title, contents = x[0], x[1], x[2], x[3]
+        start_t = int(start.split(':')[0]) * 60 + int(start.split(':')[1])
+        end_t = int(end.split(':')[0]) * 60 + int(end.split(':')[1])
+        play_time = end_t - start_t  ## 해당곡 플레이 시간
+        listen_contents = []
+        actual_contents = []
+        for i in range (len(contents)) :
+            if not contents[i].isalpha() :
+                continue
+            if i+1<len(contents) and contents[i:i+2] in info :
+                actual_contents.append(contents[i:i+2])
+            else :
+                actual_contents.append(contents[i])
+        for i in range(play_time):
+            listen_contents.append(actual_contents[i % len(actual_contents)])
+
+        if compare_str(listen_contents,actual_m) :
+            if play_time > ans_play :
+                answer = title
+                ans_play = play_time
+
+    return answer

@@ -1,0 +1,25 @@
+https://www.acmicpc.net/problem/1806
+------------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N,S = map(int,input().split())
+    arr = list(map(int,input().split()))
+    prefix_sum = [0]*(N+1) ## prefix_sum[i] : i-1번 인덱스까지의 합
+    for i in range (N) :
+        prefix_sum[i+1] = prefix_sum[i]+arr[i]
+    left = 0
+    right = 1
+    ans = sys.maxsize
+    while left <= right :
+        if right > N : ## right의 인덱스가 prefix_sum의 인덱스를 초과한 경우
+            break
+        tmp = prefix_sum[right]-prefix_sum[left] ## left - right-1 인덱스의 합
+        if tmp < S : ## 구간 합이 S보다 작은 경우 구간을 확장한다
+            right += 1
+        else : ## 구간 합이 S보다 큰 경우 구간 길이를 저장하고 범위를 축소한다.(left를 앞으로 당겨 더 작은 범위의 조건 만족 구간을 찾는다)
+            ans = min(ans,right-left)
+            left += 1
+    print(ans if ans != sys.maxsize else 0)
