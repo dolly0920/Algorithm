@@ -1,0 +1,22 @@
+def solution(boxes):
+    answer = -1
+    dic = {}
+    for x,y in boxes : ## 최대 100000
+        if x not in dic :
+            dic[x] = 1
+        else :
+            dic[x] += 1
+
+        if y not in dic :
+            dic[y] = 1
+        else :
+            dic[y] += 1
+
+    cnt = 0
+    for value in dic.values() : ## 최대 20만개 ==> 10만 + 20만
+        if value % 2 != 0 :
+            cnt += 1
+
+    answer = cnt//2
+    if cnt % 2 != 0 : answer += 1
+    return answer

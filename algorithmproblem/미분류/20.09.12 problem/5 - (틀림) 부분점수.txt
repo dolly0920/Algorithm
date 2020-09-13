@@ -1,0 +1,77 @@
+def trans(hour,minutes,seconds) :
+    return int(hour)*3600 + int(minutes)*60 + int(seconds)
+
+def solve(time_dic,start,adv_time) : ## 누적 재생 시간 구하기
+    s_time = time_dic[start][0]
+    s_cnt = time_dic[start][1]
+    e_time = time_dic[start][0] + adv_time
+    res = 0
+    for i in range (start+1,len(time_dic)) :
+        if s_time <= time_dic[i][0] <= e_time : ## 구간 내의 시간이라면
+            res += s_cnt*(time_dic[i][0]-s_time)
+            s_time = time_dic[i][0]
+            s_cnt = time_dic[i][1] ## 갱신
+        else:
+            break
+    return res
+
+def second_to_time(seconds) : ## 초를 ("hh:mm:ss")형태로 리턴
+    hh = seconds//3600
+    seconds = seconds%3600
+    mm = seconds//60
+    ss = seconds%60
+    ## 문자열 공백 처리
+    hh = str(hh).rjust(2,'0')
+    mm = str(mm).rjust(2,'0')
+    ss = str(ss).rjust(2,'0')
+    return hh+":"+mm+":"+ss
+
+
+def solution(play_time, adv_time, logs):
+    answer = ''
+    ## 재생시간
+    hour,minutes,seconds = play_time.split(":")
+    play_time = trans(hour,minutes,seconds)
+
+    ## 공익광고시간
+    hour,minutes,seconds = adv_time.split(":")
+    adv_time = trans(hour,minutes,seconds)
+
+    time_log = []
+    for x in logs :
+        start,end = x.split("-")
+        ## 시작,끝 (초로 전환)
+        hour,minutes,seconds = start.split(":")
+        start_time = trans(hour,minutes,seconds)
+        hour,minutes,seconds = end.split(":")
+        end_time = trans(hour,minutes,seconds)
+        time_log.append((start_time,"s"))
+        time_log.append((end_time,"e"))
+
+    time_log.sort() ## 오름차순 정렬
+
+    time_dic = []
+    ing = 0 ## 현재 보고 있는 인원
+    max_ing = 0
+    for time,state in time_log :
+        if state == 's' :
+            ing += 1
+            if ing > max_ing :
+                max_ing = ing
+            time_dic.append((time,ing,'s'))
+        else :
+            ing -= 1
+            time_dic.append((time,ing,'e'))
+
+    max_value = 0 ## 최대 누적 재생시간
+    for i in range (len(time_dic)) :
+        if time_dic[i][2] == 's' : ## 출발점부터
+            tmp = solve(time_dic,i,adv_time)
+            if tmp > max_value :
+                max_value = tmp
+                answer = time_dic[i][0]
+
+    answer = second_to_time(answer)
+
+
+    return answer

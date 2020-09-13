@@ -1,0 +1,60 @@
+https://www.acmicpc.net/problem/6593
+----------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [1,-1,0,0,0,0]
+dc = [0,0,1,-1,0,0]
+dl = [0,0,0,0,1,-1]
+
+def BFS() :
+    q = deque()
+    visit[sl][sr][sc] = 1
+    q.append((sl,sr,sc))
+    res = 0
+
+    while q :
+        q_len = len(q)
+        while q_len :
+            q_len -= 1
+            l,r,c = q.popleft()
+            if l==tl and r==tr and c==tc :
+                return "Escaped in " + str(res) + " minute(s)."
+            for i in range (6) :
+                nr = r + dr[i]
+                nc = c + dc[i]
+                nl = l + dl[i]
+                if nr<0 or nr>=R or nc<0 or nc>=C or nl<0 or nl>=L :
+                    continue
+                if building[nl][nr][nc] == '#' or visit[nl][nr][nc] == 1:
+                    continue
+                visit[nl][nr][nc] = 1
+                q.append((nl,nr,nc))
+        res += 1
+
+    return "Trapped!"
+
+
+if __name__ == "__main__" :
+    while True :
+        L,R,C = map(int,input().split()) ## L : 층,  R,C : 한층의 열과 갯수
+        if (L==0 and R==0 and C==0) :
+            break
+        building = [] ## building[층][행][열] ## building[L][R][C]
+        for i in range (L) :
+            MAP = []
+            for j in range (R+1) :
+                tmp = list(input())
+                if len(tmp) == 0 :
+                    break
+                for k in range (len(tmp)) :
+                    if tmp[k] == 'S' :
+                        sl,sr,sc = i,j,k
+                    if tmp[k] == 'E' :
+                        tl,tr,tc = i,j,k
+                MAP.append(tmp)
+            building.append(MAP)
+        visit = [[[0 for _ in range (C)] for _ in range (R)] for _ in range (L)]
+        print(BFS())

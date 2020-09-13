@@ -1,0 +1,72 @@
+https://programmers.co.kr/learn/courses/30/lessons/60060
+------------------------------------------------------------------------------------------------------------------------
+<Trie>
+class Node:
+    def __init__(self, key, data=None):
+        self.key = key
+        self.data = data
+        self.children = {}  ## 자식 노드
+        self.length = {} ## 거쳐가는 노드들의 문자열 길이 (딕셔너리형태로)
+
+
+class Trie:
+    def __init__(self):
+        self.head = Node(None)  ## root노드
+
+    def insert(self, string):
+        curr_node = self.head  ## root노드로 노드설정
+        if len(string) in curr_node.length :
+            curr_node.length[len(string)] += 1
+        else :
+            curr_node.length[len(string)] = 1
+
+        for char in string:
+            if char not in curr_node.children:
+                curr_node.children[char] = Node(char)  ## 자식 생성
+            curr_node = curr_node.children[char]  ## 노드 갱신
+            if len(string) in curr_node.length:
+                curr_node.length[len(string)] += 1
+            else:
+                curr_node.length[len(string)] = 1
+
+        curr_node.data = string  ## string의 끝에 data를 담는다.
+
+
+    def starts_with(self,string):
+        curr_node = self.head
+
+        for char in string :
+            if char == '?' :
+                if len(string) in curr_node.length :
+                    return curr_node.length[len(string)]
+                else :
+                    return 0
+            if char not in curr_node.children :
+                return 0
+            curr_node = curr_node.children[char]
+
+        if curr_node.data != None : ## 문자열의 끝
+            return 1
+        else :
+            return 0
+
+
+def solution(words, queries):
+    answer = []
+    p = Trie()  ## p라는 트라이 생성
+    r = Trie() ## 역방향 트라이
+
+    for x in words:
+        p.insert(x)  ## 트라이 삽입
+        r.insert(x[::-1]) ## 역방향 트라이 삽입
+
+
+    for y in queries :
+        if y[0] == '?' :
+            y = y[::-1] ## 역방향
+            answer.append(r.starts_with(y))
+        else :
+            answer.append(p.starts_with(y))
+    return answer
+
+<문자열함수>

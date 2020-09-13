@@ -1,0 +1,48 @@
+https://programmers.co.kr/learn/courses/30/lessons/60058
+----------------------------------------------------------------------
+def test_arr(arr):  ## 올바른 괄호열인지 확인
+    stack = []
+    for i in range(len(arr)):
+        if arr[i] == '(':
+            stack.append('(')
+        else:
+            if len(stack) == 0:
+                return False
+            stack.pop()
+    return True
+
+
+def solution(p):
+    answer = ''
+    if len(p) == 0:  ## 1
+        return answer
+
+    while len(p) > 0:
+        cnt = 0
+        for i in range (len(p)) :
+            if p[i] == '(' :
+                cnt += 1
+            else :
+                cnt -= 1
+            if cnt == 0 :
+                u = p[:i+1]
+                v = p[i+1:]
+                break
+
+        if test_arr(u):  ## u가 올바른 문자열이라면
+            answer += u
+            p = p[i + 1:]
+
+        else:  ## u가 올바른 문자열이 아니라면
+            tmp = "(" + solution(v) + ")"  ## 재귀 수행
+            u = u[1:-1]
+            ## u의 괄호방향을 뒤집는다.
+            tmp1 = ""
+            for x in u :
+                if x == '(' :
+                    tmp1 += ')'
+                else :
+                    tmp1 += '('
+            p = tmp+tmp1
+
+    return answer

@@ -1,0 +1,50 @@
+https://programmers.co.kr/learn/courses/30/lessons/60059
+----------------------------------------------------------------------
+def rotate_key(key) : ## 반시계방향 회전
+    length = len(key)
+    arr = [[0]*length for _ in range (length)]
+    for i in range (length) :
+        for j in range (length) :
+            arr[i][j] = key[j][length-1-i]
+    return arr
+
+def compare_arr(key,lock) : ## 확장-이동 열쇠배열과 자물쇠 배열 비교
+    ## 1. 자물쇠의 홈에 열쇠의 돌기가 없는 경우 (불가능)
+    ## 2. 자물쇠의 돌기와 열쇠의 돌기가 만나는 경우 (불가능)
+    for i in range (len(lock)) :
+        for j in range (len(lock)) :
+            if lock[i][j] == 0 and key[i][j] != 1 : ## 자물쇠의 홀에 열쇠의 돌기가 들어오지 않는 경우
+                return False
+            if lock[i][j] == 1 and key[i][j] == 1 : ## 돌기끼리 부딪히는 경우
+                return False
+    return True
+
+
+def solve(key,lock) : ## key를 lock에 넣어 확인한다. (이동하는 경우까지 확인)
+    ## key는 왼쪽으로는 len(key)-1만큼, 오른쪽으로는 len(lock)-1만큼 이동가능
+
+    for i in range (-len(key)+1,len(lock)) : ## 행이동
+        for j in range (-len(key)+1,len(lock)) : ## 열이동
+            arr = [[0]*len(lock) for _ in range (len(lock))]
+            for r in range (len(key)) :
+                for c in range (len(key)) : ## 열쇠이동
+                    nr,nc = r+i,c+j
+                    if nr<0 or nr>=len(lock) or nc<0 or nc>=len(lock) :
+                        continue
+                    arr[nr][nc] = key[r][c]
+            ## 이동한 열쇠배열(arr)과 lock배열 비교
+            if compare_arr(arr,lock) : ## 비교해서 모든 조건을 만족하는 경우
+                return True
+    return False
+
+
+def solution(key, lock):
+    rotate_cnt = 0
+
+    while rotate_cnt<=3 :
+        if solve(key,lock) :
+            return True
+        key = rotate_key(key)
+        rotate_cnt += 1
+
+    return False

@@ -1,0 +1,30 @@
+from itertools import combinations
+
+def solution(orders, course):
+    menu = {} ## "음식" : (주문횟수) 형태로 저장
+    answer = []
+    for x in orders :
+        x = "".join(sorted(list(x)))
+        for y in course : ## y는 조합의 갯수
+            com_list = list(combinations(x,y))
+            for z in com_list :
+                if z in menu :
+                    menu[z] += 1
+                else :
+                    menu[z] = 1
+    print(menu)
+    for com,cnt in menu.items() :
+        if cnt>=2 :
+            answer.append((com,cnt))
+    answer.sort(key=lambda x:x[1],reverse=True)
+    result = []
+    used_info = {} ## 사용한 메뉴조합 길이(len(x)) : (주문횟수)
+    for x in answer :
+        if len(x[0]) not in used_info :
+            used_info[len(x[0])] = x[1]
+            result.append("".join(sorted(x[0])))
+        else : ## 있는 경우
+            if x[1] == used_info[len(x[0])] : ## 같은 경우
+                result.append("".join(sorted(x[0])))
+    result.sort()
+    return result

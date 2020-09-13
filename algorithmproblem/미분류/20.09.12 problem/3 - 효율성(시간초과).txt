@@ -1,0 +1,39 @@
+def solution(info, query):
+    answer = []
+    ## 개발언어 : cpp,java,python 중 하나
+    ## 지원 직군 : backend, frontend 중 하나
+    ## 지원 경력 : junior, senior 중 하나
+    ## 선호 소울푸드 : chicken, pizza 중 하나
+    info_dic = dict()
+
+    for x in info :
+        language,job,career,food,score = x.split()
+        if (language,job,career,food) not in info_dic :
+            info_dic[(language,job,career,food)] = [int(score)]
+        else :
+            info_dic[(language,job,career,food)].append(int(score))
+
+    ##print(info_dic)
+    for x in query :
+        language,job,career,food_score = x.split("and")
+        food, score = food_score.split()
+        score = int(score) ## 숫자 변환
+        language,job,career = language.lstrip().rstrip(),job.lstrip().rstrip(),career.lstrip().rstrip() ## 공백 제거
+        ## key 추출
+        possible_key = [] ## key는 최대 24개 나올 수 있다.
+        for keys in info_dic.keys() :
+            flag = 1
+            if language != '-' and language != keys[0] :  flag = 0
+            elif job != '-' and job != keys[1] :    flag = 0
+            elif career != '-' and career != keys[2] :      flag = 0
+            elif food != '-' and food != keys[3] :  flag = 0
+            elif flag : ## 가능한 key라면
+                possible_key.append(keys)
+        res = 0 ## 가능한 인원
+        for y in possible_key :
+            for z in info_dic[y] :
+                if z >= score :
+                    res += 1
+        answer.append(res)
+
+    return answer

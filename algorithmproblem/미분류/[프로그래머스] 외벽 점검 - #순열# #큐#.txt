@@ -1,0 +1,59 @@
+https://programmers.co.kr/learn/courses/30/lessons/60062
+----------------------------------------------------------------------------------------------------------------
+from collections import deque
+from itertools import permutations
+
+def search(weak,w_index,dist) : ## dist를 초과하는 배열인덱스 찾기
+    for i in range (w_index+1,len(weak)) :
+        if weak[i] > dist :
+            return i
+    return -1 ## 없다.
+
+
+def test(weak,p_list) : ## 취약점 리스트, 순열 리스트(친구들의 이동거리)
+    p_index = 0
+    w_index = 0
+
+    while True :
+        if p_index == len(p_list) : ## 마지막 친구까지 확인한 이후
+            break
+        w_index = search(weak,w_index,weak[w_index]+p_list[p_index]) ## 출발점+탐색범위
+        if w_index == -1 :
+            ##print("조건 만족")
+            return True
+        p_index += 1
+
+    return False
+
+
+def solution(n, weak, dist):
+    answer = -1
+    weak = deque(weak)
+
+    dist.sort(reverse=True)
+
+    for select_cnt in range(1, len(dist) + 1):  ## 선택한 인원
+        if select_cnt == 1:  ## 한명 선택 시
+            for _ in range(len(weak)):
+                if weak[0] + dist[0] >= weak[-1]:
+                    return 1
+                else:
+                    weak.rotate(-1)
+                    weak[-1] += n
+        else : ## 다수 선택 시 (2명 이상)
+            ## 순열
+            ##print("======",end=' ')
+            ##print(select_cnt)
+            permutation_list = list(permutations(dist[:select_cnt],select_cnt))
+            for _ in range (len(weak)) :
+                ##print("main:",end=' ')
+                ##print(weak)
+                for per in permutation_list : ## per => (x,x,x,x,....) 이런 형태의 순열
+                    ##print("sub:",end=' ')
+                    ##print(weak)
+                    if test(weak,per) :
+                        return select_cnt
+                weak.rotate(-1)
+                weak[-1] += n
+        weak = deque(map(lambda x:x%n,weak)) ## 원상복구
+    return answer

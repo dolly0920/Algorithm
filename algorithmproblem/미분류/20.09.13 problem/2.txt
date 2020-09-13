@@ -1,0 +1,32 @@
+from collections import deque
+
+def solution(ball, order):
+    answer = []
+    ball = deque(ball) ## ball 최대 300000
+    wait = set()
+
+    for x in order : ## x는 빼내고싶은 공의 번호
+        if ball[0] == x : ## 왼쪽 끝이 x라면
+            answer.append(ball.popleft())
+        elif ball[-1] == x : ## 오른쪽 끝이 x라면
+            answer.append(ball.pop())
+        else : ## 빠져나오지 못하는 경우 (보류)
+            wait.add(x)
+
+        if len(ball) == 0 : ## 모든 공이 처리되었다면
+            break
+
+        ## 보류 명령 처리 => wait의 최대 크기가 30만-2가 될 수도 있다.
+        while True :
+            flag = 1
+            if ball[0] in wait : ## 왼쪽
+                wait.remove(ball[0])
+                answer.append(ball.popleft())
+                flag = 0
+            if ball[-1] in wait : ## 오른쪽
+                wait.remove(ball[-1]) ## 삭제는 O(1)
+                answer.append(ball.pop())
+                flag = 0
+            if flag : break
+
+    return answer
