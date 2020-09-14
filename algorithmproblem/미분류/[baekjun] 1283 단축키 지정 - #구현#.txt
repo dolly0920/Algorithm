@@ -1,0 +1,30 @@
+https://www.acmicpc.net/problem/1283
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## 옵션의 갯수
+    dic = {}
+    for _ in range (N) :
+        tmp1 = input()
+        tmp2 = list(tmp1.split())
+        flag = 1
+        for i in range (len(tmp2)) :
+            if tmp2[i][0].lower() not in dic :
+                dic[tmp2[i][0].lower()] = 1
+                tmp2[i] = '['+tmp2[i][0]+']'+tmp2[i][1:]
+                print(" ".join(tmp2))
+                flag = 0
+                break
+        if flag : ## 예외의 경우
+            flag = 1
+            for i in range (len(tmp1)) :
+                if tmp1[i].isalpha() and tmp1[i].lower() not in dic :
+                    dic[tmp1[i].lower()] = 1
+                    print(tmp1[:i]+'['+tmp1[i]+']'+tmp1[i+1:])
+                    flag = 0
+                    break
+            if flag :
+                print(tmp1)

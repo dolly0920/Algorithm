@@ -1,0 +1,35 @@
+https://www.acmicpc.net/problem/2002
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## 차의 대수
+    start = []
+    end = []
+    over = [] ## 추월 차량
+    answer = 0
+    for i in range (N) :
+        start.append(input())
+    for i in range (N) :
+        end.append(input())
+
+    left = 0
+    right = 0
+
+    while True :
+        if left>=len(start) or right>=len(end) :
+            break
+        if start[left] == end[right] :
+            left += 1
+            right += 1
+        else : ## 다른 경우
+            if start[left] in over : ## 추월차량 중 있는가?
+                left += 1 ## 이미 이전에 처리를 했으므로
+            else : ## 추월차량으로 등록
+                over.append(end[right]) ## 추월 차량 등록
+                answer += 1
+                right += 1 ## 그 다음 도착하는 차량 탐색
+    print(answer)
