@@ -1,0 +1,20 @@
+https://www.acmicpc.net/problem/15922
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input())
+    left,right = -sys.maxsize,-sys.maxsize
+    answer = 0
+    for _ in range (N) :
+        x,y = map(int,input().split())
+        if x > right : ## 시작점이 이전 범위의 끝 값보다 큰 경우
+            answer += (right-left) ## 이전 범위를 더한다.
+            left = x
+            right = y ## 범위 갱신
+        elif x <= right and y>right :
+            right = y
+    answer += (right-left)
+    print(answer)
