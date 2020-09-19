@@ -1,0 +1,32 @@
+https://www.acmicpc.net/problem/3495
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    h,w = map(int,input().split())
+    check = [[0]*w for _ in range (h)]
+    MAP = []
+    for _ in range (h) :
+        MAP.append(list(input()))
+    answer = 0
+    for i in range (h) :
+        for j in range (w) :
+            if MAP[i][j] == '/' or MAP[i][j] == '\\' :
+                answer += 0.5
+                check[i][j] = 1
+    for i in range (h) :
+        index = 0
+        flag = 0 ## 열리기를 기다리는 상태
+        while True :
+            if index == w :
+                break
+            if check[i][index] == 1 and flag==0: ## '/' or '\'
+                flag = 1 ## 닫히기를 기다리는 상태
+                start = index
+            elif check[i][index] == 1 and flag==1 : ## '/' or '\'
+                flag = 0
+                answer += (index-start-1)
+            index += 1
+    print(int(answer))
