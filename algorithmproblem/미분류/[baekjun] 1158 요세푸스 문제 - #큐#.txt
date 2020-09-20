@@ -1,0 +1,18 @@
+https://www.acmicpc.net/problem/1158
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N,K = map(int,input().split())
+    q = deque(range(1,N+1))
+    answer = []
+    while True :
+        if len(q) == 0 :
+            break
+        for _ in range (K) :
+            q.rotate(-1)
+        answer.append(str(q.pop()))
+    print("<"+", ".join(answer)+">")
