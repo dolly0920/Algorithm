@@ -1,0 +1,25 @@
+https://www.acmicpc.net/problem/1874
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    n = int(input())
+    stack = []
+    answer = []
+    cnt = 1
+    for _ in range (n) :
+        num = int(input())
+        while cnt <= num : ## 숫자가 작을 때 같아질 때까지 push
+            stack.append(cnt)
+            answer.append("+")
+            cnt += 1
+        if stack[-1] == num : ## 마지막 요소가 숫자와 같으면 수열을 만들기 위해 pop (pop하는 숫자가 수열의 요소가 된다.)
+            stack.pop()
+            answer.append("-")
+        else : ## 표현할 수 없는 숫자인 경우
+            print("NO")
+            sys.exit()
+    for x in answer :
+        print(x)

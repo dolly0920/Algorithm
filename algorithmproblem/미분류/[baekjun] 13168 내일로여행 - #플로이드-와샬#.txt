@@ -1,0 +1,53 @@
+https://www.acmicpc.net/problem/13168
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+city_table = dict()
+ticket_free = ['Mugunghwa','ITX-Saemaeul','ITX-Cheongchun'] ## 무료
+ticket_sale = ['S-Train','V-Train'] ## 50% 할인
+
+
+if __name__ == "__main__" :
+    N,R = map(int,input().split())
+    non_buy = [[sys.maxsize]*N for _ in range (N)] ## 티켓을 사지 않은 경우
+    buy = [[sys.maxsize]*N for _ in range (N)] ## 티켓을 산 경우
+    for i in range (N) :
+        non_buy[i][i],buy[i][i] = 0,0 ## 0으로 초기화 (자기자신)
+    city = list(input().split()) ## N개의 도시
+    for i in range (len(city)) :
+        city_table[city[i]] = i
+    M = int(input())
+    travel = list(input().split())
+    K = int(input())
+    for _ in range (K) : ## 교통수단
+        type,s,e,cost = input().split()
+        s,e = city_table[s],city_table[e]
+        non_buy[s][e],non_buy[e][s] = min(non_buy[s][e],int(cost)),min(non_buy[e][s],int(cost))
+        if type in ticket_free :
+            buy[s][e],buy[e][s] = 0,0
+        elif type in ticket_sale :
+            buy[s][e],buy[e][s] = min(buy[s][e],int(cost)//2),min(buy[e][s],int(cost)//2)
+        else :
+            buy[s][e],buy[e][s] = min(buy[s][e],int(cost)),min(buy[e][s],int(cost))
+
+    for k in range (N) :
+        for i in range (N) :
+            for j in range (N) :
+                buy[i][j] = min(buy[i][j],buy[i][k]+buy[k][j])
+                non_buy[i][j] = min(non_buy[i][j],non_buy[i][k]+non_buy[k][j])
+
+    basic_cost = 0
+    buy_cost = 0
+    for i in range (M-1) :
+        start, end = travel[i],travel[i+1]
+        ##print(start,end)
+        start, end = city_table[start],city_table[end]
+        ##print(non_buy[start][end],buy[start][end])
+        basic_cost += non_buy[start][end]
+        buy_cost += buy[start][end]
+    if buy_cost+R >= basic_cost :
+        print("No")
+    else :
+        print("Yes")
