@@ -1,0 +1,53 @@
+https://www.acmicpc.net/problem/1167
+--------------------------
+import sys
+import heapq as hq
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(start,dist) :
+    global answer
+    for point,cost in path[start].items() :
+        if visit[point] == 1 :
+            continue
+        visit[point] = 1
+        DFS(point,dist+cost)
+        visit[point] = 0
+    answer = max(answer,dist)
+    return
+
+
+def BFS(x) : ## 탐색을 시작할 지점을 찾는다.
+    pq = []
+    visit[x] = 1
+    hq.heappush(pq,(0,x))
+
+    while pq :
+        cur_cost,cur = hq.heappop(pq)
+        for x in path[cur] :
+            if visit[x] == 1 :
+                continue
+            visit[x] = 1
+            hq.heappush(pq,(cur_cost+path[cur][x],x))
+    return cur ## 마지막 위치
+
+
+if __name__ == "__main__" :
+    V = int(input())
+    path = [{} for _ in range (V+1)]
+    for _ in range (V) :
+        command = list(map(int,input().split()))
+        command = command[:-1]
+        s = command[0] ## 기준 노드
+        for i in range (1,len(command),2) :
+            if command[i] in path[s] :  path[s][command[i]] = min(path[s][command[i]],command[i+1])
+            else :  path[s][command[i]] = command[i+1]
+            if s in path[command[i]] : path[command[i]][s] = min(path[command[i]][s],command[i+1])
+            else :  path[command[i]][s] = command[i+1]
+    answer = 0
+    visit = [0]*(V+1)
+    start = BFS(1) ## 임의의 점을 넣어 시작점을 구한다
+    visit = [0]*(V+1)
+    visit[start] = 1
+    DFS(start,0)
+    print(answer)
