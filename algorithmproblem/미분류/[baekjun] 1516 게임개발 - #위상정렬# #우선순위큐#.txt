@@ -1,0 +1,37 @@
+https://www.acmicpc.net/problem/1516
+--------------------------------------------------------------------------------------------
+import sys
+import heapq as hq
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## 건물의 종류 수
+    rank = [0]*N
+    cost = [0]*N ## cost[i] : i번 건물이 지어지는데 걸리는 시간
+    path = [[0]*N for _ in range (N)] ## path[i][j] = 연결상태
+    for i in range (N) :
+        tmp = list(map(int,input().split()))
+        tmp = tmp[:-1]
+        cost[i] = tmp[0] ## 짓는데 걸리는 시간
+        for j in range (1,len(tmp)) :
+            rank[i] += 1
+            path[i][tmp[j]-1] = 1
+            path[tmp[j]-1][i] = 1
+
+    pq = []
+    for i in range (N) :
+        if rank[i] == 0 :
+            hq.heappush(pq,(cost[i],i))
+
+    answer = [0]*N ## answer[i] : i번 건물을 짓는데 걸리는 최소시간
+    while pq :
+        cur_cost,cur = hq.heappop(pq)
+        answer[cur] = cur_cost ## 정답 갱신
+        for i in range (N) :
+            if path[cur][i] == 1 and rank[i] > 0: ## 연결되어 있고 rank가 0보다 큰경우
+                rank[i] -= 1
+                if rank[i] == 0 :
+                    hq.heappush(pq,(cur_cost+cost[i],i))
+    for x in answer :
+        print(x)
