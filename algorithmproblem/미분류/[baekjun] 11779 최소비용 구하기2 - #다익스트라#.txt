@@ -1,0 +1,41 @@
+https://www.acmicpc.net/problem/11779
+----------------------------------------------------------------------------------------------------------------
+import sys
+import heapq as hq
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    n = int(input()) ## 도시의 갯수
+    m = int(input()) ## 버스의 갯수
+    path = [{} for _ in range (n+1)]
+    for _ in range (m) :
+        s,e,cost = map(int,input().split())
+        if e in path[s] : path[s][e] = min(path[s][e],cost)
+        else :  path[s][e] = cost
+    s,e = map(int,input().split()) ## 출발, 도착
+    dist = [sys.maxsize]*(n+1) ## dist[i] : s에서 i까지의 최소 거리
+    trace = [0]*(n+1) ## trace[i] : i노드에 최소값으로 도착했을 때 이전 노드
+    dist[s] = 0
+    pq = []
+    hq.heappush(pq,(0,s))
+    while pq :
+        cur_cost,cur_point = hq.heappop(pq)
+        for next,cost in path[cur_point].items() :
+            next_cost = cur_cost+cost
+            if dist[next] > next_cost :
+                dist[next] = next_cost
+                trace[next] = cur_point
+                hq.heappush(pq,(next_cost,next))
+    point = e ## 역추적 시작
+    answer = []
+    while True :
+        if trace[point] == 0 :
+            answer.append(point)
+            break
+        answer.append(point)
+        point = trace[point] ## 갱신
+    print(dist[e])
+    print(len(answer))
+    for x in answer[::-1] :
+        print(x,end=' ')
