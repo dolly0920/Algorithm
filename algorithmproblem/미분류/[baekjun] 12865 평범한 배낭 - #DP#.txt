@@ -1,0 +1,14 @@
+https://www.acmicpc.net/problem/12865
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N,K = map(int,input().split()) ## 물품의 수 N, 버틸 수 있는 무게 K
+    dp = [0] * (K + 1)  ## dp[i] : 무게가 i일 때의 최대 가치
+    for _ in range (N) :
+        W,V = map(int,input().split()) ## 물건의 무게 W, 물건의 가치 V
+        for i in range (K,W-1,-1) : ## 뒤에서부터 해야 같은 물건이 두 번 더해지는 경우를 피할 수 있다!
+            dp[i] = max(dp[i],dp[i-W]+V)
+    print(dp[K])
