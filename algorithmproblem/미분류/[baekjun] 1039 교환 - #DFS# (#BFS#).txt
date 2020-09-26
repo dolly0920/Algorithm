@@ -1,0 +1,35 @@
+https://www.acmicpc.net/problem/1039
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(depth,N) : ## depth : 깊이(연산횟수), 숫자(string배열)
+    global answer
+    if depth == K :
+        answer = max(answer,int("".join(N)))
+        return
+
+    if int("".join(N)) in check[depth] :
+        return
+
+    check[depth].add(int("".join(N))) ## 사용 숫자 체크
+
+    for i in range (M) :
+        for j in range (i+1,M) :
+            if i==0 and N[j] == '0' : ## 맨 앞에 숫자 0이 들어가는 경우
+                continue
+            N[i],N[j] = N[j],N[i] ## swap
+            DFS(depth+1,N)
+            N[i],N[j] = N[j],N[i] ## swap
+
+
+
+if __name__ == "__main__" :
+    N,K = map(int,input().split()) ## 숫자 N, 연산횟수 K
+    check = [set() for _ in range (K+1)] ## check[i] : 연산을 i번했을 때 만들어진 수
+    M = len(str(N))
+    N = list(str(N))
+    answer = -1
+    DFS(0,N)
+    print(answer)
