@@ -1,0 +1,34 @@
+https://www.acmicpc.net/problem/1967
+----------------------------------------------------------------------------------------------------------------
+import sys
+import heapq as hq
+
+##sys.stdin = open("input.txt","rt")
+input = sys.stdin.readline
+
+def solve(x) : ## 가중치 bfs
+    visit = [0]*(n+1)
+    pq = []
+    visit[x] = 1 ## 방문체크
+    hq.heappush(pq,(0,x)) ## (cost,cur_node)
+
+    while pq :
+        cur_cost,cur_node = hq.heappop(pq)
+        for next,cost in path[cur_node].items() :
+            if visit[next] == 1 :
+                continue
+            next_cost = cur_cost+cost
+            visit[next] = 1
+            hq.heappush(pq,(next_cost,next))
+    return (cur_node,cur_cost)
+
+
+if __name__ == "__main__" :
+    n = int(input()) ## 노드의 개수
+    path = [{} for _ in range (n+1)]
+    for _ in range (n-1) :
+        a,b,c = map(int,input().split())
+        path[a][b] = c ## 가중치 c
+        path[b][a] = c ## 가중치 c (양방향)
+    s = solve(1)[0]
+    print(solve(s)[1])
