@@ -1,0 +1,31 @@
+https://www.acmicpc.net/problem/13549
+----------------------------------------------------------------------------------------------------------------
+import sys
+import heapq as hq
+
+sys.stdin = open("input.txt","rt")
+
+def BFS() :
+    visit = [0]*(100000+1)
+    pq = []
+    visit[N] = 1 ## 방문 체크
+    hq.heappush(pq,(0,N))
+
+    while pq :
+        cnt,cur = hq.heappop(pq)
+        if cur == K :
+            return cnt
+        for next in [cur*2,cur+1,cur-1] :
+            if 0<=next<100001 and visit[next] == 0 :
+                if next == cur*2 : ## *2 연산한 것을 먼저 넣어야 방문체크가 먼저 되어 올바른 값이 출력된다.
+                    visit[next] = 1
+                    hq.heappush(pq,(cnt,next))
+                else :
+                    visit[next] = 1
+                    hq.heappush(pq,(cnt+1,next))
+
+
+
+if __name__ == "__main__" :
+    N,K = map(int,input().split()) ## 수빈이가 있는 위치, 동생이 있는 위치
+    print(BFS())
