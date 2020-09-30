@@ -1,0 +1,27 @@
+https://www.acmicpc.net/problem/7579
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split()) ## 앱의 갯수 N, 추가로 M바이트의 메모리가 필요하다.
+    app_byte = list(map(int,input().split())) ## 앱의 사용중인 메모리 바이트 수
+    app_cost = list(map(int,input().split())) ## 앱을 재실행할 때의 비용
+
+    ## 앱은 한개만 (냅색문제=> 중복 허용x)
+    dp = [[0]*(sum(app_cost)+1) for _ in range (N)]## dp[i][j] : i번째 app까지의 j cost로 만들 수 있는 최대의 byte
+
+    answer = sys.maxsize
+    for i in range (N) :
+        byte = app_byte[i]
+        cost = app_cost[i]
+        for j in range (sum(app_cost)+1) :
+            if j < cost :
+                dp[i][j] = dp[i-1][j]
+            else :
+                dp[i][j] = max(dp[i-1][j],dp[i-1][j-cost]+byte)
+
+            if dp[i][j] >= M : ## M바이트의 메모리가 필요하다.
+                answer = min(answer,j) ## j는 비용이다.
+    print(answer)
