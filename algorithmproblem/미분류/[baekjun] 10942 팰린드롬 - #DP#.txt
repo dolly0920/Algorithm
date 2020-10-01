@@ -1,0 +1,38 @@
+https://www.acmicpc.net/problem/10942
+----------------------------------------------------------------------------------------------------------------
+##python3로 제출함
+import sys
+sys.setrecursionlimit(10**6) ## pypy3에선 이 부분쓰면 메모리 초과
+
+sys.stdin = open("input.txt","rt")
+
+def solve(S,E) :
+    if S==E :
+        return 1
+
+    if S+1 == E :
+        if n_list[S] == n_list[E] :
+            return 1
+        else :
+            return 0
+
+    if dp[S][E] != -1 :
+        return dp[S][E]
+
+    if n_list[S] == n_list[E] :
+        dp[S][E] = solve(S+1,E-1)
+    else :
+        dp[S][E] = 0
+
+    return dp[S][E]
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## 수열의 크기
+    n_list = list(map(int,input().split()))
+    dp = [[-1]*N for _ in range (N)] # #dp[i][j] = i-j가 팰린드롬인지 아닌지 확인
+
+    M = int(input()) ## 홍준이가 한 질문의 개수
+    for _ in range (M) :
+        S,E = map(int,input().split())
+        print(solve(S-1,E-1))
