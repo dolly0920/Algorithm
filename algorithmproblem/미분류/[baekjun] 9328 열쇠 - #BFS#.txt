@@ -1,0 +1,66 @@
+https://www.acmicpc.net/problem/9328
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def BFS() :
+    res = 0
+    q = deque() ## 진행을 하는 q
+    visit = [[0]*(w+2) for _ in range (h+2)]
+    wait = [deque() for _ in range (26)] ## 각각의 알파벳 문에 대해서 기다리고 있는 좌표(열쇠를 얻는다면 들어갈 수 있다)
+    visit[0][0] = 1
+    q.append((0,0)) ## (r,c)
+
+    while q :
+        r,c = q.popleft()
+        for i in range (4) :
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if nr<0 or nr>=h+2 or nc<0 or nc>=w+2 : ## 범위 초과인 경우
+                continue
+            if MAP[nr][nc] == '*':  ## 벽인 경우
+                continue
+            if visit[nr][nc] == 1 : ## 방문한 곳인 경우
+                continue
+            ## 방문에 대한 처리
+            visit[nr][nc] = 1 ## 방문 체크
+            if MAP[nr][nc] == '$' : ## 문서인 경우
+                res += 1
+                q.append((nr,nc)) ## 그 다음도 탐색 가능하다.
+            elif MAP[nr][nc].isupper() and open[ord(MAP[nr][nc].lower())-ord('a')] == 0 : ## 열쇠가 없는 경우
+                wait[ord(MAP[nr][nc].lower())-ord('a')].append((nr,nc)) ## 대기큐에 넣는다.
+            elif MAP[nr][nc].islower() : ## 소문자인 경우 (열쇠인 경우)
+                key_alpha = ord(MAP[nr][nc])-ord('a')
+                open[key_alpha] = 1 ## 열쇠 획득
+                while wait[key_alpha] : ## 열쇠를 획득함으로써 갈 수 있는 좌표를 다시 q에 넣는다.
+                    wr,wc = wait[key_alpha].popleft()
+                    q.append((wr,wc))
+                q.append((nr,nc)) ## 열쇠를 얻은 후의 좌표도 q에 추가
+            else : ## 그 외의 경우 (대문자 문 + 열쇠가 있는 경우, '.'인 경우)
+                q.append((nr,nc))
+    return res
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for _ in range (T) :
+        h,w = map(int,input().split())
+        ## 둘레에 '.' 추가
+        MAP = [['.']*(w+2)]
+        for _ in range (h) :
+            MAP.append(list(input()))
+        MAP.append(['.']*(w+2))
+        for i in range (1,h+1) :
+            MAP[i] = ['.']+MAP[i]+['.']
+        key = list(input())
+        open = [0]*26 ## 소문자 알파벳 26개에 대해서
+        for x in key :
+            if x == '0' :
+                break
+            open[ord(x)-ord('a')] = 1
+        print(BFS())
