@@ -1,0 +1,19 @@
+https://www.acmicpc.net/problem/1915
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+
+if __name__ == "__main__" :
+    n,m = map(int,input().split())
+    MAP = []
+    for _ in range (n) :
+        MAP.append(list(map(int,list(input()))))
+    ans = 0
+    for i in range (n) :
+        for j in range (m) :
+            if i>0 and j>0 and MAP[i][j] == 1 : ## 이렇게 안쓰고 for문 범위를 1로 한다면 예외케이스 발생
+                MAP[i][j] += min(MAP[i][j-1],MAP[i-1][j],MAP[i-1][j-1])
+            ans = max(ans,MAP[i][j])
+    print(ans*ans)

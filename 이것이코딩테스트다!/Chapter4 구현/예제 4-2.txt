@@ -1,0 +1,21 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    hh,mm,ss = 0,0,0
+    N = int(input())
+    answer = 0
+    while True : ## 3중 포문으로도 구현 가능
+        if '3' in str(hh) or '3' in str(mm) or '3' in str(ss) :
+            answer += 1
+        ss += 1
+        if ss == 60 :
+            mm += 1
+            ss = 0
+        if mm == 60 :
+            hh += 1
+            mm = 0
+        if hh==N and mm==59 and ss==59 :
+            break
+    print(answer)

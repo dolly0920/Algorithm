@@ -1,0 +1,20 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+dir = {'L':1,"R":0,"U":3,"D":2}
+
+if __name__ == "__main__" :
+    N = int(input())
+    command = list(input().split())
+    r,c = 0,0
+    for x in command :
+        nr = r+dr[dir[x]]
+        nc = c+dc[dir[x]]
+        if nr<0 or nr>=N or nc<0 or nc>= N :
+            continue
+        r,c = nr,nc
+    print(r+1,c+1)
