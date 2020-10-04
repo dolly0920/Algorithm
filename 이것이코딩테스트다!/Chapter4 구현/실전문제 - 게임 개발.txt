@@ -1,0 +1,36 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+dr = [-1,0,1,0]
+dc = [0,1,0,-1] ## 북,동,남,서
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split()) ## 세로,가로
+    visit = [[0]*M for _ in range (M)]
+    r,c,dir = map(int,input().split())
+    visit[r][c] = 1 ## 방문 체크
+    MAP = []
+    for _ in range (N) :
+        MAP.append(list(map(int,input().split()))) ## 0:육지, 1:바다
+    answer = 1 ## 시작점
+    while True :
+        for i in range (1,5) :
+            nr = r + dr[(dir-i)%4]
+            nc = c + dc[(dir-i)%4] ## 왼쪽으로 회전
+            if nr<0 or nr>=N or nc<0 or nc>=M or MAP[nr][nc] == 1 or visit[nr][nc] == 1: ## 범위를 벗어나거나, 바다거나, 이미 방문한 곳인 경우
+                continue
+            ## 이동한 경우
+            ##print(nr,nc,dir)
+            visit[nr][nc] = 1 ## 방문 체크
+            answer += 1
+            r,c,dir = nr,nc,i
+            break ## for문 break
+        else : ## 4방향이 갈 수 없는 경우
+            nr = r + dr[(dir+2)%4]
+            nc = c + dc[(dir+2)%4] ## 반대방향(뒤)로 이동
+            if nr<0 or nr>=N or nc<0 or nc>=M or MAP[nr][nc] == 1 :
+                break
+            r = nr
+            c = nc
+    print(answer)

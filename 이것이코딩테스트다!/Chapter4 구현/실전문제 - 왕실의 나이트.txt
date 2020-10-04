@@ -1,0 +1,21 @@
+import sys
+
+sys.stdin = open("input.txt")
+
+## 수직2수평1, 수평2수직1
+dr = [2,2,-2,-2,1,-1,1,-1]
+dc = [1,-1,1,-1,2,2,-2,-2]
+
+if __name__ == "__main__" :
+    ## 8*8 좌표
+    pos = input()
+    r = ord(pos[0])-ord('a')
+    c = int(pos[1])-1
+    ans = 0
+    for i in range (8) :
+        nr = r + dr[i]
+        nc = c + dc[i]
+        if nr<0 or nr>=8 or nc<0 or nc>=8 :
+            continue
+        ans += 1
+    print(ans)
