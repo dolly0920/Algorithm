@@ -1,0 +1,47 @@
+https://www.acmicpc.net/problem/11437
+-------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+def LCA(node1,node2) :
+    if depth[node1] < depth[node2] :
+        node1,node2 = node2,node1 ## swap => 깊이가 더 큰 노드를 기준으로 연산한다.
+    while (depth[node1]!=depth[node2]) : ## 깊이를 맞춰준다.
+        node1 = parent[node1]
+    while (node1 != node2) : ## 공통 조상을 찾는다.
+        node1 = parent[node1]
+        node2 = parent[node2]
+    return node1
+
+
+if __name__ == "__main__" :
+    N = int(input())
+    path = [[] for _ in range (N+1)]
+    depth = [-1]*(N+1) ## depth[i] : i번 노드의 깊이
+    parent = [-1]*(N+1) ## parent[i] : i노드의 부모 노드
+    for _ in range (N-1) :
+        a,b = map(int,input().split())
+        path[a].append(b)
+        path[b].append(a)
+
+    q = deque()
+    visit = [0]*(N+1)
+    visit[1] = 1
+    depth[1] = 0
+    q.append(1)
+
+    while q : ## 노드의 깊이, 부모 노드 저장
+        cur = q.popleft()
+        for x in path[cur] :
+            if visit[x] == 1 :
+                continue
+            visit[x] = 1
+            depth[x] = depth[cur] + 1
+            parent[x] = cur
+            q.append(x)
+    M = int(input())
+    for _ in range (M) :
+        a,b = map(int,input().split())
+        print(LCA(a,b))
