@@ -1,0 +1,17 @@
+https://www.acmicpc.net/problem/11052
+-----------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## 민규가 구매하려는 카드의 갯수
+    dp = [0]*(N+1) ## dp[i] : i개의 카드를 살 때의 최댓값
+    card = list(map(int,input().split()))
+    card = [0] + card
+    for i in range (1,N+1) :
+        dp[i] = card[i]
+    for i in range (1,N+1) :
+        for j in range (i,N+1) :
+            dp[j] = max(dp[j],dp[j-i]+card[i])
+    print(dp[N])
