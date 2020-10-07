@@ -1,0 +1,47 @@
+https://www.acmicpc.net/problem/9019
+---------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+def operate_L(num) : ## 숫자 num을 왼편으로 회전
+    return (10*num+(num//1000))%10000
+
+def operate_R(num) :
+    return (num//10 + (num%10)*1000)%10000
+
+def BFS() :
+    visit = [0]*10000 ## 숫자는 0-9999사이에 있으므로
+    q = deque()
+    visit[A] = 1
+    q.append(("",A))
+
+    while q :
+        op,cur = q.popleft() ## 연산과정,현재숫자
+        if cur == B :
+            return op
+        tmp = (cur*2)%10000
+        if visit[tmp] == 0 : ## 'D'
+            visit[tmp] = 1 ## 사용체크
+            q.append((op+'D',tmp))
+        tmp = (cur-1)%10000
+        if visit[tmp] == 0 : ## 'S'
+            visit[tmp] = 1 ## 사용체크
+            q.append((op+'S',tmp))
+        ##'L'
+        tmp = operate_L(cur)
+        if visit[tmp] == 0 :
+            visit[tmp] = 1
+            q.append((op+'L',tmp))
+        ##'R'
+        tmp = operate_R(cur)
+        if visit[tmp] == 0 :
+            visit[tmp] = 1
+            q.append((op+'R',tmp))
+
+if __name__ == "__main__" :
+    T = int(input()) ## 테스트케이스
+    for _ in range (T) :
+        A,B = map(int,input().split()) ## 레지스터 초기값, 최종값
+        print(BFS())
