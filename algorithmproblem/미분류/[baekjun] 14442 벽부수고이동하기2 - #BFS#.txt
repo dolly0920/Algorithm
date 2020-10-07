@@ -1,0 +1,51 @@
+https://www.acmicpc.net/problem/14442
+---------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def BFS() :
+    q = deque()
+    visit[0][0][0] = 1  ## 방문 체크
+    q.append((0, 0, 0))  ## (r,c,cnt) : 좌표+벽을부순횟수
+    res = 0
+
+    while q:
+        q_len = len(q)
+        res += 1
+        while q_len:
+            q_len -= 1
+            r, c, cnt = q.popleft()
+            if r==N-1 and c==M-1 :
+                return res
+            for i in range(4):
+                nr = r + dr[i]
+                nc = c + dc[i]
+                if nr < 0 or nr >= N or nc < 0 or nc >= M:
+                    continue
+                if MAP[nr][nc] == 1:  ## 벽인 경우
+                    if cnt+1 > K : ## 벽을 부술 수 있는 횟수를 초과한 경우
+                        continue
+                    if visit[nr][nc][cnt + 1] == 1:  ## 방문한 경우
+                        continue
+                    visit[nr][nc][cnt + 1] = 1
+                    q.append((nr, nc, cnt + 1))
+                else:  ## 벽이 아닌 경우
+                    if visit[nr][nc][cnt] == 1:
+                        continue
+                    visit[nr][nc][cnt] = 1
+                    q.append((nr, nc, cnt))
+    return -1
+
+
+if __name__ == "__main__" :
+    N,M,K = map(int,input().split()) ## 세로,가로,벽을 부술수있는 횟수
+    visit = [[[0]*(K+1) for _ in range (M)] for _ in range (N)]
+    MAP = []
+    for _ in range (N) :
+        MAP.append(list(map(int,input())))
+    print(BFS())
