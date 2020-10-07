@@ -1,0 +1,38 @@
+https://www.acmicpc.net/problem/1261
+------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+##sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+if __name__ == "__main__" :
+    M,N = map(int,input().split()) ## 가로, 세로
+    visit = [[-1]*M for _ in range (N)] ## visit[i][j] : k => (i,j)에 도달했을 때 k번 벽을 부순 상태이다.
+    MAP = []
+    for _ in range (N) :
+        MAP.append(list(map(int,input())))
+
+    q = deque()
+    visit[0][0] = 0
+    q.append((0,0,0)) ## (r,c,cnt)
+
+    while q :
+        ##print(q)
+        r,c,cnt = q.popleft()
+        for i in range (4) :
+            t_cnt = cnt
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if nr<0 or nr>=N or nc<0 or nc>=M : ## 범위초과
+                continue
+            if MAP[nr][nc] == 1 : ## 벽이라면
+                t_cnt += 1
+            if visit[nr][nc] != -1 and visit[nr][nc] <= t_cnt : ## 방문한 적이 있고, 이전 방문했을 때 벽을 부순 횟수보다 벽을 부순 횟수가 크거나 같을 때
+                continue
+            visit[nr][nc] = t_cnt
+            q.append((nr,nc,t_cnt))
+
+    print(visit[N-1][M-1])
