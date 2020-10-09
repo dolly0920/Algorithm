@@ -1,0 +1,11 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## 식량창고의 갯수
+    dp = list(map(int,input().split())) ## 각 식량 창고의 저장된 식량의 갯수
+    dp[1] = max(dp[0],dp[1]) ## 초기값에 대한 설정
+    for i in range (2,N) :
+        dp[i] = max(dp[i-1],dp[i-2]+dp[i]) ## dp[i] : i창고까지의 저장된 식량의 최대 갯수
+    print(dp[N-1])

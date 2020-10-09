@@ -1,0 +1,50 @@
+## Bottom-up 방식 (책) 
+x = int(input())
+
+d = [0] * 30001
+
+for i in range (2,x+1) :
+    d[i] = d[i-1] + 1
+    if i%2 == 0 :
+        d[i] = min(d[i],d[i//2]+1)
+    if i%3 == 0 :
+        d[i] = min(d[i],d[i//3]+1)
+    if i%5 == 0 :
+        d[i] = min(d[i],d[i//5]+1)
+print(d[x])
+
+## BFS,memorization 활용 (내 코드)
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    num = int(input())
+    visit = [0] * (num+1)
+    visit[num] = 1
+    q = deque()
+    q.append(num)
+    cnt = 0
+
+    while q :
+        q_len = len(q)
+        while q_len :
+            q_len -= 1
+            cur = q.popleft()
+            if cur == 1 :
+                print(cnt)
+                sys.exit()
+            if cur%5 == 0 and visit[cur//5] == 0 :
+                visit[cur//5] = 1
+                q.append(cur//5)
+            if cur%3 == 0 and visit[cur//3] == 0 :
+                visit[cur//3] = 1
+                q.append(cur//3)
+            if cur%2 == 0 and visit[cur//2] == 0 :
+                visit[cur//2] = 1
+                q.append(cur//2)
+            if cur-1 > 0 and visit[cur-1] == 0 :
+                visit[cur-1] = 1
+                q.append(cur-1)
+        cnt += 1

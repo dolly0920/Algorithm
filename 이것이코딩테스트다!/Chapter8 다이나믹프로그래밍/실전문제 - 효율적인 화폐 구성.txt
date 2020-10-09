@@ -1,0 +1,13 @@
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split()) ## N가지 종류의 화폐, 가치의 합 M원
+    dp = [sys.maxsize]*(M+1) ## dp[i] : i원의 가치를 만드는데 필요한 화폐의 최소 가지 수
+    dp[0] = 0 ## 0원의 가치를 만드는데 필요한 화폐 가지수는 0이다.
+    for _ in range (N) :
+        money = int(input()) ## 각 화폐의 가치
+        for i in range (money,M+1) :
+            dp[i] = min(dp[i],dp[i-money]+1)
+    print(dp[M] if dp[M]!=sys.maxsize else -1)
