@@ -1,0 +1,26 @@
+https://www.acmicpc.net/problem/5557
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input())
+    numbers = list(map(int,input().split()))
+    dp = [[0]*21 for _ in range (N)] ## dp[i][j] : i번의 연산에서 숫자 j를 만들 수 있는 경우의 수
+
+    prev = set()
+    dp[0][numbers[0]] = 1 ## 첫번쨰 원소 dp[0][numbers[0]] : 0번의 연산과 시작하는 숫자 numbers[0]
+    prev.add(numbers[0])
+
+    for i in range (1,N-1) :
+        next = set()
+        for x in prev :
+            if x+numbers[i] <= 20 :
+                dp[i][x+numbers[i]] += dp[i-1][x] ## dp[i-1][x]는 이전의 x를 만들 수 있는 경우의 수이다. (set을 통해 중복을 제거하였으므로 연산 가능)
+                next.add(x+numbers[i])
+            if x-numbers[i] >= 0 :
+                dp[i][x-numbers[i]] += dp[i-1][x]
+                next.add(x-numbers[i])
+        prev = next
+    print(dp[N-2][numbers[-1]])
