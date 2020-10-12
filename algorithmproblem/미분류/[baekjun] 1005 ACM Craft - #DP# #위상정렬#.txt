@@ -1,0 +1,40 @@
+https://www.acmicpc.net/problem/1005
+----------------------------------------------------------------------------------------------------------------
+## DP를 사용한 코드는 노드에 대한 처리를 'DP[i]=max(DP[a]+building[i],DP[i])'로 해주었다.
+## 내가 쓴 코드 (우선순위큐만 사용)
+import sys
+import heapq as hq
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    T = int(input())
+    for _ in range (T) :
+        N,K = map(int,input().split()) ## 건물의 개수, 건설순서규칙
+        path = [[] for _ in range (N+1)] ## path[i] = [...] : i노드 이후에 지어지는 건물
+        rank = [0]*(N+1)
+        D = [0] ## 각 건물당 건설에 걸리는 시간
+        D += list(map(int,input().split()))
+        for _ in range (K) :
+            x,y = map(int,input().split()) ## 건설순서
+            path[x].append(y)
+            rank[y] += 1
+        W = int(input()) ## 건설해야할 건물의 번호
+
+        ##finish = [0]*(N+1) ## finish[i] : i번 노드의 상태
+        pq = [] ## pq에는 (x,y) : y번호 건물을 지은 후의 시간 x
+        ## 초기값 (시작)
+        for i in range (1,N+1) :
+            if rank[i] == 0 :
+                hq.heappush(pq,(D[i],i))
+
+        ## 시행
+        while pq :
+            cur_time,cur_node = hq.heappop(pq)
+            if cur_node == W :
+                print(cur_time)
+                break
+            for x in path[cur_node] :
+                rank[x] -= 1 ## 진입차수 -1
+                if rank[x] == 0 : ## 진입차수가 0이 된다면 바로 짓기 시작할 수 있다.
+                    hq.heappush(pq,(cur_time+D[x],x))
