@@ -1,5 +1,6 @@
+https://www.acmicpc.net/problem/1256
+---------------------------------------------------------------
 import sys
-
 sys.stdin = open("input.txt","rt")
 
 INF = 1000000001
@@ -9,15 +10,12 @@ def solve(N,M,order) : ## 'a'남은 사용횟수, 'b'남은 사용 횟수, 순�
         for i in range (M) :
             print('z',end='')
         return
-
     if M==0 :
         for i in range (N) :
             print('a',end='')
         return
-
     ## 앞에 'a'를 사용한 경우의 수(조합)
     tmp = dp[N-1][M]
-
     if order <= tmp : ## 'a'를 사용한 경우의 수보다 순서가 작은 경우 앞에 'a'를 붙힌 뒤 뒤에서 순서를 다시 탐색한다.
         print('a',end='')
         solve(N-1,M,order)
@@ -27,16 +25,14 @@ def solve(N,M,order) : ## 'a'남은 사용횟수, 'b'남은 사용 횟수, 순�
 
 
 if __name__ == "__main__" :
-    N,M,K = map(int,input().split())
-    dp = [[0]*(N+1) for _ in range (M+1)]
-
+    N,M,K = map(int,input().split()) ## 'a'사용횟수, 'z'사용횟수, 순서 K
+    dp = [[0]*(M+1) for _ in range (N+1)] ## dp[i][j] : 'a'를 i번, 'z'를 j번 사용한 경우의 수
     for i in range (N+1) :
         for j in range (M+1) :
             if i==0 or j==0 :
                 dp[i][j] = 1
                 continue
             dp[i][j] = min(INF,dp[i-1][j]+dp[i][j-1])
-
     if dp[N][M] < K :
         print(-1)
     else :
