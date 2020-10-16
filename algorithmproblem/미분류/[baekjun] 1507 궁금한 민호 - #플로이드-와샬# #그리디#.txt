@@ -1,0 +1,34 @@
+https://www.acmicpc.net/problem/1507
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input())
+    update = [[1]*N for _ in range (N)] ## update[i][j]=1 => (i->j) 로 가는 도로 존재
+    for i in range (N) :
+        update[i][i] = 0 ## 자기 자신으로 가는 도로는 존재하지 않는다.
+
+    path = []
+    for _ in range (N) :
+        path.append(list(map(int,input().split())))
+
+
+    for k in range (N) :
+        for i in range (N) :
+            for j in range (N) :
+                if i==j or j==k or k==i: ## 3개의 숫자 중 2개가 같은 경우는 (두 지점을 바로 이은 경로와 같다.)
+                    continue
+                if path[i][j] == path[i][k]+path[k][j] : ## 같은 경우 갱신되었을 때이다.
+                    update[i][j] = 0 ## i->j로 가는 직접적인 도로는 없다 (i->k k->j에 의해 갱신된 값만 있을 뿐이다.)
+                if path[i][j] > path[i][k]+path[k][j] : ## 문제의 가정(path[i][j]는 i->j의 최소값이다.)이 부정된 경우
+                    print(-1)
+                    sys.exit()
+
+    ans = 0
+    for i in range (N) :
+        for j in range (i+1,N) :
+            if update[i][j] == 1 :
+                ans += path[i][j]
+    print(ans)
