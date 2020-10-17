@@ -1,0 +1,28 @@
+https://programmers.co.kr/learn/courses/30/lessons/42895
+----------------------------------------------------------------------------------------------------------------
+def generate(N,cnt) : ## 숫자 N을 합친 모양
+    return int(str(N)*cnt)
+
+def solution(N, number):
+    dp = [set() for _ in range (9)] ## dp[i] : 숫자 N을 i번 사용해서 만들 수 있는 숫자
+
+    dp[1].add(N)
+    if number in dp[1] :
+        return 1
+
+    for i in range (2,9) :
+        dp[i].add(generate(N,i)) ## 숫자 i개를 이어붙여 만들 수 있는 숫자를 미리 등록
+
+    for i in range (2,9) : ## 숫자 N을 i개 사용하여 만들 수 있는 숫자를 정의한다. (dp[i])
+        for j in range (i) :
+            for op1 in dp[i-j] :
+                for op2 in dp[j] : ## j는 i미만의 숫자 (아래부터 차례대로 채워나가며 경우의 수를 따진다.)
+                    dp[i].add(op1+op2) ## 더하기 연산
+                    dp[i].add(op1-op2) ## 빼기 연산
+                    dp[i].add(op1*op2) ## 곱하기 연산
+                    if op2 != 0 : ## 0으로 나눌 때 발생하는 에러를 없애기 위해
+                        dp[i].add(op1//op2)
+            if number in dp[i] :
+                return i
+
+    return -1
