@@ -1,0 +1,19 @@
+https://programmers.co.kr/learn/courses/30/lessons/68646
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+def solution(a):
+    answer = 0
+    res = set()
+    left_min = sys.maxsize
+    right_min = sys.maxsize
+
+    for i in range (len(a)) :
+        left_min = min(left_min,a[i])
+        right_min = min(right_min,a[len(a)-1-i])
+        res.add(left_min)
+        res.add(right_min)
+
+    answer = len(res)
+
+    return answer
