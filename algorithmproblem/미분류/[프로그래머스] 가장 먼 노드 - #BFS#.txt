@@ -19,10 +19,8 @@ def solution(n, edge):
     
     while q :
         q_len = len(q) ## q_len을 사용해 단위 거리 별로 단계를 나눈다.
-        answer = q_len
         flag = 1
-        while q_len : ## while q_len에서 처리되는 값들은 동 시간(동 거리)에 이루어지는 동작이다.
-            q_len -= 1
+        for _ in range (q_len) :
             cur = q.popleft()
             for x in path[cur] :
                 if visit[x] == 1 :
@@ -31,4 +29,4 @@ def solution(n, edge):
                 visit[x] = 1
                 q.append(x)
         if flag :
-            return answer
+            return q_len
