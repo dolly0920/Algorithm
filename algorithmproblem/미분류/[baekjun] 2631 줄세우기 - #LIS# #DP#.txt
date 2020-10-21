@@ -1,0 +1,37 @@
+https://www.acmicpc.net/problem/2631
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def lower_bound(num,left,right,dp) : ## lower_bound 찾기
+    answer = -1
+    while left <= right :
+        mid = (left+right)//2
+        if dp[mid] >= num :
+            answer = mid
+            right = mid-1
+        else :
+            left = mid+1
+    return answer
+
+if __name__ == "__main__" :
+    ## LIS
+    N = int(input()) ## 아이들의 수 N
+    arr = []
+    for _ in range (N) :
+        arr.append(int(input()))
+
+    dp = [sys.maxsize]*(N+1) ## dp[i] : 길이가 i인 증가수열의 끝의 최소값
+    tmp_length = 1 ## index
+
+    for i in range (N) :
+        if arr[i] > dp[tmp_length] :
+            tmp_length += 1
+            dp[tmp_length] = arr[i]
+        else :
+            index = lower_bound(arr[i],1,tmp_length,dp)
+            dp[index] = arr[i]
+
+    ## tmp_length는 최대 수열(LIS)의 길이 => 최대 수열의 길이는 그대로 두고 나머지 숫자들을 끼워넣으면 최소가 된다.
+    print(N-tmp_length)
