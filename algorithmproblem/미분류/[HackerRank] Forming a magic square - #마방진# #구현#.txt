@@ -1,0 +1,28 @@
+https://www.hackerrank.com/challenges/magic-square-forming/problem
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+magic_square = [[(4,9,2),(3,5,7),(8,1,6)],
+                [(8,1,6),(3,5,7),(4,9,2)],
+                [(2,9,4),(7,5,3),(6,1,8)],
+                [(4,3,8),(9,5,1),(2,7,6)],
+                [(6,7,2),(1,5,9),(8,3,4)],
+                [(8,3,4),(1,5,9),(6,7,2)],
+                [(6,1,8),(7,5,3),(2,9,4)],
+                [(2,7,6),(9,5,1),(4,3,8)]] ## 마방진 규칙을 이용해 구한 3*3 마방진의 가능한 형태
+
+if __name__ == "__main__" :
+    arr = []
+    for _ in range (3) :
+        arr.append(list(map(int,input().split())))
+
+    ans = sys.maxsize
+    for x in magic_square : ## x는 3*3 마방진 배열
+        res = 0
+        for i in range (3) :
+            for j in range (3) :
+                res += abs(arr[i][j]-x[i][j])
+        ans = min(ans,res)
+    print(ans)
