@@ -1,0 +1,40 @@
+https://www.hackerrank.com/challenges/ctci-bfs-shortest-reach/problem
+----------------------------------------------------------------------------------------------------------------
+import sys
+import heapq as hq
+
+sys.stdin = open("input.txt","rt")
+
+def solve(start) :
+    pq = []
+    dist = [sys.maxsize]*(n+1) ## dist[i] : 1부터 i까지의 거리
+    dist[start] = 0 ## 자기 자신은 0
+
+    hq.heappush(pq,(0,start)) ## (cost,cur)
+
+    while pq :
+        cur_cost,cur = hq.heappop(pq)
+        for next,cost in path[cur].items() : ## 다음 갈 수 있는 노드, 비용
+            if dist[next] > cur_cost+cost : ## 비용이 더 작은 경우 갱신
+                dist[next] = cur_cost+cost
+                hq.heappush(pq,(cur_cost+cost,next))
+
+    return dist
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for _ in range (T) :
+        n,m = map(int,input().split()) ## 노드의 수, 간선의 수
+        path = [{} for _ in range (n+1)]
+        for _ in range (m) :
+            a,b = map(int,input().split())
+            path[a][b] = 6
+            path[b][a] = 6 ## 양방향 간선
+        start_node = int(input())
+        res = solve(start_node)
+        for i in range (1,len(res)) :
+            if i == start_node :
+                continue
+            print(res[i] if res[i] != sys.maxsize else -1, end=' ')
+        print()

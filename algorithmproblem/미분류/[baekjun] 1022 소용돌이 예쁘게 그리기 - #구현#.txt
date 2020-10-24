@@ -1,0 +1,49 @@
+https://www.acmicpc.net/problem/1022
+----------------------------------------------------------------------------------------------------------------
+import sys
+sys.stdin = open("input.txt","rt")
+
+## 오,위,왼,아
+dr = [0,-1,0,1]
+dc = [1,0,-1,0]
+
+if __name__ == "__main__" :
+    ## (0,0) : 1 부터 시작하는 소용돌이 모양 배열
+    r1,c1,r2,c2 = map(int,input().split())
+    cnt = (abs(r2-r1)+1)*(abs(c2-c1)+1) ## 총 넓이 (차지하는 칸의 갯수)
+    ## (r1,c1) ~ (r2,c2) 까지의 직사각형 모양 출력
+    place_info = {} ## (r,c):값 형태로 저장
+    r,c = 0,0 ## 시작점
+    draw_cnt = 0 ## 기록한 갯수
+    number = 1 ## 적는 숫자
+    dir = 0 ## 처음 방향
+
+    ## 규칙성을 갖기 위해 설정한 변수
+    move_cnt = 0 ## 이동 횟수
+    limit_move = 1 ## 이동 횟수 제한 ## 처음엔 1이다.
+
+    ## 최대 길이 (일정한 칸수로 출력하기 위해)
+    max_length = 0
+
+    while draw_cnt != cnt :
+        if r1<=r<=r2 and c1<=c<=c2 :
+            max_length = max(max_length,len(str(number)))
+            place_info[(r,c)] = number
+            draw_cnt += 1
+        number += 1 ## 기록 후 숫자 증가
+
+        r += dr[dir]
+        c += dc[dir]
+        move_cnt += 1 ## 이동 횟수 증가
+
+        if move_cnt == limit_move : ## 제한 횟수에 걸린 경우 (방향 전환)
+            dir = (dir+1)%4 ## 방향 전환
+            move_cnt = 0 ## 이동 횟수 초기화
+            if dir==0 or dir==2 : ## 이동방향이 가로(오른쪽 or 왼쪽)인 경우
+                limit_move += 1 ## 제한 이동 횟수가 1증가한다.
+
+    for i in range (r1,r2+1) :
+        for j in range (c1,c2+1) :
+            tmp = " "*(max_length-len(str(place_info[(i,j)]))) ## 일정 칸을 만들기 위해
+            print(tmp+str(place_info[(i,j)]),end=' ')
+        print()
