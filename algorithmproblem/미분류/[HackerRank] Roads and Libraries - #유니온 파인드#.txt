@@ -1,0 +1,45 @@
+https://www.hackerrank.com/challenges/torque-and-development/problem
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def find_parent(x) : ## x노드의 부모 노드를 찾고 갱신한다.
+    if x != parent[x] : ## 부모 노드가 자기 자신이 아니라면
+        parent[x] = find_parent(parent[x]) ## 재귀적으로 찾는다.
+
+    return parent[x]
+
+def union(x,y) : ## x노드와 y노드를 합친다.
+    root_x = find_parent(x)
+    root_y = find_parent(y)
+
+    if rank[root_x] > rank[root_y] :
+        parent[root_y] = root_x ## 아래에 붙힌다.
+    else :
+        parent[root_x] = root_y
+
+        if rank[root_x] == rank[root_y] :
+            rank[root_y] += 1 ## 랭크(깊이)를 높혀준다.
+    return
+
+
+if __name__ == "__main__" :
+    T = int(input())
+    for _ in range (T) :
+        n,m,c_lib,c_road = map(int,input().split()) ## 도시의 수, 간선의 수, 도서관 건축비용, 간선의 비용
+        parent = list(range(n+1))
+        rank = [0]*(n+1)
+        cost = c_lib*n ## 다리를 복구하지 않고 각각의 도시에 도서관을 짓는 경우의 비용
+        cost_repair = 0 ## 수리에 드는 비용 (다리)
+        for _ in range (m) :
+            a,b = map(int,input().split())
+            if find_parent(a) != find_parent(b) :
+                cost_repair += c_road
+                union(a,b)
+
+        parent_node = set() ## parent_node의 수가 곧 연결된 지역의 수이다.
+        for i in range (1,n+1) :
+            parent_node.add(find_parent(i))
+        cost_repair += len(parent_node)*c_lib
+        print(min(cost_repair,cost))
