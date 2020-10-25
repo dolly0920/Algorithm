@@ -1,0 +1,47 @@
+https://www.acmicpc.net/problem/2304
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## 기둥의 갯수
+    arr = [] ## (index,높이) 형식으로 저장
+    for _ in range (N) :
+        arr.append(list(map(int,input().split())))
+    arr.sort() ## index 오름차순 정렬
+    max_height = 0
+    max_index = -1 ## 여기서의 인덱스는 배열의 index이다.
+    '''
+    for index,height in arr :
+        if height > max_height :
+            max_index = index
+            max_height = height
+    '''
+    for i in range (len(arr)) :
+        if arr[i][1] > max_height :
+            max_index = i
+            max_height = arr[i][1]
+    ##print(arr)
+    ##print(max_index)
+    area = 0 ## 답 : 넓이
+    area += max_height ## 가장 높은 곳은 따로 더한다.
+    ## 왼쪽부터 max_index까지 다각형 그리기
+    cur_index = arr[0][0] ## 현재 기둥의 위치
+    cur_height = arr[0][1] ## 현재 기둥의 높이
+    for i in range (1,max_index+1) :
+        if arr[i][1] >= cur_height : ## 이전의 기둥보다 높이가 높다면
+            ##print((arr[i][0]-cur_index)*cur_height)
+            area += (arr[i][0]-cur_index)*cur_height ## 밑변길이 * 높이
+            cur_index = arr[i][0]
+            cur_height = arr[i][1]
+    ## 오른쪽부터 max_index까지 다각형 그리기
+    cur_index = arr[N-1][0]
+    cur_height = arr[N-1][1]
+    for i in range (N-2,max_index-1,-1) :
+        if arr[i][1] >= cur_height : ## 이전 기둥보다 높이가 높은 경우
+            ##print((cur_index-arr[i][0])*cur_height)
+            area += (cur_index-arr[i][0])*cur_height
+            cur_index = arr[i][0]
+            cur_height = arr[i][1]
+    print(area)
