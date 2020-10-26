@@ -1,0 +1,27 @@
+https://programmers.co.kr/learn/courses/30/lessons/42583
+----------------------------------------------------------------------------------------------------------------
+from collections import deque
+
+def solution(bridge_length, weight, truck_weights):
+    answer = 0
+    truck_cnt = len(truck_weights)
+    truck_weights = deque(truck_weights)
+    bridge = deque([0]*bridge_length) ## 다리
+    cur_weight = 0 ## 현재 다리에 올라간 트럭들의 무게 합
+
+    arrival_cnt = 0
+    while True :
+        ##print(answer,bridge)
+        arrival = bridge.popleft()
+        if arrival > 0 : ## 트럭이 탈출했다면
+            cur_weight -= arrival ## 다리의 트럭 무게 감소
+            arrival_cnt += 1
+            if arrival_cnt == truck_cnt :
+                return answer+1
+        if len(truck_weights) > 0 and cur_weight+truck_weights[0] <= weight : ## 버틸 수 있는 무게라면
+            e_truck = truck_weights.popleft()
+            cur_weight += e_truck ## 다리의 무게 증가
+            bridge.append(e_truck)
+        else :
+            bridge.append(0)
+        answer += 1
