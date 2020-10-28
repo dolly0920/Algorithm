@@ -1,0 +1,55 @@
+https://www.acmicpc.net/problem/1504
+----------------------------------------------------------------------------------------------------------------
+import sys
+import heapq as hq
+
+sys.stdin = open("input.txt","rt")
+
+def dijkstra(start,end) : ## start-end까지의 최단 경로의 길이
+    dist = [sys.maxsize]*(N+1) ## dist[i] : start ~ i 까지의 최단 경로
+    dist[start] = 0 ## 초기화
+    pq = []
+    hq.heappush(pq,(0,start)) ## (cur_cost,cur_node)
+
+    while pq :
+        cur_cost,cur_node = hq.heappop(pq)
+        for next_node,dis in path[cur_node].items() :
+            next_dist = cur_cost+dis
+            if next_dist < dist[next_node] :
+                dist[next_node] = next_dist
+                hq.heappush(pq,(next_dist,next_node))
+
+    return dist[end]
+
+
+if __name__ == "__main__" :
+    N,E = map(int,input().split()) ## 정점,간선
+    path = [{} for _ in range (N+1)]
+    for _ in range (E) :
+        a,b,c = map(int,input().split())
+        path[a][b] = c
+        path[b][a] = c
+    x,y = map(int,input().split()) ## 들러야하는 두 곳
+
+    ## 1번노드 - x번 노드
+    dist1 = dijkstra(1,x)
+
+    ## 1번노드 - y번 노드
+    dist2 = dijkstra(1,y)
+
+    ## x번노드 - y번 노드
+    dist3 = dijkstra(x,y)
+
+    ## y번노드 - N번 노드
+    dist4 = dijkstra(y,N)
+
+    ## x번노드 - N번 노드
+    dist5 = dijkstra(x,N)
+
+    if dist1 == sys.maxsize or dist2 == sys.maxsize or dist3 == sys.maxsize or dist4 == sys.maxsize or dist5 == sys.maxsize : ## 5개의 값 중에 하나라도 못가는 경우가 있다면 -1 리턴
+        print(-1)
+    else :
+        ## 경로 조합 : 1.  1번 -> x번 -> y번 -> N번, 2. 1번 -> y번 -> x번 -> N번
+        to_dest1 = dist1 + dist3 + dist4
+        to_dest2 = dist2 + dist3 + dist5
+        print(min(to_dest1,to_dest2))

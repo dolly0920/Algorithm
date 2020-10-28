@@ -1,0 +1,15 @@
+https://www.acmicpc.net/problem/2293
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    n,k = map(int,input().split()) ## n가지 종류의 동전, 가치의 합 k원
+    dp = [0]*(k+1) ## dp[i] : 가치 i를 만드는 경우의 수
+    dp[0] = 1 ## 0원을 만드는 경우의 수는 1개이다.
+    for _ in range (n) :
+        coin = int(input()) ## 동전의 종류
+        for i in range (coin,k+1) :
+            dp[i] += dp[i-coin] ## 경우의 수를 한다.
+    print(dp[k])
