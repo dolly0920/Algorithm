@@ -1,0 +1,46 @@
+https://www.acmicpc.net/problem/1743
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def BFS(r,c) :
+    q = deque()
+    visit[r][c] = 1
+    q.append((r,c))
+    cnt = 0
+
+    while q :
+        r,c = q.popleft()
+        cnt += 1
+        for i in range (4) :
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if nr<0 or nr>=N or nc<0 or nc>=M :
+                continue
+            if visit[nr][nc] == 1 or MAP[nr][nc] == 0 :
+                continue
+            visit[nr][nc] = 1
+            q.append((nr,nc))
+    return cnt
+
+
+if __name__ == "__main__" :
+    N,M,K = map(int,input().split())
+    MAP = [[0]*M for _ in range (N)]
+    visit = [[0]*M for _ in range (N)]
+    for _ in range (K) :
+        x,y = map(int,input().split())
+        MAP[x-1][y-1] = 1
+
+
+    answer = 0
+    for i in range (N) :
+        for j in range (M) :
+            if visit[i][j] == 0 and MAP[i][j] == 1:
+                answer = max(answer,BFS(i,j))
+    print(answer)
