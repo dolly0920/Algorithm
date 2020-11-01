@@ -1,0 +1,38 @@
+https://www.acmicpc.net/problem/4485
+----------------------------------------------------------------------------------------------------------------
+import sys
+import heapq as hq
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+if __name__ == "__main__" :
+    test_case = 1
+    while True :
+        N = int(input())
+        if N == 0 :
+            break
+        cave = []
+        for _ in range (N) :
+            cave.append(list(map(int,input().split())))
+
+        dp = [[sys.maxsize] * N for _ in range(N)] ## dp[i][j] : (i,j)에 도달하는 최소비용
+        dp[0][0] = cave[0][0]
+        pq = []
+        hq.heappush(pq,(dp[0][0],0,0)) ## (cost,r,c)
+
+        while pq :
+            cur_cost,r,c, = hq.heappop(pq)
+            for i in range (4) :
+                nr = r + dr[i]
+                nc = c + dc[i]
+                if nr<0 or nr>=N or nc<0 or nc>=N :
+                    continue
+                if cur_cost+cave[nr][nc] >= dp[nr][nc] : ## 더 이상 연산할 필요가 없다
+                    continue
+                dp[nr][nc] = cur_cost+cave[nr][nc] ## dp테이블 갱신
+                hq.heappush(pq,(cur_cost+cave[nr][nc],nr,nc))
+        print("Problem %d: %d"%(test_case,dp[N-1][N-1]))
+        test_case += 1
