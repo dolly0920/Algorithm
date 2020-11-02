@@ -1,0 +1,26 @@
+https://www.acmicpc.net/problem/1339
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+
+if __name__ == "__main__" :
+    ## 0 ~ 9의 숫자 알파벳에 매칭시킨다.
+    N = int(input()) ## 숫자의 갯수 ( ~ 10) => 10개의 알파벳에 숫자를 대응시키는 경우의 수 => 9!
+    alphabet = [0]*26
+    for _ in range (N) :
+        tmp = input()
+        t = len(tmp)-1
+        for x in tmp :
+            alphabet[ord(x)-ord('A')] += (10**t)    ## 분배법칙에 의해 숫자를 나눈 다음 덧셈한다고 생각하면 쉽다.
+            t -= 1
+    alphabet.sort(reverse=True)
+    answer = 0
+    number = 9
+    for x in alphabet :
+        if x == 0 :
+            break
+        answer += (x*number)
+        number -= 1
+    print(answer)
