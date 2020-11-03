@@ -1,0 +1,28 @@
+https://www.acmicpc.net/problem/1038
+----------------------------------------------------------------------------------------------------------------
+import sys
+sys.setrecursionlimit(1000000)
+
+sys.stdin = open("input.txt","rt")
+
+def DFS(add_num,number) :
+    global decrease_num
+    if add_num == -1 :
+        decrease_num.add(number)
+        return
+
+    DFS(add_num-1,number)
+    DFS(add_num-1,(number*10)+add_num)
+
+    return
+
+if __name__ == "__main__" :
+    N = int(input())
+    decrease_num = set()
+    DFS(9,0)
+    decrease_num = list(decrease_num)
+    decrease_num.sort()
+    if N>=1023 :
+        print(-1)
+    else :
+        print(decrease_num[N])
