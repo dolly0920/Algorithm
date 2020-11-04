@@ -1,0 +1,71 @@
+https://www.acmicpc.net/problem/11559
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def BFS(r,c,K) : ## 행,열,타겟
+    q = deque()
+    visit[r][c] = 1 ## 방문체크
+    q.append((r,c))
+    location = set() ## 좌표저장
+
+    while q :
+        r,c = q.popleft()
+        location.add((r,c))
+        for i in range (4) :
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if nr<0 or nr>=12 or nc<0 or nc>=6 :
+                continue
+            if visit[nr][nc] == 1 or arr[nr][nc] != K :
+                continue
+            visit[nr][nc] = 1
+            q.append((nr,nc))
+
+    if len(location) >= 4 :
+        for r,c in location :
+            arr[r][c] = '.' ## 블록 제거
+        return True ## 블록이 제거되면 True
+    else :
+        return False ## 블록이 제거되지 않는 다면 False
+
+
+if __name__ == "__main__" :
+    arr = []
+    for _ in range (12) :
+        arr.append(list(input()))
+
+    answer = 0
+    while True :
+        visit = [[0]*6 for _ in range (12)] ## 방문배열
+        flag = True ## 블록이 제거되었다면 False, 아니라면 True
+
+        ## 4개 이상 연결되어 있는 블록 제거
+        for i in range (12) :
+            for j in range (6) :
+                if arr[i][j] != '.' and visit[i][j] == 0:
+                    if BFS(i,j,arr[i][j]) : ## 블록이 한번이라도 제거되면 False
+                        flag = False
+
+
+        if flag : ## 블록이 제거되지 않았다면 더이상 연산을 할 필요가 없다.
+            break
+
+        ## 중력 작용
+        for i in range (6) :
+            for j in range (11,-1,-1) :
+                if arr[j][i] == '.' : ## 빈칸이라면
+                    for k in range (j-1,-1,-1) :
+                        if arr[k][i] != '.' :
+                            arr[j][i] = arr[k][i] ## 빈 칸에 블록이 내려온다.
+                            arr[k][i] = '.' ## 빈 칸으로
+                            break
+
+        answer += 1
+
+    print(answer)
