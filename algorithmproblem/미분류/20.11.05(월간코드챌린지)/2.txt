@@ -1,0 +1,36 @@
+def solve(num):  ## num를 이진수로 (문자형 반환)
+    res = []
+    while num > 0:
+        res.append(str(num % 2))
+        num = num // 2
+    res.reverse()
+    return "".join(res)
+
+
+def solution(s):
+    answer = []
+
+    remove_cnt = 0  ## 제거된 0의 갯수
+    transform_cnt = 0  ## 이진변환의 횟수
+
+    while True:
+        num_cnt = 0
+        other_cnt = 0
+
+        for x in s:
+            if x == '0':
+                num_cnt += 1  ## 제거된 '0'의 갯수
+            else:
+                other_cnt += 1  ## 살아남은 숫자의 길이
+
+        s = solve(other_cnt)  ## 길이를 이진수 형태로 반환 (s로 저장)
+
+        transform_cnt += 1
+        remove_cnt += num_cnt
+
+        if s == '1' :
+            break
+
+    answer = [transform_cnt, remove_cnt]
+
+    return answer
