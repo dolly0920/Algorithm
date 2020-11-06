@@ -1,0 +1,41 @@
+https://www.acmicpc.net/problem/1713
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+##sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input()) ## 사진틀
+    M = int(input()) ## 전체 추천 회수
+    arr = list(map(int,input().split())) ## 추천학생
+
+    album = [] ## 사진틀
+    vote = {} ## 투표수
+
+    for x in arr :
+        if x in album : ## 앨범에 있는 경우
+            vote[x] += 1
+        else : ## 앨범에 없는 경우
+            if len(album) < N : ## 여유 공간이 있는 경우
+                album.append(x)
+                if x in vote :
+                    vote[x] += 1
+                else :
+                    vote[x] = 1
+            else : ## 여유 공간이 없는 경우
+                min_vote = sys.maxsize
+                min_num = -1 ## 삭제해야할 후보번호
+                for y in album :
+                    if vote[y] < min_vote :
+                        min_vote = vote[y] ## 최소 득표수
+                        min_num = y ## 삭제해야할 후보 번호
+                album.remove(min_num) ## 삭제
+                vote[min_num] = 0 ## 삭제되면서 투표 수 0
+                album.append(x)
+                if x in vote :
+                    vote[x] += 1
+                else :
+                    vote[x] = 1
+    album.sort()
+    for x in album :
+        print(x,end=' ')
