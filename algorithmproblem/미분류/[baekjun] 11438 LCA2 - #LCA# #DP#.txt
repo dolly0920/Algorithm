@@ -1,4 +1,4 @@
-https://developmentdiary.tistory.com/469
+https://www.acmicpc.net/problem/11438
 ----------------------------------------------------------------------------------------------------------------
 import sys
 from collections import deque
