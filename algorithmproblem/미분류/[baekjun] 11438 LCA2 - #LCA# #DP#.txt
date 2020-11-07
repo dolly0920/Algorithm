@@ -1,0 +1,67 @@
+https://developmentdiary.tistory.com/469
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+def BFS(cur) : ## parent[i][0] 을 구한다. (각 노드의 부모를 구하는 과정)
+    visit[cur] = 1
+    q = deque()
+    q.append(cur)
+
+    while q :
+        cur = q.popleft()
+        for x in path[cur] :
+            if visit[x] == 1 :
+                continue
+            visit[x] = 1 ## 방문체크
+            parent[x][0] = cur
+            depth[x] = depth[cur]+1
+            q.append(x)
+
+
+def set_parent() : ## 각각의 노드들에 대해 2^x번째 부모노드들을 저장한다.
+    BFS(1) ## 부모 노드들에 대해 먼저 탐색한다.
+
+    ## 점화식 : parent[x][i] = parent[parent[x][i-1]][i-1] ## x의 2^i 번째 부모 노드 = x의 2^(i-1)번째 노드의 2^(i-1)번째 노드 (=> 2^(i-1) * 2^(i-1) = 2^i 노드)
+    ## => bottom-up 방식으로 아래부터 채워나가자
+    for i in range (1,20) :
+        for j in range (1,N+1) :
+            parent[j][i] = parent[parent[j][i-1]][i-1] ## 점화식
+
+def LCA(x,y) : ## x노드와 y노드의 Lowest Common Ancestor (최소공통조상)
+    if depth[x] > depth[y] : ## x노드의 깊이가 더 깊다면
+        x,y = y,x ## swap => x노드가 낮고 y노드가 깊음을 보장한다.
+    ## 깊이를 동일하게 만들어준다
+    for i in range (20,-1,-1) :
+        if depth[y]-depth[x] >= (1<<i) :
+            y = parent[y][i] ## 부모 갱신 => 건너뛰는 범위가 2^x 꼴이다.
+    ## 깊이를 맞춰준 후, 공통 조상을 찾는다.
+    if x==y :
+        return x
+    else :
+        for i in range (19,-1,-1) :
+            if parent[x][i] != parent[y][i] : ## 이렇게 쓸 수 있는 이유 : 같은 깊이에서 동일한 공통 조상 이후의 조상은 항상 같다. => 이걸 다르게 생각하면, 공통 조상이 아니라면 무조건 공통 조상보다 아래라는 결론이 나온다.
+                x = parent[x][i]
+                y = parent[y][i]
+    return parent[x][0] ## 위의 조건에서 부모가 같은 경우 더 이상 변경되지 않으므로 이때의 부모가 LCA이다.
+
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## 노드의 갯수
+    path = [[] for _ in range (N+1)]
+    ## parent[x][y] : 노드 x의 2^(y)번쨰 조상
+    visit = [0]*(N+1) ## 방문 체크 배열열
+    depth = [0]*(N+1) ## 각 노드의 깊이
+    parent = [[0]*20 for _ in range (N+1)] ## 2^20 => 약 1000000
+    for _ in range (N-1) :
+        a,b = map(int,input().split())
+        path[a].append(b)
+        path[b].append(a)
+    set_parent() ## 각 노드들의 부모노드 설정
+    M = int(input()) ## 공통 조상
+    for _ in range (M) :
+        a,b = map(int,input().split())
+        print(LCA(a,b))
