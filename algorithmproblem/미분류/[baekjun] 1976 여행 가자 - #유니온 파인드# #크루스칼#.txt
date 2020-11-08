@@ -1,0 +1,49 @@
+https://www.acmicpc.net/problem/1976
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def find_parent(x) :
+    if x == parent[x] :
+        return parent[x]
+    parent[x] = find_parent(parent[x])
+    return parent[x]
+
+def union(a,b) :
+    root1 = find_parent(a)
+    root2 = find_parent(b)
+
+    if root1 != root2 :
+        if rank[root1] > rank[root2] :
+            parent[root2] = root1
+        else :
+            parent[root1] = root2
+            if rank[root1] == rank[root2] :
+                rank[root2] += 1
+    return
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## 도시의 수
+    parent = list(range(N+1))
+    rank = [0]*(N+1)
+    M = int(input())
+    path = []
+    for i in range (N) :
+        tmp = list(map(int,input().split()))
+        for j in range (len(tmp)) :
+            if tmp[j] == 1 :
+                path.append((i+1,j+1))
+    ## 간선 탐색 (Kruskal Algorithm)
+    for x,y in path :
+        if find_parent(x) != find_parent(y) :
+            union(x,y)
+
+    arr = list(map(int,input().split())) ## 연결된 도시인지 확인
+    common = find_parent(arr[0])
+    for x in arr :
+        if find_parent(x) != common :
+            print("NO")
+            sys.exit()
+    print("YES")
