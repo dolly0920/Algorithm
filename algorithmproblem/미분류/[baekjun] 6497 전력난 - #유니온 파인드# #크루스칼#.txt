@@ -1,0 +1,50 @@
+https://www.acmicpc.net/problem/6497
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def find_parent(x) :
+    if x == parent[x] :
+        return parent[x]
+    parent[x] = find_parent(parent[x])
+    return parent[x]
+
+def union(x,y) :
+    root1 = find_parent(x)
+    root2 = find_parent(y)
+
+    if root1 != root2 :
+        if rank[root1] > rank[root2] :
+            parent[root2] = root1
+        else :
+            parent[root1] = root2
+            if rank[root1] == rank[root2] :
+                rank[root2] += 1
+    return
+
+
+if __name__ == "__main__" :
+    while True :
+        m,n = map(int,input().split()) ## 집의 수, 길의 수
+        if m==0 and n==0 :
+            break
+        parent = list(range(m+1))
+        rank = [0]*(m+1)
+        path = []
+        total = 0
+        for _ in range (n) :
+            x,y,z = map(int,input().split()) ## x-y : z
+            total += z
+            path.append((z,y,x))
+        path.sort(key=lambda x:x[0])
+        union_cnt = 0
+        save_cost = 0
+        for cost,a,b in path :
+            if find_parent(a) != find_parent(b) :
+                union(a,b)
+                save_cost += cost
+                union_cnt += 1
+                if union_cnt == m-1 :
+                    break
+        print(total-save_cost)
