@@ -1,0 +1,36 @@
+https://www.acmicpc.net/problem/1865
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def Bellman_Ford(start) :
+    dist = [sys.maxsize]*(N+1) ## dist[i] : 시작노드에서 i노드까지의 최소 거리
+    dist[start] = 0 ## 자기 자신은 0
+
+    for k in range (N) : ##
+        for i in range (1,N+1) : ## 경유지
+            for end,cost in path[i] : ## 경유지에 대한 처리
+                if dist[end] > dist[i] + cost :
+                    dist[end] = dist[i]+cost ## 최소값 갱신
+                    if k == N-1 : ## 음수 사이클 존재
+                        return True
+    return False
+
+
+if __name__ == "__main__" :
+    TC = int(input())
+    for _ in range (TC) :
+        N,M,W = map(int,input().split()) ## 지점,도로,웜홀
+        path = [[] for _ in range (N+1)] ## path[x] : [(end1,cost1),(end2,cost2),....] 형태로 저장
+        for _ in range (M) : ## 도로의 정보
+            S,E,T = map(int,input().split())
+            path[S].append((E,T))
+            path[E].append((S,T))
+        for _ in range (W) : ## 웜홀의 정보
+            S,E,T = map(int,input().split())
+            path[S].append((E,-T))
+        if Bellman_Ford(1) :
+            print("YES")
+        else :
+            print("NO")

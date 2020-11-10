@@ -1,0 +1,62 @@
+https://www.acmicpc.net/status?from_mine=1&problem_id=2887&user_id=dolly0920
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def find_parent(x) :
+    if x==parent[x] :
+        return parent[x]
+    parent[x] = find_parent(parent[x])
+    return parent[x]
+
+def union(a,b) :
+    root1 = find_parent(a)
+    root2 = find_parent(b)
+
+    if root1 != root2 :
+        if rank[root1] > rank[root2] :
+            parent[root2] = root1
+        else :
+            parent[root1] = root2
+            if rank[root1] == rank[root2] :
+                rank[root2] += 1
+    return
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## 행성의 수
+    parent = list(range(N+1))
+    rank = [0]*(N+1)
+    arr = []
+    for i in range (1,N+1) :
+        x,y,z = map(int,input().split())
+        arr.append((x,y,z,i))
+    edges = [] ## 간선 저장 배열 (cost,start,end)
+    ## 거리 정의 : min(x좌표 사이의 거리, y좌표 사이의 거리, z좌표 사이의 거리) => 이 부분 주의!
+    ## x좌표에 대해 정렬
+    arr.sort(key=lambda x:x[0])
+    for i in range (1,N) :
+        distance = min(abs(arr[i][0]-arr[i-1][0]),abs(arr[i][1]-arr[i-1][1]),abs(arr[i][2]-arr[i-1][2]))
+        edges.append((distance,arr[i-1][3],arr[i][3]))
+    ## y좌표에 대해 정렬
+    arr.sort(key=lambda x:x[1])
+    for i in range(1, N):
+        distance = min(abs(arr[i][0] - arr[i - 1][0]), abs(arr[i][1] - arr[i - 1][1]), abs(arr[i][2] - arr[i - 1][2]))
+        edges.append((distance, arr[i - 1][3], arr[i][3]))
+    ## z좌표에 대해 정렬
+    arr.sort(key=lambda x:x[2])
+    for i in range(1, N):
+        distance = min(abs(arr[i][0] - arr[i - 1][0]), abs(arr[i][1] - arr[i - 1][1]), abs(arr[i][2] - arr[i - 1][2]))
+        edges.append((distance, arr[i - 1][3], arr[i][3]))
+    edges.sort(key=lambda x:x[0]) ## kruskal을 사용하기 위해 간선의 가중치에 대해 오름차순 정렬
+    answer = 0
+    cnt = 0
+    for cost,start,end in edges :
+        if find_parent(start) != find_parent(end) :
+            answer += cost
+            cnt += 1
+            union(start,end)
+            if cnt == N-1 :
+                break
+    print(answer)
