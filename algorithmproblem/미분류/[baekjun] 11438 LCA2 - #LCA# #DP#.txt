@@ -42,7 +42,7 @@ def LCA(x,y) : ## x노드와 y노드의 Lowest Common Ancestor (최소공통조�
         return x
     else :
         for i in range (19,-1,-1) :
-            if parent[x][i] != parent[y][i] : ## 이렇게 쓸 수 있는 이유 : 같은 깊이에서 동일한 공통 조상 이후의 조상은 항상 같다. => 이걸 다르게 생각하면, 공통 조상이 아니라면 무조건 공통 조상보다 아래라는 결론이 나온다.
+            if parent[x][i] != parent[y][i] : ## 같은 깊이에서 동일한 공통 조상 이후의 조상은 항상 같다. => 이걸 다르게 생각하면, 공통 조상이 아니라면 무조건 공통 조상보다 아래라는 결론이 나온다.
                 x = parent[x][i]
                 y = parent[y][i]
     return parent[x][0] ## 위의 조건에서 부모가 같은 경우 더 이상 변경되지 않으므로 이때의 부모가 LCA이다.

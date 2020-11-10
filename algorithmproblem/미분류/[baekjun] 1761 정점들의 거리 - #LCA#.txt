@@ -1,0 +1,69 @@
+
+----------------------------------------------------------------------------------------------------------------
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+def BFS(node) : ## node의 첫 번째 부모를 찾는 bfs
+    q = deque()
+    dist[node] = 0 ## 자기 자신은 0
+    q.append(node)
+
+    while q :
+        cur = q.popleft()
+        for next in path[cur] :
+            if dist[next] != -1 :
+                continue
+            dist[next] = dist[cur] + path[cur][next]
+            depth[next] = depth[cur] + 1
+            parent[next][0] = cur
+            q.append(next)
+    return
+
+def set_parent() : ## 각각의 노드들의 2^x번째 부모노드 설정
+    BFS(1) ## 각각의 노드들의 2^0(1)번째 부모 노드 입력
+
+    for i in range (1,17) :
+        for j in range (1,N+1) :
+            parent[j][i] = parent[parent[j][i-1]][i-1] ## 점화식
+    return
+
+def LCA(x,y) : ## x,y노드의 최소 공통조상 찾기
+    if depth[x] < depth[y] : ## 깊이를 x > y 로 만들어주기 위해서
+        x,y = y,x ## swap
+
+    ## x의 깊이를 y의 깊이로 맞춰준다.
+    for i in range (16,-1,-1) :
+        if depth[x]-depth[y] >= (1<<i) :
+            x = parent[x][i]
+    if x==y :
+        return x
+    else :
+        ## 공통 조상을 찾는다.
+        for i in range (16,-1,-1) :
+            if parent[x][i] != parent[y][i] : ## 다른 경우
+                x = parent[x][i]
+                y = parent[y][i] ## x,y값 갱신
+        return parent[x][0]
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## 노드의 갯수
+    depth = [0]*(N+1) ## depth[i] : i노드의 깊이
+    dist = [-1]*(N+1) ## dist[i] : root(1번노드)에서 i번 노드까지의 거리
+    parent = [[0]*17 for _ in range (N+1)] ##parent[i][j] : i노드의 2^j번째 부모
+    ##path = [[0]*(N+1) for _ in range (N+1)] ## 이렇게 써서 메모리초과 (당연한 결과 !)
+    path = [{} for _ in range (N+1)] ## dictionary 형태로 저장
+    for _ in range (N-1) :
+        a,b,c = map(int,input().split())
+        path[a][b] = c
+        path[b][a] = c ## 간선
+
+    set_parent()
+    M = int(input())
+    for _ in range (M) :
+        a,b = map(int,input().split()) ## 거리를 알고 싶은 노드의 쌍
+        common = LCA(a,b)
+        answer = dist[a]-dist[common] + dist[b]-dist[common]
+        print(answer)
