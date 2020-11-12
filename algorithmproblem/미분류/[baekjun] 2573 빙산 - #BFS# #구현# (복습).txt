@@ -1,0 +1,68 @@
+https://www.acmicpc.net/problem/2573
+----------------------------------------------------------------------------------------------------------------
+## 문제 제대로 읽을것!!
+import sys
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def BFS(r,c) :
+    q = deque()
+    visit[r][c] = 1
+    q.append((r,c))
+
+    while q :
+        r,c = q.popleft()
+        for i in range (4) :
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if nr<0 or nr>=N or nc<0 or nc>=M :
+                continue
+            if MAP[nr][nc] <= 0 or visit[nr][nc] == 1 :
+                continue
+            visit[nr][nc] = 1
+            q.append((nr,nc))
+    return
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    MAP = []
+    for _ in range (N) :
+        MAP.append(list(map(int,input().split())))
+
+    answer = 0 ## 시간
+    while True :
+        visit = [[0]*M for _ in range (N)]
+
+        cnt = 0
+        water = 0
+        for i in range (N) :
+            for j in range (M) :
+                if MAP[i][j] > 0 and visit[i][j] == 0 :
+                    cnt += 1
+                    BFS(i,j)
+                elif MAP[i][j] <= 0 :
+                    water += 1
+        if cnt >= 2 : ## 2덩이 이상인 경우
+            break
+        if water == N*M :
+            answer = 0
+            break
+
+        for i in range (N) :
+            for j in range (M) :
+                if visit[i][j] == 1 : ## 빙산인 경우
+                    remove = 0
+                    for k in range (4) :
+                        ni = i + dr[k]
+                        nj = j + dc[k]
+                        if ni<0 or ni>=N or nj<0 or nj>=M :
+                            continue
+                        if visit[ni][nj] == 0 : ## 바다인 경우
+                            remove += 1
+                    MAP[i][j] -= remove ## 빙산높이 감소
+        answer += 1
+    print(answer)
