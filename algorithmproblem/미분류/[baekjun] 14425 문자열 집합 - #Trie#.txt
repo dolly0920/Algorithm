@@ -1,0 +1,63 @@
+https://www.acmicpc.net/problem/14425
+----------------------------------------------------------------------------------------------------------------
+## Trie사용 (약 6000ms)
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+class Node :
+    def __init__(self,key):
+        self.key = key
+        self.children = {}
+        self.flag = False
+
+class Trie :
+    def __init__(self):
+        self.root = Node(None)
+
+    def insert(self,data) :
+        cur_node = self.root ## 루트 노드
+        for key in data :
+            if key not in cur_node.children :
+                cur_node.children[key] = Node(key)
+            cur_node = cur_node.children[key] ## 노드 갱신
+        cur_node.flag = True ## 문자열의 마지막은 True로 체크
+
+    def search(self,data) :
+        cur_node = self.root
+        for key in data :
+            if key not in cur_node.children :
+                return False
+            cur_node = cur_node.children[key]
+        ## 문자열의 끝값인지 확인
+        if cur_node.flag == True :
+            return True
+        else :
+            return False
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split()) ##  N개의 문자열, M개의 쿼리
+    Trie = Trie()
+    for _ in range (N) : ## 문자열 입력
+        Trie.insert(input())
+    answer = 0
+    for _ in range (M) : ## 쿼리
+        if Trie.search(input()) :
+            answer += 1
+    print(answer)
+
+## set()사용 (약 270ms)
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N,M = map(int,input().split())
+    string_set = set()
+    for _ in range (N) :
+        string_set.add(input())
+    answer = 0
+    for _ in range (M) :
+        if input() in string_set :
+            answer += 1
+    print(answer)
