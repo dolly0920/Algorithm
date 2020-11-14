@@ -1,0 +1,46 @@
+https://www.acmicpc.net/problem/14725
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+class Node :
+    def __init__(self,key=None):
+        self.key = key
+        self.children = {}
+
+class Trie :
+    def __init__(self):
+        self.root = Node() ## 루트 노드 none
+
+    def insert(self,str_arr) : ## str_arr의 원소 자체를 key로 받는다.
+        cur_node = self.root
+        for x in str_arr : ## x는 문자열이다.
+            if x not in cur_node.children :
+                cur_node.children[x] = Node(x)
+            cur_node = cur_node.children[x]
+
+    def solve(self):
+        def DFS(node,depth) : ## 왼쪽은 사전 순서
+            if depth != -1 : ## root 제한
+                tmp = "-"*(depth*2)
+                print(tmp+node.key)
+            arr = [] ## key를 정렬한다.
+            for key in node.children.keys() :
+                arr.append(key)
+            arr.sort() ## 오름차순(사전순) 정렬
+            for x in arr : ## arr에는 정렬된 key값이 담긴다.
+                DFS(node.children[x],depth+1)
+
+
+        DFS(self.root,-1)
+        return
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## 길의 정보
+    Trie = Trie()
+    for _ in range (N) :
+        arr = list(input().split()) ## 먹이정보
+        Trie.insert(arr[1:])
+    Trie.solve()
