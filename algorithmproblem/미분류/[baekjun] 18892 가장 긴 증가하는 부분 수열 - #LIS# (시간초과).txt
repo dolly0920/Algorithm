@@ -1,0 +1,52 @@
+https://www.acmicpc.net/problem/18892
+----------------------------------------------------------------------------------------------------------------
+import sys
+from copy import deepcopy
+
+sys.stdin = open("input.txt","rt")
+
+def lis(index) :
+    if dp[index] != -1 :
+        return dp[index]
+
+    dp[index] = 1 ## 자기 자신은 1 (길이)
+
+    for i in range (index+1,N) :
+        if arr[i] > arr[index] :
+            dp[index] = max(dp[index],lis(i)+1)
+    return dp[index]
+
+
+def solve(index) :
+    for i in range (index+1,N) :
+        if arr[i] > arr[index] and dp[index] == dp[i]+1 : ## 연속적인 수열
+            tmp.append(arr[i])
+            solve(i)
+            tmp.pop()
+    if len(tmp) == lis_num :
+        tmp1 = deepcopy(tmp)
+        lis_arr.append(tmp1)
+    return
+
+
+if __name__ == "__main__" :
+    N,K = map(int,input().split())
+    arr = list(map(int,input().split()))
+    dp = [-1]*(N) ## dp[i] : i인덱스를 시작하는 lis의 길이
+    for i in range (len(arr)) : ## lis 갱신
+        lis(i)
+    lis_num = max(dp)
+
+    tmp = []
+    lis_arr = []
+    for i in range (N) :
+        if dp[i] == lis_num :
+            tmp.append(arr[i])
+            solve(i)
+            tmp.pop()
+    if len(lis_arr) < K :
+        print(-1)
+    else :
+        lis_arr.sort()
+        for x in lis_arr[K-1] :
+            print(x,end=' ')
