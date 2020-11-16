@@ -1,0 +1,65 @@
+https://www.acmicpc.net/problem/status/1941/73/1
+----------------------------------------------------------------------------------------------------------------
+import sys
+from itertools import combinations
+from collections import deque
+
+sys.stdin = open("input.txt","rt")
+
+dr = [0,0,1,-1]
+dc = [1,-1,0,0]
+
+def test(arr) : ## arr배열이 인접한 7개의 원소인지 확인
+    spot = set()
+    for x,y,z in arr :
+        spot.add((x,y))
+    q = deque()
+    visit = [[0]*5 for _ in range (5)]
+    sr,sc = arr[0][0],arr[0][1]
+    q.append((sr,sc))
+    visit[sr][sc] = 1 ## 방문 체크
+
+    cnt = 0
+    while q :
+        r,c = q.popleft()
+        cnt += 1
+        for i in range (4) :
+            nr = r + dr[i]
+            nc = c + dc[i]
+            if nr<0 or nr>=5 or nc<0 or nc>=5 :
+                continue
+            if (nr,nc) not in spot : ## 같은 조합 내에 없는 좌표라면
+                continue
+            if visit[nr][nc] == 1 : ## 방문한 곳이라면
+                continue
+            visit[nr][nc] = 1
+            q.append((nr,nc))
+    if cnt == 7 :
+        return True
+    else :
+        return False
+
+
+if __name__ == "__main__" :
+    arr = []
+    for _ in range (5) :
+        arr.append(list(input()))
+
+    info = []
+    for i in range (5) :
+        for j in range (5) :
+            info.append((i,j,arr[i][j]))
+
+    com_list = list(combinations(info,7))
+
+    answer = 0
+    for i in range (len(com_list)) :
+        cnt = 0
+        for x,y,z in com_list[i] :
+            if z == 'Y' :
+                cnt += 1
+        if cnt > 3 :
+            continue
+        if test(com_list[i]) :
+            answer += 1
+    print(answer)
