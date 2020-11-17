@@ -1,0 +1,66 @@
+https://www.acmicpc.net/problem/11053
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def lis1(arr) : ## 완전탐색 (재귀활용 ) => 시간 복잡도 O(2^n) => 대부분의 문제에서 시간초과 나올듯 (이 문제에선 메모리 초과나옴 )
+    if len(arr) == 0 :
+        return 0
+
+    tmp = []
+    ret = 1 ## 자기 자신만 있을 경우 최소 1이다.
+    for i in range (len(arr)) : ## 시작점
+        for j in range (i+1,len(arr)) : ## 뒤에 올 후보들
+            if arr[j] > arr[i] :
+                tmp.append(arr[j])
+    ret = max(ret,lis1(tmp)+1) ## 2번째 원소를 시작으로 하는 증가수열 + 1
+    return ret
+
+def lis2(arr) : ## O(N^2) => dp활용
+    arr = [-sys.maxsize]+arr ## 맨 앞의 원소에 가장 작은 원소를 더한다.
+    dp = [-1]*(len(arr)) ## dp[i] : i번 원소를 시작으로하는 lis값
+
+    def solve(index) : ##
+        if dp[index] != -1 :
+            return dp[index]
+
+        dp[index] = 0 ## 0으로 초기화
+        for i in range (index+1,len(arr)) :
+            if arr[i] > arr[index] :
+                dp[index] = max(dp[index],solve(i)+1)
+        return dp[index]
+
+    return solve(0)
+
+
+def lis3(arr) : ## O(NlogK) => dp + 이진탐색 활용
+    dp = [sys.maxsize]*(N+1) ## dp[i] : lis길이 i일 때의 최소 끝 값
+    tmp_length = 1 ## lis길이
+
+    def lower_bound(left,right,num) :
+        answer = 1 ## 최소값이라면 가장 앞의 인덱스값 변경
+
+        while left<=right :
+            mid = (left+right)//2
+            if dp[mid] >= num : ## dp배열의 lower_bound를 구하는 것이다. (여기서 arr써서 계속 틀림 정신차리자!!!!)
+                answer = mid
+                right = mid-1
+            else :
+                left = mid+1
+        return answer
+
+    for i in range (N) :
+        if dp[tmp_length] < arr[i] :
+            tmp_length += 1
+            dp[tmp_length] = arr[i]
+        else :
+            index = lower_bound(1,tmp_length,arr[i])
+            dp[index] = arr[i]
+    return tmp_length
+
+
+if __name__ == "__main__" :
+    N = int(input())
+    arr = list(map(int,input().split()))
+    print(lis3(arr))
