@@ -1,0 +1,32 @@
+https://www.acmicpc.net/problem/12015
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def lower_bound(start,end,num) : ## dp배열에서 num의 lower_bound를 구한다.
+    answer = 1 ## 만약 아래의 while문에서 answer가 갱신되지 않는다면 (num가 dp의 start~end의 범위에서 최소값이라면)
+    while start <= end :
+        mid = (start+end)//2
+        if dp[mid] >= num :
+            answer = mid
+            end = mid-1
+        else :
+            start = mid+1
+    return answer
+
+if __name__ == "__main__" :
+    N = int(input()) ## N은 최대값 백만 => O(Nlogk)만 가능할 듯
+    arr = list(map(int,input().split()))
+
+    dp = [sys.maxsize]*(N+1) ## dp[i] : lis가 i인 수열의 최소 끝 값
+    tmp_length = 1 ## lis길이
+
+    for i in range (N) :
+        if arr[i] > dp[tmp_length] : ## lis를 붙힌다
+            tmp_length += 1
+            dp[tmp_length] = arr[i] ## 끝 값 갱신
+        else : ## 작거나 같은 경우
+            lower_bound_index = lower_bound(1,tmp_length,arr[i])
+            dp[lower_bound_index] = arr[i] ## dp배열 갱신 (최소값 갱신)
+    print(tmp_length)
