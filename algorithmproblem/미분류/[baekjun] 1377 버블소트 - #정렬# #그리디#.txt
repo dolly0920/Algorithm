@@ -1,0 +1,20 @@
+https://www.acmicpc.net/problem/1377
+----------------------------------------------------------------------------------------------------------------
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+
+if __name__ == "__main__" :
+    N = int(input())
+    arr = []
+    for i in range (N) :
+        arr.append((int(input()),i)) ## (값,인덱스)
+    arr.sort(key=lambda x:x[0]) ## 값에 대해 정렬
+
+    answer = 0
+
+    for i in range (N) :
+        answer = max(answer,arr[i][1]-i+1) ## 이동한 인덱스 값
+
+    print(answer)
