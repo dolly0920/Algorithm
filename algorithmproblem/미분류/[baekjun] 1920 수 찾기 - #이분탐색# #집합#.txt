@@ -1,0 +1,51 @@
+https://www.acmicpc.net/problem/1920
+----------------------------------------------------------------------------------------------------------------
+## 이분탐색 (312ms)
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+def binary_search(arr,num) :
+    left = 0
+    right = len(arr)-1
+
+    while left<=right :
+        mid = (left+right)//2
+        if arr[mid] == num :
+            return True
+        elif arr[mid] > num :
+            right = mid-1
+        else :
+            left = mid+1
+    return False
+
+
+if __name__ == "__main__" :
+    N = int(input()) ## N개의 정수
+    arr = list(map(int,input().split()))
+    M = int(input()) ## M개의 입력
+    query = list(map(int,input().split()))
+
+    arr.sort()  ## 오름차순 정렬 (시간복잡도 : 100000log(100000) ~ 100000^2)
+
+    for x in query :
+        if binary_search(arr,x) :
+            print(1)
+        else :
+            print(0)
+
+## set사용 (264ms)
+import sys
+
+sys.stdin = open("input.txt","rt")
+
+if __name__ == "__main__" :
+    N = int(input())
+    arr = set(map(int,input().split()))
+    M = int(input())
+    query = list(map(int,input().split()))
+    for x in query :
+        if x in arr :
+            print(1)
+        else :
+            print(0)
