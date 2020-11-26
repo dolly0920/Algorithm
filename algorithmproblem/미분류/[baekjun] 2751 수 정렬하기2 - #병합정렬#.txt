@@ -1,0 +1,47 @@
+https://www.acmicpc.net/problem/2751
+--------------------------------------------------------
+import sys
+
+#sys.stdin = open("input.txt","rt")
+
+def merge(left,right) :
+    if len(left) == 0 :
+        return right
+    elif len(right) == 0 :
+        return left
+
+    left_index = 0
+    right_index = 0
+    sorted = []
+
+    while True :
+        if (left[left_index] >= right[right_index]) :
+            sorted.append(right[right_index])
+            right_index += 1
+            if right_index == len(right) :
+                sorted += left[left_index:]
+                return sorted
+        elif (left[left_index] < right[right_index]) :
+            sorted.append(left[left_index])
+            left_index += 1
+            if left_index == len(left) :
+                sorted += right[right_index:]
+                return sorted
+
+def merge_sort(arr) :
+    if len(arr) <= 1 :
+        return arr
+
+    mid = len(arr)//2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left,right)
+
+if __name__ == "__main__":
+    n = int(input())
+    a = []
+    for _ in range (n) :
+        a.append(int(input()))
+
+    for x in merge_sort(a) :
+        print(x)
